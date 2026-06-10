@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+git config --global --add safe.directory /workspaces/dograh
+git config --global --add safe.directory /workspaces/dograh/pipecat
+
 ROOT_DIR="/workspaces/dograh"
 UI_ENV_EXAMPLE="$ROOT_DIR/ui/.env.example"
 UI_ENV_FILE="$ROOT_DIR/ui/.env"
@@ -42,7 +45,7 @@ copy_if_missing() {
 
 # Copy an api/.env*.example template to its target, rewriting infra hostnames
 # from `localhost` to the docker service names defined in
-# docker-compose-local.yaml. MINIO_PUBLIC_ENDPOINT stays on localhost — that
+# docker-compose-local.yaml. MINIO_PUBLIC_ENDPOINT stays on localhost â€” that
 # URL ends up in UI responses and is loaded by the host browser via the
 # forwarded port. No-op if the target already exists.
 copy_env_with_docker_hostnames() {

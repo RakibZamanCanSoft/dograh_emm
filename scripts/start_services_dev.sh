@@ -119,7 +119,7 @@ for name in "${SERVICE_NAMES[@]}"; do
     oldpid=$(<"$pidfile")
 
     if kill -0 "$oldpid" 2>/dev/null; then
-      echo "Stopping $name (PID $oldpid and all descendants)…"
+      echo "Stopping $name (PID $oldpid and all descendants)â€¦"
 
       kill_process_tree "$oldpid" "-TERM"
       sleep 4
@@ -137,7 +137,7 @@ for name in "${SERVICE_NAMES[@]}"; do
       fi
 
       if $still_alive; then
-        echo "⚠️  $name did not exit cleanly, forcing stop..."
+        echo "âš ï¸  $name did not exit cleanly, forcing stop..."
         kill_process_tree "$oldpid" "-KILL"
         sleep 1
       fi
@@ -179,7 +179,7 @@ echo "Latest symlink: $LATEST_LINK -> $TIMESTAMP"
 for i in "${!SERVICE_NAMES[@]}"; do
   name="${SERVICE_NAMES[$i]}"
   cmd="${SERVICE_COMMANDS[$i]}"
-  echo "→ Starting $name"
+  echo "â†’ Starting $name"
 
   (
     cd "$BASE_DIR"
@@ -209,7 +209,7 @@ for ((attempt = 1; attempt <= HEALTH_MAX_ATTEMPTS; attempt++)); do
     "http://127.0.0.1:${UVICORN_BASE_PORT}${HEALTH_CHECK_ENDPOINT}" 2>/dev/null || echo "000")
 
   if [[ "$http_code" == "200" ]]; then
-    echo "✓ uvicorn healthy (attempt $attempt)"
+    echo "âœ“ uvicorn healthy (attempt $attempt)"
     healthy=true
     break
   fi
@@ -217,7 +217,7 @@ for ((attempt = 1; attempt <= HEALTH_MAX_ATTEMPTS; attempt++)); do
 done
 
 if ! $healthy; then
-  echo "✗ uvicorn FAILED health check after $HEALTH_MAX_ATTEMPTS attempts."
+  echo "âœ— uvicorn FAILED health check after $HEALTH_MAX_ATTEMPTS attempts."
   echo "  Check logs: tail -f $LOG_DIR/uvicorn.log"
   exit 1
 fi
@@ -227,12 +227,12 @@ fi
 ###############################################################################
 
 echo
-echo "──────────────────────────────────────────────────"
+echo "â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"
 echo "Mode: DEVELOPMENT (auto-reload enabled)"
 echo ""
 for name in "${SERVICE_NAMES[@]}"; do
   pid=$(<"$RUN_DIR/$name.pid")
-  echo "✓ $name (PID $pid) → $LOG_DIR/$name.log"
+  echo "âœ“ $name (PID $pid) â†’ $LOG_DIR/$name.log"
 done
 echo ""
 echo "  Rotation: ${LOG_ROTATION_SIZE:-100 MB}"
@@ -241,4 +241,4 @@ echo "  Compression: ${LOG_COMPRESSION:-gz}"
 echo "Logs: tail -f $LOG_DIR/*.log"
 echo "Rotated logs: ls $LOG_DIR/*.log.*"
 echo "To stop: ./scripts/stop_services.sh"
-echo "──────────────────────────────────────────────────"
+echo "â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"

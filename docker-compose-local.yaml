@@ -58,6 +58,30 @@ services:
     networks:
       - app-network
 
+  coturn:
+    image: coturn/coturn:4.8.0
+    container_name: coturn-local
+    restart: unless-stopped
+    ports:
+      - "3478:3478/udp"
+      - "3478:3478/tcp"
+    command:
+      - -c
+      - /dev/null
+      - --listening-port=3478
+      - --listening-ip=0.0.0.0
+      - --relay-ip=192.168.0.105
+      - --external-ip=192.168.0.105
+      - --min-port=49152
+      - --max-port=49200
+      - --user=devuser:devsecret
+      - --realm=dograh.local
+      - --no-tls
+      - --no-dtls
+      - --verbose
+    networks:
+      - app-network
+
 volumes:
   postgres_data:
   redis_data:

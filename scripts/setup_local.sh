@@ -29,10 +29,10 @@ trap cleanup EXIT
 . "$LIB_PATH"
 
 echo -e "${BLUE}"
-echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║                    Dograh Local Setup                        ║"
-echo "║       Local docker deployment, optional TURN server          ║"
-echo "╚══════════════════════════════════════════════════════════════╝"
+echo "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—"
+echo "â•‘                    Dograh Local Setup                        â•‘"
+echo "â•‘       Local docker deployment, optional TURN server          â•‘"
+echo "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"
 echo -e "${NC}"
 
 # Ask whether to enable coturn (skip prompt if ENABLE_COTURN is already set)
@@ -49,7 +49,7 @@ fi
 if [[ "${ENABLE_COTURN:-false}" == "true" ]]; then
     # Pick a TURN_HOST that's reachable from BOTH the browser (running on the
     # host) and the API container (running in docker). 127.0.0.1 is tempting
-    # but doesn't work for the api container — its own loopback isn't where
+    # but doesn't work for the api container â€” its own loopback isn't where
     # coturn lives, so aiortc can't allocate a relay. The host's LAN IP works
     # for both.
     detect_lan_ip() {
@@ -122,7 +122,7 @@ echo -e "  Telemetry:     ${BLUE}$ENABLE_TELEMETRY${NC}"
 echo -e "  Registry:      ${BLUE}$REGISTRY${NC}"
 echo ""
 
-# Download compose file (skip when DOGRAH_SKIP_DOWNLOAD=1 — e.g. local repo testing).
+# Download compose file (skip when DOGRAH_SKIP_DOWNLOAD=1 â€” e.g. local repo testing).
 TOTAL_STEPS=2
 
 if [[ "${DOGRAH_SKIP_DOWNLOAD:-}" != "1" ]]; then
@@ -135,7 +135,7 @@ if [[ "${DOGRAH_SKIP_DOWNLOAD:-}" != "1" ]]; then
     if [[ "${ENABLE_COTURN:-false}" == "true" ]]; then
         dograh_download_init_support_bundle "$(pwd)" "main"
     fi
-    echo -e "${GREEN}✓ Deployment files downloaded${NC}"
+    echo -e "${GREEN}âœ“ Deployment files downloaded${NC}"
 else
     echo -e "${BLUE}[1/$TOTAL_STEPS] Using docker-compose.yaml in current directory${NC}"
 fi
@@ -160,7 +160,7 @@ REGISTRY=$REGISTRY
 OSS_JWT_SECRET=$OSS_JWT_SECRET
 
 # PostgreSQL password. Used by the postgres container on first init and by the
-# API's DATABASE_URL. Do not change after the first start — the password is
+# API's DATABASE_URL. Do not change after the first start â€” the password is
 # baked into the postgres data volume when it is first created.
 POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 
@@ -179,12 +179,12 @@ TURN_HOST=$TURN_HOST
 TURN_SECRET=$TURN_SECRET
 ENV_EOF
 fi
-echo -e "${GREEN}✓ .env file created${NC}"
+echo -e "${GREEN}âœ“ .env file created${NC}"
 
 echo ""
-echo -e "${GREEN}╔══════════════════════════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║                    Setup Complete!                           ║${NC}"
-echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${NC}"
+echo -e "${GREEN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${NC}"
+echo -e "${GREEN}â•‘                    Setup Complete!                           â•‘${NC}"
+echo -e "${GREEN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${NC}"
 echo ""
 echo -e "Files created in ${BLUE}$(pwd)${NC}:"
 echo "  - docker-compose.yaml"

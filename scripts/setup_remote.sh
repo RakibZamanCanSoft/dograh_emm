@@ -29,10 +29,10 @@ trap cleanup EXIT
 . "$LIB_PATH"
 
 echo -e "${BLUE}"
-echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║                   Dograh Remote Setup                        ║"
-echo "║      Automated HTTPS deployment with TURN server             ║"
-echo "╚══════════════════════════════════════════════════════════════╝"
+echo "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—"
+echo "â•‘                   Dograh Remote Setup                        â•‘"
+echo "â•‘      Automated HTTPS deployment with TURN server             â•‘"
+echo "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"
 echo -e "${NC}"
 
 # Get the public IP address (skip prompt if SERVER_IP is already set)
@@ -208,7 +208,7 @@ if [[ "$DEPLOY_MODE" == "build" ]]; then
         echo -e "${BLUE}[1/$TOTAL] Cloning $FORK_REPO (branch: $BRANCH)...${NC}"
         git clone --branch "$BRANCH" --recurse-submodules "https://github.com/$FORK_REPO.git" dograh
         cd dograh
-        echo -e "${GREEN}✓ Repo cloned${NC}"
+        echo -e "${GREEN}âœ“ Repo cloned${NC}"
     else
         echo -e "${BLUE}[1/$TOTAL] Using existing repo at $(pwd)${NC}"
     fi
@@ -220,7 +220,7 @@ else
         echo -e "${BLUE}[1/$TOTAL] Downloading deployment bundle...${NC}"
         curl -fsSL -o docker-compose.yaml "https://raw.githubusercontent.com/dograh-hq/dograh/main/docker-compose.yaml"
         dograh_download_remote_support_bundle "$(pwd)" "main"
-        echo -e "${GREEN}✓ Deployment bundle downloaded${NC}"
+        echo -e "${GREEN}âœ“ Deployment bundle downloaded${NC}"
     else
         echo -e "${BLUE}[1/$TOTAL] Using deployment files in current directory${NC}"
     fi
@@ -243,11 +243,11 @@ openssl req -x509 -nodes -newkey rsa:2048 \\
   -subj "/CN=$SERVER_IP"
 CERT_EOF
 chmod +x generate_certificate.sh
-echo -e "${GREEN}✓ generate_certificate.sh created${NC}"
+echo -e "${GREEN}âœ“ generate_certificate.sh created${NC}"
 
 echo -e "${BLUE}[3/$TOTAL] Generating SSL certificates...${NC}"
 ./generate_certificate.sh
-echo -e "${GREEN}✓ SSL certificates generated${NC}"
+echo -e "${GREEN}âœ“ SSL certificates generated${NC}"
 
 echo -e "${BLUE}[4/$TOTAL] Creating environment file...${NC}"
 OSS_JWT_SECRET=$(openssl rand -hex 32)
@@ -278,7 +278,7 @@ FORCE_TURN_RELAY=$FORCE_TURN_RELAY
 OSS_JWT_SECRET=$OSS_JWT_SECRET
 
 # PostgreSQL password. Used by the postgres container on first init and by the
-# API's DATABASE_URL. Do not change after the first start — the password is
+# API's DATABASE_URL. Do not change after the first start â€” the password is
 # baked into the postgres data volume when it is first created.
 POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 
@@ -288,11 +288,11 @@ ENABLE_TELEMETRY=$ENABLE_TELEMETRY
 # Number of uvicorn worker processes; nginx load-balances across them
 FASTAPI_WORKERS=$FASTAPI_WORKERS
 ENV_EOF
-echo -e "${GREEN}✓ .env file created${NC}"
+echo -e "${GREEN}âœ“ .env file created${NC}"
 
 echo -e "${BLUE}[5/$TOTAL] Validating remote init configuration...${NC}"
 dograh_prepare_remote_install "$(pwd)"
-echo -e "${GREEN}✓ Remote init configuration validated${NC}"
+echo -e "${GREEN}âœ“ Remote init configuration validated${NC}"
 
 if [[ "$DEPLOY_MODE" == "build" ]]; then
     echo -e "${BLUE}[6/$TOTAL] Creating docker-compose.override.yaml...${NC}"
@@ -316,13 +316,13 @@ services:
     image: dograh-local/dograh-ui:local
     pull_policy: never
 OVERRIDE_EOF
-    echo -e "${GREEN}✓ docker-compose.override.yaml created${NC}"
+    echo -e "${GREEN}âœ“ docker-compose.override.yaml created${NC}"
 fi
 
 echo ""
-echo -e "${GREEN}╔══════════════════════════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║                    Setup Complete!                           ║${NC}"
-echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${NC}"
+echo -e "${GREEN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${NC}"
+echo -e "${GREEN}â•‘                    Setup Complete!                           â•‘${NC}"
+echo -e "${GREEN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${NC}"
 echo ""
 echo -e "Files created in ${BLUE}$(pwd)${NC}:"
 echo "  - docker-compose.yaml"
@@ -347,7 +347,7 @@ if [[ "$DEPLOY_MODE" == "build" ]]; then
     echo ""
     echo -e "${YELLOW}A docker-compose.override.yaml has been created alongside${NC}"
     echo -e "${YELLOW}docker-compose.yaml. Compose auto-loads it, so no -f flag is${NC}"
-    echo -e "${YELLOW}needed — it swaps the prebuilt images for local builds.${NC}"
+    echo -e "${YELLOW}needed â€” it swaps the prebuilt images for local builds.${NC}"
 else
     echo -e "  ${BLUE}./remote_up.sh${NC}"
 fi

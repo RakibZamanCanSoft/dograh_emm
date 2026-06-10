@@ -5,7 +5,7 @@ set -euo pipefail
 # Ensure Ruff is installed (first try pipx, fall back to pip --user).
 ###############################################################################
 if ! command -v ruff >/dev/null 2>&1; then
-  echo "⇢ Ruff not found on PATH – installing…"
+  echo "â‡¢ Ruff not found on PATH â€“ installingâ€¦"
   if command -v pipx >/dev/null 2>&1; then
     # install into an isolated environment if pipx is present
     pipx install --quiet ruff
@@ -16,16 +16,16 @@ if ! command -v ruff >/dev/null 2>&1; then
 fi
 
 ###############################################################################
-# 1 – Python formatting (calls Ruff + Black, etc.)
+# 1 â€“ Python formatting (calls Ruff + Black, etc.)
 ###############################################################################
 sh scripts/format.sh
 
 ###############################################################################
-# 2 – ESLint autofix inside the Next.js app
+# 2 â€“ ESLint autofix inside the Next.js app
 ###############################################################################
 (cd ui && npm run fix-lint)
 
 ###############################################################################
-# 3 – Restage any files changed by the fixers so the commit includes them
+# 3 â€“ Restage any files changed by the fixers so the commit includes them
 ###############################################################################
 git add -u

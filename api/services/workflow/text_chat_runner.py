@@ -418,7 +418,7 @@ async def execute_text_chat_pending_turn(
         raise ValueError("Text chat requires an LLM configuration")
 
     llm = create_llm_service(user_config)
-    inference_llm = llm
+    inference_llm = create_llm_service(user_config)
 
     runtime_configuration = {
         "llm_provider": user_config.llm.provider,

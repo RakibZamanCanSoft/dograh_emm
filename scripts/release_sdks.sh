@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Cut a release of both SDKs — dograh-sdk (PyPI) and @dograh/sdk (npm) —
+# Cut a release of both SDKs â€” dograh-sdk (PyPI) and @dograh/sdk (npm) â€”
 # at the given version. Regenerates typed files from node_specs first so
 # a stale SDK can't ship.
 #
@@ -9,7 +9,7 @@
 # Prerequisites (one-time setup):
 #   - `build` + `twine` installed: `pip install --upgrade build twine`
 #   - `npm login` completed as a member of the `dograh` npm org. npm
-#     publish will prompt interactively for a 2FA OTP — run this script
+#     publish will prompt interactively for a 2FA OTP â€” run this script
 #     in a terminal where you can type the code.
 #
 # The script is idempotent up to the upload steps: each publish is gated
@@ -37,33 +37,33 @@ confirm() {
     [[ "$reply" =~ ^[Yy]$ ]]
 }
 
-echo "→ Pre-flight checks..."
+echo "â†’ Pre-flight checks..."
 if ! command -v npm >/dev/null 2>&1; then
     echo "error: npm not found in PATH" >&2
     exit 1
 fi
 if ! NPM_USER="$(npm whoami 2>/dev/null)"; then
     echo "error: not logged in to npm. Run 'npm login' as a member of the" >&2
-    echo "       dograh org before re-running this script — otherwise PyPI" >&2
+    echo "       dograh org before re-running this script â€” otherwise PyPI" >&2
     echo "       will publish and npm will 404, leaving the release split." >&2
     exit 1
 fi
 echo "  npm: logged in as $NPM_USER"
 
-echo "→ Regenerating typed SDK sources from node_specs..."
+echo "â†’ Regenerating typed SDK sources from node_specs..."
 ./scripts/generate_sdk.sh
 
 if ! git diff --quiet -- sdk/python/src/dograh_sdk/typed sdk/typescript/src/typed; then
     echo
-    echo "⚠  node_specs regeneration changed typed files. Review the diff"
-    echo "   above and commit before releasing — otherwise the tag will"
+    echo "âš   node_specs regeneration changed typed files. Review the diff"
+    echo "   above and commit before releasing â€” otherwise the tag will"
     echo "   point at a tree that disagrees with what ships to the registry."
     if ! confirm "Continue anyway?"; then
         exit 1
     fi
 fi
 
-echo "→ Bumping versions to $VERSION..."
+echo "â†’ Bumping versions to $VERSION..."
 VERSION="$VERSION" python - <<'PY'
 import os
 import pathlib
@@ -100,13 +100,13 @@ if ts_lock.exists():
     )
     ts_lock.write_text(lock_text)
 
-print(f"  pyproject.toml → {version}")
-print(f"  package.json  → {version}")
+print(f"  pyproject.toml â†’ {version}")
+print(f"  package.json  â†’ {version}")
 if ts_lock.exists():
-    print(f"  package-lock.json → {version}")
+    print(f"  package-lock.json â†’ {version}")
 PY
 
-echo "→ Building Python wheel + sdist..."
+echo "â†’ Building Python wheel + sdist..."
 (
     cd sdk/python
     rm -rf dist build
@@ -114,7 +114,7 @@ echo "→ Building Python wheel + sdist..."
     twine check dist/*
 )
 
-echo "→ Building TypeScript + running tests..."
+echo "â†’ Building TypeScript + running tests..."
 (
     cd sdk/typescript
     rm -rf dist
@@ -132,26 +132,26 @@ echo
 
 if confirm "Upload dograh-sdk==$VERSION to TestPyPI first (recommended)?"; then
     (cd sdk/python && twine upload --repository testpypi dist/*)
-    echo "  → https://test.pypi.org/project/dograh-sdk/$VERSION/"
+    echo "  â†’ https://test.pypi.org/project/dograh-sdk/$VERSION/"
     echo
 fi
 
 if confirm "Publish @dograh/sdk@$VERSION to npm? (will prompt for 2FA OTP)"; then
     (cd sdk/typescript && npm publish --access public)
-    echo "  → https://www.npmjs.com/package/@dograh/sdk/v/$VERSION"
+    echo "  â†’ https://www.npmjs.com/package/@dograh/sdk/v/$VERSION"
     echo
 fi
 
 if confirm "Upload dograh-sdk==$VERSION to PyPI?"; then
     (cd sdk/python && twine upload dist/*)
-    echo "  → https://pypi.org/project/dograh-sdk/$VERSION/"
+    echo "  â†’ https://pypi.org/project/dograh-sdk/$VERSION/"
     echo
 fi
 
 if confirm "Create annotated git tag sdks-v$VERSION at HEAD?"; then
     git tag -a "sdks-v$VERSION" -m "dograh-sdk + @dograh/sdk $VERSION"
-    echo "  → created tag (not pushed). Push with:"
+    echo "  â†’ created tag (not pushed). Push with:"
     echo "     git push origin sdks-v$VERSION"
 fi
 
-echo "✓ Done."
+echo "âœ“ Done."

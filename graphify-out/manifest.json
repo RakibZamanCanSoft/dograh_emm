@@ -1,0 +1,2154 @@
+{
+  "G:\\cansoft\\dograh_emm\\api\\app.py": {
+    "mtime": 1780840719.817939,
+    "hash": "f8604c4af8471a9783e0948b5ad7804a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\conftest.py": {
+    "mtime": 1780840719.8549397,
+    "hash": "31e9eb4eabc2cb7cab774961f8135b2d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\constants.py": {
+    "mtime": 1780840719.8549397,
+    "hash": "deb125b8cfa369a2d2655424069de1d2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\enums.py": {
+    "mtime": 1780840719.8629432,
+    "hash": "778346beb84163af50ae9a9e94ca2cdd"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\logging_config.py": {
+    "mtime": 1780840719.863947,
+    "hash": "3a1f9b369781fdbb6b8d8318440053ba"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\sdk_expose.py": {
+    "mtime": 1780840719.9101107,
+    "hash": "4559398f06b5d5d5d85a566aa1d63649"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\__init__.py": {
+    "mtime": 1780840719.7909384,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\env.py": {
+    "mtime": 1780840719.791938,
+    "hash": "e608ee78ce601eca189f733882e549d6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\02ffd7f23d1d_add_index_in_workflow_run.py": {
+    "mtime": 1780840719.791938,
+    "hash": "a18207ea6d07b741df8155e21b8da9f2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\08bb6e7f1397_added_campaign_table.py": {
+    "mtime": 1780840719.7929382,
+    "hash": "f886fd6a081ce927c9e1ba0fecd092b9"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\0a1b2c3d4e5f_add_mcp_in_toolcategory.py": {
+    "mtime": 1780840719.7929382,
+    "hash": "3680d0e255b00c9960f6e7d3a1dada7a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\0c1223cc266f_make_json_not_nullable.py": {
+    "mtime": 1780840719.7929382,
+    "hash": "88a8e9af53c9d087a00f751075d69d0e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\0c1bbc83fe9e_fix_unique_constraint_on_workflow_.py": {
+    "mtime": 1780840719.7939377,
+    "hash": "dcfe85f6b7dafd0fcafdf8d127b02927"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\0fe708f2acb9_add_call_disposition_codes.py": {
+    "mtime": 1780840719.7939377,
+    "hash": "a56904994de60a2191d04272f0ca18e7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\1225ac786848_add_organization_configurations.py": {
+    "mtime": 1780840719.7939377,
+    "hash": "1c5ebaf710cd61b337213df4fc60e4fd"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\13ccd6e1f5ad_add_workflow_run_mode.py": {
+    "mtime": 1780840719.7939377,
+    "hash": "da5bf6305ee2d7dae076eb5104a08b44"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\181475b2a1a1_add_public_access_token.py": {
+    "mtime": 1780840719.7949386,
+    "hash": "cf9be7e388b35e07c5d7583575e48746"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\19d2a4b6c8ef_rename_integrations_organisation_id.py": {
+    "mtime": 1780840719.7949386,
+    "hash": "b83babbb230800e526f1bc9dce7bfe02"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\1a7d74d54e8f_add_transfer_call_tool_category.py": {
+    "mtime": 1780840719.7949386,
+    "hash": "b503f38a9c5e60a7a56a1f536e286ab9"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\1d441e79db94_add_user_model.py": {
+    "mtime": 1780840719.7949386,
+    "hash": "35a1b5b0b32a4a684835c3396e4d3978"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\1da1d650c0e4_add_total_call_duration_to_usage.py": {
+    "mtime": 1780840719.7959373,
+    "hash": "616553eb0d9048d1b09e96832021ac1a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\20c780c2a218_add_provider.py": {
+    "mtime": 1780840719.7959373,
+    "hash": "bc566b151c43c1644642870cf93a0d75"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\2159d4ac431a_added_quota_tables.py": {
+    "mtime": 1780840719.7959373,
+    "hash": "93b6f751fc8e33f4a70ed66f0ea58c46"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\2d6e2f41caa2_add_workflow_run.py": {
+    "mtime": 1780840719.7969382,
+    "hash": "0d4d043526d14e06c96e94b9ae6b0998"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\2dfee251117b_fix_defaults.py": {
+    "mtime": 1780840719.7969382,
+    "hash": "e776dd33dff024b7c862835eea11b7c0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\2ed4baa89f15_add_annotations_in_workflow_run_model.py": {
+    "mtime": 1780840719.7969382,
+    "hash": "9a9958cd6336a21ec2c36c5b7f98083d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\2f638891cbb6_add_workflow_run_text_sessions.py": {
+    "mtime": 1780840719.7969382,
+    "hash": "11ccaf0c0ec0b50257db29f8f60e5ef0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\34c8537dfde5_add_processing_state_in_queued_runs.py": {
+    "mtime": 1780840719.7979403,
+    "hash": "5d5a2e999ca7a0806776f147fe238285"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\36b5dbf670e4_add_external_credentials_model.py": {
+    "mtime": 1780840719.7979403,
+    "hash": "40cda67a8738bf1ead4f80f0357cc62d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\3717ae6146e2_add_workflow_configurations.py": {
+    "mtime": 1780840719.7979403,
+    "hash": "2dc1d77efe34cbaa39eae43089ff99be"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\37d0a90fccba_add_api_keys_model.py": {
+    "mtime": 1780840719.798938,
+    "hash": "f471436cb31c8a10e47afc026fdbcc8e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\384be6596b36_make_email_case_insensitive.py": {
+    "mtime": 1780840719.798938,
+    "hash": "992e6856ef12f3ed10998545ab4d7b99"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\3a0384c5ab2e_add_user_configuration.py": {
+    "mtime": 1780840719.798938,
+    "hash": "b15f362fce4f0f973490a4aca143b32b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\3a30110d7cd7_added_livekit_room.py": {
+    "mtime": 1780840719.798938,
+    "hash": "119c4e17c710910fd8ef752bedde0646"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\3cd3155084a2_dedup_org_scoped_recordings.py": {
+    "mtime": 1780840719.7999365,
+    "hash": "1e926515caff04eb081eaf6b14eac28e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\45fa7fec2993_add_selected_organisation_id_field_in_.py": {
+    "mtime": 1780840719.7999365,
+    "hash": "4c7ef7496017facc3a28b2ca59593f0f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\4735a1f0cdb3_add_queued_runs_table.py": {
+    "mtime": 1780840719.7999365,
+    "hash": "a11721518d828306ceed1a9a245e140b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\477b47ce346b_add_organisation_id_in_workflow.py": {
+    "mtime": 1780840719.8009367,
+    "hash": "c0c99c6b0ebe526c28fb799abdd0b194"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\488eb58e4e6e_add_cloudonix_mode.py": {
+    "mtime": 1780840719.8009367,
+    "hash": "bfb69cf373822f8cab72b5cb5b2a07ac"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\493ca2bb001f_add_end_call_tool_category.py": {
+    "mtime": 1780840719.8019383,
+    "hash": "f2c243f283b1a435b4ee305208cf8b9c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\49a8fe6841e6_add_state_field_to_workflow_runs.py": {
+    "mtime": 1780840719.8019383,
+    "hash": "27142db26bd1fb5e01efc5d2d15081b5"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\4c1f1e3e8ef2_drop_looptalk_tables.py": {
+    "mtime": 1780840719.8019383,
+    "hash": "ffb2a13ea6f031d0d6de16b54a29dfa7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\4d8e9b2a3c5f_drop_workflow_run_mode_enum.py": {
+    "mtime": 1780840719.8019383,
+    "hash": "c6493540be468bc97cccd73ee3d4ab9d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\5253971e3f03_add_teplate_context_variables_in_.py": {
+    "mtime": 1780840719.802938,
+    "hash": "09454cc3ae9f69275f41485c94f62d3d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\58f17b468b3c_add_workflow_definition.py": {
+    "mtime": 1780840719.802938,
+    "hash": "01b85fa93818945748d375dfeb511da7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\594f16adf97c_add_timezone_info_on_tables.py": {
+    "mtime": 1780840719.8039382,
+    "hash": "d7173d05443a0810acc5c7354cdb8e07"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\6499c608d0f6_add_campaign_logs_column.py": {
+    "mtime": 1780840719.8039382,
+    "hash": "dfed0eebd24a3336a88ce108a76557cc"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\67a5cf3e09d0_unique_recording_id_per_org.py": {
+    "mtime": 1780840719.8039382,
+    "hash": "273104d4d84c3a85242dca5159951c1a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\693a865c011f_add_status_in_workflow.py": {
+    "mtime": 1780840719.8039382,
+    "hash": "fbc30d8c91108b79e323b9ad730025f6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\6bd9f67ec994_add_folders_and_workflow_folder_id.py": {
+    "mtime": 1780840719.8049386,
+    "hash": "a03dd9b0b2659992498973f72332f4ee"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\6d2f94baf4b7_add_ari_mode.py": {
+    "mtime": 1780840719.8049386,
+    "hash": "ed83363e499c4698e3a849e3c9783688"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\6fd8fac02883_add_user_email_and_password.py": {
+    "mtime": 1780840719.8049386,
+    "hash": "e15fa7959eed899403f2e43a512089b0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\7e90cc8d025b_add_workflow_template.py": {
+    "mtime": 1780840719.8049386,
+    "hash": "5c973a046a76a9625b2335e7f6e6bc4e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\7feef09d7cc6_add_price_per_second_usd.py": {
+    "mtime": 1780840719.8059387,
+    "hash": "6d51f173bc7aa2ffffb26db24a177ece"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\93a1ddbb6ffd_add_workflow_model.py": {
+    "mtime": 1780840719.8059387,
+    "hash": "e36d4839e0f03249cc59a71d5ea22d07"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\9641b4f306cd_add_is_superuser_to_user_model.py": {
+    "mtime": 1780840719.8059387,
+    "hash": "5bdc8b30738389d209083aff4e6f088d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\982ec8e434be_add_storage_backend_in_workflow.py": {
+    "mtime": 1780840719.8059387,
+    "hash": "f0971e8bf9a24c8a465f29092c7e1eb6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\9be6240baa00_add_recording_and_transcript_urls_in_.py": {
+    "mtime": 1780840719.8069403,
+    "hash": "f4137076e15b11df8e0b38217d010847"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\9ef49df72862_add_workflow_id_in_workflow_definition.py": {
+    "mtime": 1780840719.8069403,
+    "hash": "180bcea18521d15e9a4e3de9fdbe6ff2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\9f25ff8f3cbd_add_actions.py": {
+    "mtime": 1780840719.8069403,
+    "hash": "fc7ddfa7be4549413b6b5be8bfd59022"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\9f5f2d35f6fb_remove_workflow_definition_id_from_.py": {
+    "mtime": 1780840719.8069403,
+    "hash": "9053ba948fa35248cf428cb173b09e41"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\a188ff90e76f_add_vobiz_mode_for_workflow.py": {
+    "mtime": 1780840719.8079383,
+    "hash": "44aad91f091fcb96a58bd0d4189fd871"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\a1b2c3d4e5f6_make_tts_columns_nullable.py": {
+    "mtime": 1780840719.8079383,
+    "hash": "1e6f44a6a839c8335b3a7ba40db24ce6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\a2355fc6bdc1_add_multi_telephony_config_tables.py": {
+    "mtime": 1780840719.8079383,
+    "hash": "0de6cebe4210bc0acb899a4b6602cafb"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\a29b05f31ddf_add_last_validated_at.py": {
+    "mtime": 1780840719.8089378,
+    "hash": "6591979bcd1f042e2b923a7886529eec"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\a2b092ff7282_add_usage_info.py": {
+    "mtime": 1780840719.8089378,
+    "hash": "6f542a49b3b0084a3a90703724b6bddb"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\a399b39479fe_add_versioning_in_workflow_definitions.py": {
+    "mtime": 1780840719.8089378,
+    "hash": "f5e29f0395c3ab5e425998973af45014"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\a57d25b75117_add_vonage_and_rename_config.py": {
+    "mtime": 1780840719.8099372,
+    "hash": "79fa73fed8b8414bee845357c4c0f1fd"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\a75ae71af479_add_log_in_workflow_run_model.py": {
+    "mtime": 1780840719.8099372,
+    "hash": "da260fb871e61db6ae4e891a0a9171b6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\ac6da37c5034_add_created_by_in_integration.py": {
+    "mtime": 1780840719.8099372,
+    "hash": "789bad09094715c42a3651b17c147433"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\b3a1c7e94f12_add_telnyx_mode.py": {
+    "mtime": 1780840719.8099372,
+    "hash": "7c91f0466424ba5dff106b48ad817b5d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\b79f19f68157_add_call_type_column_to_workflow_runs.py": {
+    "mtime": 1780840719.8109381,
+    "hash": "6ebe4567810ae06d323da466dce0b592"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\bee2a9fcc6a6_fix_datetime_to_be_in_utc.py": {
+    "mtime": 1780840719.8109381,
+    "hash": "ac2dd7608d0147e0ab235514ed345248"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\c425d3445750_add_columns_in_usage_table.py": {
+    "mtime": 1780840719.8109381,
+    "hash": "4cc563dde842c5f9a5db52b686e3bb76"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\c71db647d354_add_calculator_in_toolcategory.py": {
+    "mtime": 1780840719.8119366,
+    "hash": "99008195adeb263737d02f70754a5176"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\c7c56dd36b21_add_agent_trigger.py": {
+    "mtime": 1780840719.8119366,
+    "hash": "51f242d8133f946b02298afd9fd1787f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\cdc80a4fd2dd_add_template_description.py": {
+    "mtime": 1780840719.8119366,
+    "hash": "d6cb31d97062f576068f19c51efdb6f9"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\cdcf9f65913b_add_workflow_uuid.py": {
+    "mtime": 1780840719.8119366,
+    "hash": "6298e87ec4cdda8067f225a33e3e572f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\d0060de90c18_fix_migrations.py": {
+    "mtime": 1780840719.81294,
+    "hash": "896de6d05dbf073147aa6a3068c66e8a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\d11fbd083a55_add_connection_details.py": {
+    "mtime": 1780840719.81294,
+    "hash": "24758683015c45dea777ebdc31497dea"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\d1dac4c93e61_add_partial_index_on_call_id_for_.py": {
+    "mtime": 1780840719.81294,
+    "hash": "4d23fc5ef8214ea18bd50d3f638906b9"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\d666f3244648_add_integrations.py": {
+    "mtime": 1780840719.81294,
+    "hash": "d37e2a9a13a728e9e27fa216683c5ad9"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\d688d0da1123_backfill_workflow_definition_versioning.py": {
+    "mtime": 1780840719.8139377,
+    "hash": "1c27e360fd10f66e45d29b423f203d7c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\dc33eef8dabe_add_document_tables.py": {
+    "mtime": 1780840719.8139377,
+    "hash": "2020bc2f4d1ca7cb74f45cf31dec4be9"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\dcb0a27d98c6_remove_unique_tool_name_constraint.py": {
+    "mtime": 1780840719.8139377,
+    "hash": "e3626621125e7c3fa25ba0cf34c631d8"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\e02f387b7538_add_embed_token_model.py": {
+    "mtime": 1780840719.8149364,
+    "hash": "a271eaf13fde5f06092b8d3a7230bfd8"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\e0d1a9b9f6c4_add_looptalk_testing_tables_without_.py": {
+    "mtime": 1780840719.8149364,
+    "hash": "3c431068084597e5e6d7b3b38459252c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\e54ddb048535_add_recording_table.py": {
+    "mtime": 1780840719.8149364,
+    "hash": "75e17e5fbc3249baff71bc4d59e3c4a2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\e7254d2c6c18_add_retrieval_mode_in_document.py": {
+    "mtime": 1780840719.8159368,
+    "hash": "18a59c3d2f9d2392f30453b1a25f1114"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\ebc80cea7965_add_tools_model.py": {
+    "mtime": 1780840719.8159368,
+    "hash": "c0f46f76e35e594ee92d0dff5ccdfb1a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\ec010596a0b4_change_datatype_of_usage_to_float.py": {
+    "mtime": 1780840719.8159368,
+    "hash": "0f5bc3b633f8fea7fab288a432557c5a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\f2e1d0c9b8a7_add_plivo_mode.py": {
+    "mtime": 1780840719.8159368,
+    "hash": "978841fff114b98882fbc87a3bab4ce5"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\f6f19156bcb7_add_organisation_table.py": {
+    "mtime": 1780840719.8169384,
+    "hash": "ff983a044e0e7ea7570f459b7dee6686"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\f952c9c1105a_add_failed_state_to_queued_runs.py": {
+    "mtime": 1780840719.8169384,
+    "hash": "6276ef901f95ecceec71b8225a366564"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\fec0fb9a8db7_add_index.py": {
+    "mtime": 1780840719.8169384,
+    "hash": "9693369675ecf363473dafdb900d494a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\alembic\\versions\\fefdd1835b7d_retry_outbound_calls_for_campaigns.py": {
+    "mtime": 1780840719.8169384,
+    "hash": "4622dd21f97e83bfbbab8b085eaacd52"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\agent_trigger_client.py": {
+    "mtime": 1780840719.8559368,
+    "hash": "91c21dd0dc4934f7e2865df00aca5e10"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\api_key_client.py": {
+    "mtime": 1780840719.8559368,
+    "hash": "a5df6182bcacba336d9f142294b89d1b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\base_client.py": {
+    "mtime": 1780840719.8559368,
+    "hash": "c402458a45345b1028775d41b675e981"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\campaign_client.py": {
+    "mtime": 1780840719.8569384,
+    "hash": "03031a3dd9a5c7b8aace986135749100"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\database.py": {
+    "mtime": 1780840719.8569384,
+    "hash": "8c9fcf2eb92ce735ccca7ace64361142"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\db_client.py": {
+    "mtime": 1780840719.8569384,
+    "hash": "381a6310abbf82de5356a40c46482a31"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\embed_token_client.py": {
+    "mtime": 1780840719.8569384,
+    "hash": "f1facc6000a4ab139aad5ec5b127cebf"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\filters.py": {
+    "mtime": 1780840719.8579454,
+    "hash": "0611fa6379ff860eb304b579af795390"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\folder_client.py": {
+    "mtime": 1780840719.8579454,
+    "hash": "ccc1f8249974730219389afcd5a6cf7b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\integration_client.py": {
+    "mtime": 1780840719.8579454,
+    "hash": "7f9b938df906a29e8014a0a61470fc9d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\knowledge_base_client.py": {
+    "mtime": 1780840719.858945,
+    "hash": "1d37aca25825d3d752f44c13704a9560"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\models.py": {
+    "mtime": 1780840719.858945,
+    "hash": "5f1844175a3a902765e92a3e50df9f67"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\organization_client.py": {
+    "mtime": 1780840719.858945,
+    "hash": "4b918d94ade48afd1c429b4946c60126"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\organization_configuration_client.py": {
+    "mtime": 1780840719.8599448,
+    "hash": "652a07de5d852cac00b8d7a5d06b1a67"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\organization_usage_client.py": {
+    "mtime": 1780840719.8599448,
+    "hash": "06e30a41eed51479f3a813f3a4a58d01"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\reports_client.py": {
+    "mtime": 1780840719.8599448,
+    "hash": "a98bb40832b6960b792b62be07e77623"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\telephony_configuration_client.py": {
+    "mtime": 1780840719.8599448,
+    "hash": "08bba4e005f0c21c1df0d84af77f19ca"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\telephony_phone_number_client.py": {
+    "mtime": 1780840719.8609447,
+    "hash": "662e3b7691d91ea3b386f5938cfbb03e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\tool_client.py": {
+    "mtime": 1780840719.8609447,
+    "hash": "3891c74ecbd6bb691ec6a7109d22d0d7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\user_client.py": {
+    "mtime": 1780840719.8609447,
+    "hash": "5b02cfa9ebdba9969b6bc696c79b4322"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\webhook_credential_client.py": {
+    "mtime": 1780840719.8619452,
+    "hash": "af4bf09fef51517060dae259bbc4e706"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\workflow_client.py": {
+    "mtime": 1780840719.8619452,
+    "hash": "6b35639137cece941e5b43fd4c7b4edc"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\workflow_recording_client.py": {
+    "mtime": 1780840719.8619452,
+    "hash": "1deff8f0e0a1f497a220e782c44ed48e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\workflow_run_client.py": {
+    "mtime": 1780840719.8629432,
+    "hash": "614b4e0feb45ecd40e590982c3f5cf79"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\workflow_run_text_session_client.py": {
+    "mtime": 1780840719.8629432,
+    "hash": "1ffdb9dd1b14345a2385dcb7ece6392f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\workflow_template_client.py": {
+    "mtime": 1780840719.8629432,
+    "hash": "effd74813243ebb02109ac3a83e4c9db"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\db\\__init__.py": {
+    "mtime": 1780840719.8549397,
+    "hash": "a8cb02e69dd8ebf638d279ff4fba04a0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\errors\\telephony_errors.py": {
+    "mtime": 1780840719.863947,
+    "hash": "51944851347a88443638ff98483b98b4"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\errors\\__init__.py": {
+    "mtime": 1780840719.863947,
+    "hash": "2e11fa365f1f60e18b6a3d2ef610ec0f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\auth.py": {
+    "mtime": 1780840719.864945,
+    "hash": "cddfffb6891b1eeffb10cbc02282ece5"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\instructions.py": {
+    "mtime": 1780840719.864945,
+    "hash": "b635b500d7fb1f98559f4719b36fd0e8"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\server.py": {
+    "mtime": 1780840719.864945,
+    "hash": "d84d508ab5c460732303ebeead519b0d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\tracing.py": {
+    "mtime": 1780840719.8689442,
+    "hash": "eab56bc41191f08a9e6915ca072d1b60"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\ts_bridge.py": {
+    "mtime": 1780840719.8689442,
+    "hash": "5f7c44b0e3c32c6fa28ea8bed06081ca"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\__init__.py": {
+    "mtime": 1780840719.864945,
+    "hash": "6fe46718a8b51e70bca1fd4ad6622827"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\tools\\catalog.py": {
+    "mtime": 1780840719.865946,
+    "hash": "b0802114dc55a2a4fa128b36f42be430"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\tools\\create_workflow.py": {
+    "mtime": 1780840719.8669446,
+    "hash": "a7d03ad126db169354d11451ef625f6f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\tools\\docs_search.py": {
+    "mtime": 1780840719.8669446,
+    "hash": "b1fab8ee77384eb91dd92e9c692ddfdb"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\tools\\get_workflow_code.py": {
+    "mtime": 1780840719.8669446,
+    "hash": "96a0eba7801bca812eff7c0e4015d02f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\tools\\node_types.py": {
+    "mtime": 1780840719.8679476,
+    "hash": "4b860f198eb3f5f12aba6b3d3ccdb420"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\tools\\save_workflow.py": {
+    "mtime": 1780840719.8679476,
+    "hash": "da6f70cf1c864ff12da4a71b3bbbd827"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\tools\\tool_creation.py": {
+    "mtime": 1780840719.8679476,
+    "hash": "4f50859f328a7c4bd8d3e7501db40062"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\tools\\voice_prompting_guide.py": {
+    "mtime": 1780840719.8679476,
+    "hash": "e3684f3ecd6975d8953d7fec3f65220d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\tools\\workflows.py": {
+    "mtime": 1780840719.8689442,
+    "hash": "e016232db8c37061601025021b7b7592"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\tools\\_workflow_projection.py": {
+    "mtime": 1780840719.865946,
+    "hash": "033d65108dc2b62047440df44d637051"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\tools\\__init__.py": {
+    "mtime": 1780840719.865946,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\ts_validator\\src\\generate.ts": {
+    "mtime": 1780840719.869943,
+    "hash": "1e831cd64fc370e5427b1f57d5f65937"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\ts_validator\\src\\index.ts": {
+    "mtime": 1780840719.8709452,
+    "hash": "40cca50742e02c4408d526382778349f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\ts_validator\\src\\parse.ts": {
+    "mtime": 1780840719.8709452,
+    "hash": "b705cf002f60fce67b37f3546e1781ac"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\mcp_server\\ts_validator\\src\\types.ts": {
+    "mtime": 1780840719.8709452,
+    "hash": "ac5b0afa402d97b86c2aaf5330ea0b3c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\agent_stream.py": {
+    "mtime": 1780840719.8991086,
+    "hash": "8e6a5348ecc3873b0854092a38298c92"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\auth.py": {
+    "mtime": 1780840719.9001086,
+    "hash": "f1c3f570005380ed548692ce0cd2c660"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\campaign.py": {
+    "mtime": 1780840719.9001086,
+    "hash": "b755fdf52db6e339d2322dba5852cff2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\folder.py": {
+    "mtime": 1780840719.9011085,
+    "hash": "96d2c628f60e83561fdae2ed40e6a483"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\knowledge_base.py": {
+    "mtime": 1780840719.9011085,
+    "hash": "891e9841d29eda03c7a3c33bc6a78d10"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\main.py": {
+    "mtime": 1780840719.9011085,
+    "hash": "a10fc63af8daf672fe0e2633bd55aa8c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\node_types.py": {
+    "mtime": 1780840719.9011085,
+    "hash": "d4b8c88dd9931bbefddce8a9491890e6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\organization.py": {
+    "mtime": 1780840719.9021096,
+    "hash": "24b4edcda35d31c419384bec77047397"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\organization_usage.py": {
+    "mtime": 1780840719.9021096,
+    "hash": "65292504dc92aa0eb2f2b19cbb411830"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\public_agent.py": {
+    "mtime": 1780840719.9021096,
+    "hash": "63cc3a4880c4f307b4f70bb41b6f51f4"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\public_download.py": {
+    "mtime": 1780840719.903108,
+    "hash": "da439f5d5da507379eea4b3bea2dc662"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\public_embed.py": {
+    "mtime": 1780840719.903108,
+    "hash": "2c579639b9379a11885c1fd9cb933870"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\reports.py": {
+    "mtime": 1780840719.903108,
+    "hash": "06a73e8f908ab11529774e3033b4866c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\s3_signed_url.py": {
+    "mtime": 1780840719.903108,
+    "hash": "c9444b2720c7cbfc37a9d79907388972"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\service_keys.py": {
+    "mtime": 1780840719.9041107,
+    "hash": "bf24fe2ce6c40ca6919397a4d8b15f17"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\superuser.py": {
+    "mtime": 1780840719.9041107,
+    "hash": "a0b2491e6c0f3f7e8fd5c6d821153a95"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\telephony.py": {
+    "mtime": 1780840719.9041107,
+    "hash": "05c9a14906f0eeec927ea4a87cd4eed4"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\tool.py": {
+    "mtime": 1780840719.9051092,
+    "hash": "882b5ab9af861b52ab4fb7e54b683990"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\turn_credentials.py": {
+    "mtime": 1780840719.9051092,
+    "hash": "1d990a46dda8129a25eaebb0ce79f1b1"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\user.py": {
+    "mtime": 1780840719.9051092,
+    "hash": "fd1321fe155405986b8fd49c9f7df33d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\webrtc_signaling.py": {
+    "mtime": 1780840719.9061089,
+    "hash": "1b462590715d2dc9b86dde618e31a182"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\workflow.py": {
+    "mtime": 1780840719.907109,
+    "hash": "637ea84d447798f6442db4e26a2a2f12"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\workflow_embed.py": {
+    "mtime": 1780840719.907109,
+    "hash": "2be9078c621de444907d4dcdb92ab077"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\workflow_recording.py": {
+    "mtime": 1780840719.907109,
+    "hash": "627ea0805ce9bce776ccde50e4f04291"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\workflow_text_chat.py": {
+    "mtime": 1780840719.907109,
+    "hash": "9e8dd5e88bad38a450203bf108963913"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\routes\\__init__.py": {
+    "mtime": 1780840719.8991086,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\schemas\\auth.py": {
+    "mtime": 1780840719.9081094,
+    "hash": "26bdbb0ea4eef4f7993bf601552cb3ba"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\schemas\\knowledge_base.py": {
+    "mtime": 1780840719.9081094,
+    "hash": "58c401fbf58f50e0f66abb3230851496"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\schemas\\service_key.py": {
+    "mtime": 1780840719.9081094,
+    "hash": "45d0f32bf9304bde1b359a5b63e1f3d4"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\schemas\\telephony_config.py": {
+    "mtime": 1780840719.9091089,
+    "hash": "a0f410ce3648939a2e61b7cf868094d2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\schemas\\telephony_phone_number.py": {
+    "mtime": 1780840719.9091089,
+    "hash": "9198dc51f907ddfed70e03effe381ce4"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\schemas\\tool.py": {
+    "mtime": 1780840719.9091089,
+    "hash": "ac138bdd5ef006b6c135573d7397ae8b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\schemas\\user_configuration.py": {
+    "mtime": 1780840719.9101107,
+    "hash": "77a00ef56894fbc724e4e7c6631a539a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\schemas\\workflow.py": {
+    "mtime": 1780840719.9101107,
+    "hash": "dc385345204cd030a67712f0364e085d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\schemas\\workflow_recording.py": {
+    "mtime": 1780840719.9101107,
+    "hash": "c604075a4c8838fd735a2cce6bffc2eb"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\schemas\\__init__.py": {
+    "mtime": 1780840719.9081094,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\mps_service_key_client.py": {
+    "mtime": 1780840719.93811,
+    "hash": "8bbc3e8ddd1118cf898e0ca41881e251"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\posthog_client.py": {
+    "mtime": 1780840719.9481084,
+    "hash": "f987fe95b7115e64ed2ba0193cd6ca40"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\quota_service.py": {
+    "mtime": 1780840719.951109,
+    "hash": "51354abc630abf72a10580fe42b7abdb"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\storage.py": {
+    "mtime": 1780840719.9521093,
+    "hash": "2026ddf7eacfbcaa7f96a849417b7989"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\tool_management.py": {
+    "mtime": 1780840719.9711132,
+    "hash": "06701c760df22527f39f5183efac3225"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\auth\\depends.py": {
+    "mtime": 1780840719.9111106,
+    "hash": "b7bf36ff5b55cbe3172dd0e7291a8ac3"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\auth\\stack_auth.py": {
+    "mtime": 1780840719.9111106,
+    "hash": "5f342fd5d126c6a0b5bfc81456b5395a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\auth\\__init__.py": {
+    "mtime": 1780840719.9111106,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\campaign\\campaign_call_dispatcher.py": {
+    "mtime": 1780840719.912109,
+    "hash": "9ee2e4f14b2e4a88ed86970d701a2e6c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\campaign\\campaign_event_protocol.py": {
+    "mtime": 1780840719.912109,
+    "hash": "8d5aa5fea07883000502fbbe8da35077"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\campaign\\campaign_event_publisher.py": {
+    "mtime": 1780840719.9131088,
+    "hash": "561d3c49a8b21d69c89c26ea20f391c7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\campaign\\campaign_orchestrator.py": {
+    "mtime": 1780840719.9131088,
+    "hash": "175903bf5a95233b3020174884e85c3f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\campaign\\circuit_breaker.py": {
+    "mtime": 1780840719.9141083,
+    "hash": "c6f3834ec9cd817ece25ca881c331895"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\campaign\\errors.py": {
+    "mtime": 1780840719.9141083,
+    "hash": "8009a3330ab1d29fd99631fbf6744d35"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\campaign\\rate_limiter.py": {
+    "mtime": 1780840719.9141083,
+    "hash": "bd5ab265e83d2cb0b763a3aec6d6334c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\campaign\\runner.py": {
+    "mtime": 1780840719.9151118,
+    "hash": "307a630b75577f16b89cfe814654f353"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\campaign\\source_sync.py": {
+    "mtime": 1780840719.9151118,
+    "hash": "b9f60039532c09a6a05738442c67be99"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\campaign\\source_sync_factory.py": {
+    "mtime": 1780840719.9151118,
+    "hash": "86edaffbffb3787e59fb8ed752016ded"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\campaign\\__init__.py": {
+    "mtime": 1780840719.912109,
+    "hash": "7620870462755c3743b2223b2b7ecfc3"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\campaign\\sources\\csv.py": {
+    "mtime": 1780840719.9161084,
+    "hash": "7cc10ec84a04704bde660637785c084b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\campaign\\sources\\__init__.py": {
+    "mtime": 1780840719.9151118,
+    "hash": "157b413e0a0690b57ad6dfcc3525f129"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\configuration\\check_validity.py": {
+    "mtime": 1780840719.9161084,
+    "hash": "a722c2004065294a91a772b2517fc195"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\configuration\\defaults.py": {
+    "mtime": 1780840719.9171124,
+    "hash": "54ef84565f418d12300ccd0b050ae639"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\configuration\\masking.py": {
+    "mtime": 1780840719.9171124,
+    "hash": "b1022ad88480ac7df6061f66f0d0a956"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\configuration\\merge.py": {
+    "mtime": 1780840719.9171124,
+    "hash": "7f651c075941e4336cd82f8d6b36833e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\configuration\\registry.py": {
+    "mtime": 1780840719.92011,
+    "hash": "693cace870c37616f853588d5bef4303"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\configuration\\resolve.py": {
+    "mtime": 1780840719.92011,
+    "hash": "0bd75d040845700f7eecb29949ff6698"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\configuration\\__init__.py": {
+    "mtime": 1780840719.9161084,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\configuration\\options\\azure.py": {
+    "mtime": 1780840719.9181094,
+    "hash": "604ead557c40202dead186b67c25c94f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\configuration\\options\\deepgram.py": {
+    "mtime": 1780840719.9181094,
+    "hash": "5f7da507fa29e80a66e9c50e13d2e5fc"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\configuration\\options\\gladia.py": {
+    "mtime": 1780840719.9181094,
+    "hash": "fce79871827fef42148f1ba9630f3acc"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\configuration\\options\\google.py": {
+    "mtime": 1780840719.9191122,
+    "hash": "6d1a8f1b1ffed590395186db441bf9c6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\configuration\\options\\sarvam.py": {
+    "mtime": 1780840719.9191122,
+    "hash": "971c9ecac4e4a0661128a118992bd8ce"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\configuration\\options\\speechmatics.py": {
+    "mtime": 1780840719.9191122,
+    "hash": "d91d9fd27271be26e89a409b7dc92e13"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\configuration\\options\\__init__.py": {
+    "mtime": 1780840719.9181094,
+    "hash": "213daf907dfe46df344b24865d5023e5"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\filesystem\\base.py": {
+    "mtime": 1780840719.9211085,
+    "hash": "b5ca95cf2cbcd9c6e464122d3fcca670"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\filesystem\\local.py": {
+    "mtime": 1780840719.9211085,
+    "hash": "8f1ea2f48f4f32628d9da9b147ea8a63"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\filesystem\\minio.py": {
+    "mtime": 1780840719.9211085,
+    "hash": "5d17f2362bd3fd6149e266d0097a6455"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\filesystem\\null.py": {
+    "mtime": 1780840719.9221084,
+    "hash": "8561b538918e78744251cc5524b53266"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\filesystem\\s3.py": {
+    "mtime": 1780840719.9221084,
+    "hash": "f585f3007cbd551628f3f5270d1446ef"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\filesystem\\__init__.py": {
+    "mtime": 1780840719.92011,
+    "hash": "34479d2e4c9c1962d9f99993d742dbde"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\gender\\build_model.py": {
+    "mtime": 1780840719.9251082,
+    "hash": "1f29ea61caed6c8e8de87e07a2e6a48b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\gender\\constants.py": {
+    "mtime": 1780840719.9251082,
+    "hash": "2164ac2b7c8aa6d0cd104482350a9b53"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\gender\\gender_service.py": {
+    "mtime": 1780840719.9261107,
+    "hash": "60268584be7d5f7770a64d454dd8f7c2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\gender\\test_service.py": {
+    "mtime": 1780840719.934111,
+    "hash": "aeb5cf8b8b19842077f39439c5d12417"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\gender\\__init__.py": {
+    "mtime": 1780840719.9251082,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\gen_ai\\json_parser.py": {
+    "mtime": 1780840719.9241087,
+    "hash": "e50cae97f9f68c877caaaa2b598ed67e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\gen_ai\\__init__.py": {
+    "mtime": 1780840719.9221084,
+    "hash": "45c2e0c9aef3659f07c95e5fc68ca5f0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\gen_ai\\embedding\\azure_openai_service.py": {
+    "mtime": 1780840719.9231117,
+    "hash": "bf4125e7773d806d8d5d9a2a77c7018a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\gen_ai\\embedding\\base.py": {
+    "mtime": 1780840719.9231117,
+    "hash": "ed5d570f40b61dabbcc2fe05a044c83c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\gen_ai\\embedding\\openai_service.py": {
+    "mtime": 1780840719.9241087,
+    "hash": "0bc4694fa048e1cd22ebd86570c12cb4"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\gen_ai\\embedding\\__init__.py": {
+    "mtime": 1780840719.9231117,
+    "hash": "9d3cfe4cdd9647975a9dfbef509ca7ab"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\integrations\\base.py": {
+    "mtime": 1780840719.935109,
+    "hash": "1edfb6d26adc5480e4a110f17714d3b5"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\integrations\\loader.py": {
+    "mtime": 1780840719.935109,
+    "hash": "4146c58985cd596191667eab73ba56bc"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\integrations\\registry.py": {
+    "mtime": 1780840719.9361105,
+    "hash": "3bf1ed64855f56ff0577c4c309812c40"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\integrations\\__init__.py": {
+    "mtime": 1780840719.935109,
+    "hash": "ccea6bd10a77e21e4b816c71dc3be0bf"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\integrations\\tuner\\client.py": {
+    "mtime": 1780840719.9361105,
+    "hash": "2e5c037ca45b27dbbd8f106d9546bb48"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\integrations\\tuner\\collector.py": {
+    "mtime": 1780840719.9371097,
+    "hash": "830ba0353edf56fdb8fb01d3d0cae1bd"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\integrations\\tuner\\completion.py": {
+    "mtime": 1780840719.9371097,
+    "hash": "59a146ad837f9650b8201efcbbbbf123"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\integrations\\tuner\\node.py": {
+    "mtime": 1780840719.9371097,
+    "hash": "b3ed540ae8eae78bc48168cf043cde5b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\integrations\\tuner\\runtime.py": {
+    "mtime": 1780840719.9371097,
+    "hash": "74bc948abda9343de089cc1a9511908c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\integrations\\tuner\\__init__.py": {
+    "mtime": 1780840719.9361105,
+    "hash": "1aaefa1c542138b823fafe2cb6682e36"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\audio_config.py": {
+    "mtime": 1780840719.93811,
+    "hash": "67ef85b0ff1ef732fd960f36d239f204"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\audio_file_cache.py": {
+    "mtime": 1780840719.939109,
+    "hash": "219c376101dd7a806148df09df3096cc"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\audio_mixer.py": {
+    "mtime": 1780840719.939109,
+    "hash": "bccd46b3abe2e5ed50686f266e4fe80b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\audio_playback.py": {
+    "mtime": 1780840719.939109,
+    "hash": "e31a1c9e0c0cf74428dfa478f0d44973"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\event_handlers.py": {
+    "mtime": 1780840719.939109,
+    "hash": "4983c16a9e19dead69dc1dc3ad4a3f77"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\exceptions.py": {
+    "mtime": 1780840719.9401093,
+    "hash": "70603fd0be8f958428bb4aa18ff5a1b0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\in_memory_buffers.py": {
+    "mtime": 1780840719.9401093,
+    "hash": "77fce33dcfed24d41748a52a127bc7af"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\minimax_tts.py": {
+    "mtime": 1780840719.9401093,
+    "hash": "e6f451b0822d912a29612e0f4d843112"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\pipeline_builder.py": {
+    "mtime": 1780840719.9411097,
+    "hash": "e8df35590d665ca0336d3d69afc0c8cc"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\pipeline_engine_callbacks_processor.py": {
+    "mtime": 1780840719.9411097,
+    "hash": "56e18f66651b656a10d7eff16d1d18f5"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\pipeline_metrics_aggregator.py": {
+    "mtime": 1780840719.9411097,
+    "hash": "63a2aebb2dbaa68038e67e05e476e9cb"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\pre_call_fetch.py": {
+    "mtime": 1780840719.9421096,
+    "hash": "afb92fab5d27e30eb7bd04c58852d355"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\realtime_feedback_events.py": {
+    "mtime": 1780840719.9441123,
+    "hash": "e06545e746b7925527356c804d9723f3"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\realtime_feedback_observer.py": {
+    "mtime": 1780840719.9441123,
+    "hash": "7e63275bdf42570e53748bf04c60f04b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\recording_audio_cache.py": {
+    "mtime": 1780840719.9451106,
+    "hash": "80bf64f54f74f9d8ee06a1ba2b9ac3ac"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\recording_router_processor.py": {
+    "mtime": 1780840719.9451106,
+    "hash": "8454927336cef7d8f765bc10701e7af8"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\run_pipeline.py": {
+    "mtime": 1780840719.9461093,
+    "hash": "06436841c7bef0fbffe0c644228102c5"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\service_factory.py": {
+    "mtime": 1780840719.9461093,
+    "hash": "97c21f1c54863f1ef5de55a6a95d7b4e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\tracing_config.py": {
+    "mtime": 1780840719.9461093,
+    "hash": "b55cffad03b5a9ac4b09099d57ba48cd"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\transport_params.py": {
+    "mtime": 1780840719.9471111,
+    "hash": "064253add0e0798dac32f105d0d33676"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\transport_setup.py": {
+    "mtime": 1780840719.9471111,
+    "hash": "9bdc8385e0888b4a2fea8f2062317c0f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\turn_context.py": {
+    "mtime": 1780840719.9471111,
+    "hash": "394a65e1c3dc8affde5a7148146943fe"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\worker_runner.py": {
+    "mtime": 1780840719.9471111,
+    "hash": "9fbc13cea365419c7294ffb363bb27fe"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\ws_sender_registry.py": {
+    "mtime": 1780840719.9471111,
+    "hash": "512fa0185bd9bb6dccc977333fdb884d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\__init__.py": {
+    "mtime": 1780840719.93811,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\realtime\\azure_realtime.py": {
+    "mtime": 1780840719.9421096,
+    "hash": "826100eaf7bdf0e6608858005fd2fedb"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\realtime\\gemini_live.py": {
+    "mtime": 1780840719.9431086,
+    "hash": "20c0fe6c76b5d3cc5f72265cd4b107d9"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\realtime\\gemini_live_vertex.py": {
+    "mtime": 1780840719.9431086,
+    "hash": "761d88372ff75f17213a0e2ab07c5c3b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\realtime\\grok_realtime.py": {
+    "mtime": 1780840719.9431086,
+    "hash": "438cb3b70e35c7223500f56367615766"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\realtime\\openai_realtime.py": {
+    "mtime": 1780840719.9441123,
+    "hash": "111c5639fa1b1f94af8064f16cfe24e1"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\realtime\\ultravox_realtime.py": {
+    "mtime": 1780840719.9441123,
+    "hash": "d61bb07dd2251802a812fb4f00cf341c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pipecat\\realtime\\__init__.py": {
+    "mtime": 1780840719.9421096,
+    "hash": "c8d772480d26c8452802d0d6a21fa7e9"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pricing\\cost_calculator.py": {
+    "mtime": 1780840719.9491098,
+    "hash": "5bb22208c136e57476ed8b5d34cc0fb1"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pricing\\embeddings.py": {
+    "mtime": 1780840719.9491098,
+    "hash": "f43c0711f1146eaa8f72b3b74d312ada"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pricing\\llm.py": {
+    "mtime": 1780840719.9491098,
+    "hash": "2cb72e4af061e855f238a3e4e735c1b4"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pricing\\models.py": {
+    "mtime": 1780840719.9491098,
+    "hash": "6a10b49375206db801777ea863edbe91"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pricing\\registry.py": {
+    "mtime": 1780840719.9501078,
+    "hash": "1f46368851700eb5295772fdb4aec0fb"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pricing\\run_usage_response.py": {
+    "mtime": 1780840719.9501078,
+    "hash": "939b98f10c3a1b2831148c83733d06e0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pricing\\stt.py": {
+    "mtime": 1780840719.9501078,
+    "hash": "e0b73c1aaf4d98aacaab607d4b5bd81b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pricing\\tts.py": {
+    "mtime": 1780840719.9501078,
+    "hash": "a3b44792e5181633fe656d9d6cd32a6b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pricing\\workflow_run_cost.py": {
+    "mtime": 1780840719.951109,
+    "hash": "a162ae7faf3cf13a98d6d1085d26c063"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pricing\\__init__.py": {
+    "mtime": 1780840719.9481084,
+    "hash": "5d04aae313654d6ae0cc49b90a518ad1"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\reports\\daily_report.py": {
+    "mtime": 1780840719.9521093,
+    "hash": "0435d18ffe4440f286dd67d3d24e825b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\reports\\run_report.py": {
+    "mtime": 1780840719.9521093,
+    "hash": "51db3842269da94795e89bcb206d1cbc"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\reports\\__init__.py": {
+    "mtime": 1780840719.951109,
+    "hash": "30e5275f6761b838da94645f162d7060"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\ari_manager.py": {
+    "mtime": 1780840719.9541106,
+    "hash": "f41724b57816ac68b805acd5a1b90009"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\base.py": {
+    "mtime": 1780840719.9541106,
+    "hash": "a1144e7e1d724e01abf50a85fd2e72b1"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\call_transfer_manager.py": {
+    "mtime": 1780840719.9541106,
+    "hash": "32c879f614f62bf2cd4112b7df8e8925"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\factory.py": {
+    "mtime": 1780840719.9551103,
+    "hash": "b48748f244aa60b9986db30a37c19f2c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\registry.py": {
+    "mtime": 1780840719.9701116,
+    "hash": "1d6b109ddef5462f038bdcb315656d31"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\status_processor.py": {
+    "mtime": 1780840719.9701116,
+    "hash": "4e652dc4b44f9f26195fa2f93c39ba86"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\transfer_event_protocol.py": {
+    "mtime": 1780840719.9701116,
+    "hash": "dbc4b69030cd816baac8755de130b076"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\__init__.py": {
+    "mtime": 1780840719.9531097,
+    "hash": "cf85292679d894cd203d51ddfba5e6a7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\__init__.py": {
+    "mtime": 1780840719.9551103,
+    "hash": "a54a6d472c9410b14a5b9335352e5839"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\ari\\config.py": {
+    "mtime": 1780840719.9561114,
+    "hash": "ddaad61c1efe8b4165f17cc900e6f7d6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\ari\\provider.py": {
+    "mtime": 1780840719.9561114,
+    "hash": "b68c4513381d6fb5d2e7acb0cf907fd0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\ari\\serializers.py": {
+    "mtime": 1780840719.9571078,
+    "hash": "ed8ee362a9970e0bbc57171b1962052f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\ari\\strategies.py": {
+    "mtime": 1780840719.9571078,
+    "hash": "068489ca49baafb1cc326ca406be0ab5"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\ari\\transport.py": {
+    "mtime": 1780840719.9571078,
+    "hash": "fc52fa7a5d5bf3f52e179a68b41b66cf"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\ari\\__init__.py": {
+    "mtime": 1780840719.9561114,
+    "hash": "c75108b65d72bb8b65af596cb775433d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\cloudonix\\config.py": {
+    "mtime": 1780840719.9581134,
+    "hash": "ea7b23cb92b3fbb0a1f8766b52d90bca"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\cloudonix\\provider.py": {
+    "mtime": 1780840719.9591136,
+    "hash": "d9ad27abaf90979dc10785200a4e6e52"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\cloudonix\\routes.py": {
+    "mtime": 1780840719.9591136,
+    "hash": "bd82067ca08f686d3cf42bbd780619af"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\cloudonix\\serializers.py": {
+    "mtime": 1780840719.9591136,
+    "hash": "b475e5c0fc18819c0426860bb2f02a10"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\cloudonix\\strategies.py": {
+    "mtime": 1780840719.9591136,
+    "hash": "168991857fbf18a20c9809219e71bced"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\cloudonix\\transport.py": {
+    "mtime": 1780840719.960114,
+    "hash": "c15af40f54681959e36943c3ae3207ca"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\cloudonix\\__init__.py": {
+    "mtime": 1780840719.9581134,
+    "hash": "e8e4fb52d23bcaaba659da958695e5e9"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\plivo\\config.py": {
+    "mtime": 1780840719.960114,
+    "hash": "68a25ccfe0d48245862c9337b45f0ed0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\plivo\\provider.py": {
+    "mtime": 1780840719.9611123,
+    "hash": "ce21dd7553c80c50ed848ce6e5a1c114"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\plivo\\routes.py": {
+    "mtime": 1780840719.9611123,
+    "hash": "320dc14232c8fe03e5ecdfca98d2d6f5"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\plivo\\serializers.py": {
+    "mtime": 1780840719.9611123,
+    "hash": "e65cae058e6a98fb63f6b6b4d299ce31"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\plivo\\transport.py": {
+    "mtime": 1780840719.962114,
+    "hash": "617b147f956475e15208d45645569aa6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\plivo\\__init__.py": {
+    "mtime": 1780840719.960114,
+    "hash": "840297f57401c5a3902b7113f842e4fb"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\telnyx\\config.py": {
+    "mtime": 1780840719.962114,
+    "hash": "6563890a1f776d5e3e4ab6fa68da77b7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\telnyx\\provider.py": {
+    "mtime": 1780840719.9631138,
+    "hash": "1e5b81723f53a4447cf1a05dd74abde6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\telnyx\\routes.py": {
+    "mtime": 1780840719.9631138,
+    "hash": "bd28b1413f1990fadd698964e62580a9"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\telnyx\\serializers.py": {
+    "mtime": 1780840719.9631138,
+    "hash": "c7e1fbacc132920287696fc66212396a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\telnyx\\strategies.py": {
+    "mtime": 1780840719.964113,
+    "hash": "722481eaca28833de3a82407c24c47a0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\telnyx\\transport.py": {
+    "mtime": 1780840719.964113,
+    "hash": "76aba70d3e3d380578558c585c1d027e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\telnyx\\__init__.py": {
+    "mtime": 1780840719.962114,
+    "hash": "7e3efa8b6f9643e9010f4208096c1625"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\twilio\\config.py": {
+    "mtime": 1780840719.964113,
+    "hash": "7f4789595f385808359312dbdaa0df29"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\twilio\\provider.py": {
+    "mtime": 1780840719.9651117,
+    "hash": "e5a19ecfe44b9e348eb4a459f9a4abd2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\twilio\\routes.py": {
+    "mtime": 1780840719.9651117,
+    "hash": "d19bd15deab3c260aa33d77d899cf523"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\twilio\\serializers.py": {
+    "mtime": 1780840719.9651117,
+    "hash": "14e6d8c99322ee05fd18ea6960bf6bfa"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\twilio\\strategies.py": {
+    "mtime": 1780840719.9661124,
+    "hash": "4a1519104d0544ccab4a2d64a487d264"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\twilio\\transport.py": {
+    "mtime": 1780840719.9661124,
+    "hash": "6fb2254ca03e85b6bf739ef07b233b8d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\twilio\\__init__.py": {
+    "mtime": 1780840719.964113,
+    "hash": "379fd7b167987ba55890ce343f8243f8"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\vobiz\\config.py": {
+    "mtime": 1780840719.9671125,
+    "hash": "2f75439066cf3414cbd4ad56c1c6355b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\vobiz\\provider.py": {
+    "mtime": 1780840719.9671125,
+    "hash": "960bbb46d153a79675c3f2026bde0038"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\vobiz\\routes.py": {
+    "mtime": 1780840719.9671125,
+    "hash": "376dc6742ee678ec414f7d8dd7989a29"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\vobiz\\serializers.py": {
+    "mtime": 1780840719.9671125,
+    "hash": "f0f3d8c511f509dbd7a52373b719f44b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\vobiz\\transport.py": {
+    "mtime": 1780840719.9681156,
+    "hash": "d145f85410d19b95fc9a711957b8589b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\vobiz\\__init__.py": {
+    "mtime": 1780840719.9661124,
+    "hash": "4f2373f03d173c41479dc4e9e4d30ff7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\vonage\\config.py": {
+    "mtime": 1780840719.9681156,
+    "hash": "9b4e70b2f3489e8b49ffc880968da333"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\vonage\\provider.py": {
+    "mtime": 1780840719.9691129,
+    "hash": "70cd79868c153c973a7375d0b7082808"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\vonage\\routes.py": {
+    "mtime": 1780840719.9691129,
+    "hash": "fbeee63a98df797d4a0eda5b76d7ead0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\vonage\\serializers.py": {
+    "mtime": 1780840719.9691129,
+    "hash": "e81fdc4ab36a669feb092d584f825310"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\vonage\\transport.py": {
+    "mtime": 1780840719.9701116,
+    "hash": "0699c0db8438a99d0007d166af6c0c79"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\vonage\\__init__.py": {
+    "mtime": 1780840719.9681156,
+    "hash": "75165ad836c82a098d0f7ff0c9a3a24f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\_base.py": {
+    "mtime": 1780840719.9711132,
+    "hash": "6048d105f199bd96154d1ba953c6eae2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\_registry.py": {
+    "mtime": 1780840719.9721122,
+    "hash": "d77d08930208534df2f4487a968c9d7b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\__init__.py": {
+    "mtime": 1780840719.9711132,
+    "hash": "38fd609c92e20de793453abcf3bca3f2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\topics\\call_flow_design.py": {
+    "mtime": 1780840719.9721122,
+    "hash": "f7a502331d38ef9aed479f89f611eba0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\topics\\disfluencies.py": {
+    "mtime": 1780840719.9721122,
+    "hash": "ead6f02b721af522b96404023b5b9e65"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\topics\\end_call_logic.py": {
+    "mtime": 1780840719.9732049,
+    "hash": "2dd1f7a8c7f19dce47ff1c12165a9009"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\topics\\guardrails.py": {
+    "mtime": 1780840719.9742045,
+    "hash": "8e396cd756c1811f8cdfcfdeeabb88e2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\topics\\instruction_collision.py": {
+    "mtime": 1780840719.9742045,
+    "hash": "e628eca8c27f1f20d2016c11a20dead7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\topics\\language_and_format.py": {
+    "mtime": 1780840719.9742045,
+    "hash": "3245bd9c67f3985befe97ad26ed9581e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\topics\\numbers_dates_money.py": {
+    "mtime": 1780840719.9752066,
+    "hash": "5013b1f22494c2b9a6af80167dbc6b98"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\topics\\persona_and_identity_lock.py": {
+    "mtime": 1780840719.9752066,
+    "hash": "3c7b869700d196f3e97159803e1af8c8"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\topics\\readback_and_extraction.py": {
+    "mtime": 1780840719.9752066,
+    "hash": "be931aaf24da1002058d757e84a381bf"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\topics\\response_style.py": {
+    "mtime": 1780840719.9752066,
+    "hash": "544ac69342280d8dae7a1aa354d619c4"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\topics\\speech_handling.py": {
+    "mtime": 1780840719.9752066,
+    "hash": "3f9d0cbf31a294a7bec40c5a7240750c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\topics\\success_criteria.py": {
+    "mtime": 1780840719.9762053,
+    "hash": "5c11cab3f4109c10662e51c3e8585405"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\topics\\tool_calls.py": {
+    "mtime": 1780840719.9762053,
+    "hash": "913e978e393d468c276e5391a727ed4d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\topics\\turn_taking.py": {
+    "mtime": 1780840719.9762053,
+    "hash": "bdbc8f6b954c70e12aa9192d1fcd1b55"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\voice_prompting_guide\\topics\\__init__.py": {
+    "mtime": 1780840719.9721122,
+    "hash": "0896252cc44cdc6efffcd08123222ece"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\worker_sync\\manager.py": {
+    "mtime": 1780840719.977205,
+    "hash": "da57ee71cda1d0e87e9a86b0bd0ba4dd"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\worker_sync\\protocol.py": {
+    "mtime": 1780840719.977205,
+    "hash": "f4c8cd043be6225339043f9b81a2df45"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\worker_sync\\__init__.py": {
+    "mtime": 1780840719.977205,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\audit.py": {
+    "mtime": 1780840719.9782064,
+    "hash": "82901d2ce9d84a06035850ba11a655f3"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\disposition_mapper.py": {
+    "mtime": 1780840719.9782064,
+    "hash": "2507086ccf266cb3269ad6cda7f8e8f6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\dto.py": {
+    "mtime": 1780840719.9782064,
+    "hash": "e6058826da327f1028fcd7097710e267"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\duplicate.py": {
+    "mtime": 1780840719.9792042,
+    "hash": "9845375a3d7d82fae73d2316e009bc9a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\errors.py": {
+    "mtime": 1780840719.9792042,
+    "hash": "d0b2c37275dbd7aafb91322d966ad7d8"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\layout.py": {
+    "mtime": 1780840719.9792042,
+    "hash": "10dea20888531a380f3d13fe0d6b8038"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\mcp_tool_session.py": {
+    "mtime": 1780840719.9792042,
+    "hash": "554806daad596126c1989a581a533fa4"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\node_data.py": {
+    "mtime": 1780840719.980205,
+    "hash": "132195e20cc9e540d5cfe4e0ae265d70"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\pipecat_engine.py": {
+    "mtime": 1780840719.9822042,
+    "hash": "f06d10d0ccb7eb9cc85a97c33cd9351e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\pipecat_engine_callbacks.py": {
+    "mtime": 1780840719.9822042,
+    "hash": "940625f2894dee2ee06eaf95bfeb4b3e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\pipecat_engine_context_composer.py": {
+    "mtime": 1780840719.9832048,
+    "hash": "53945ce5da15d87a92b46cb1fe8ac477"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\pipecat_engine_context_summarizer.py": {
+    "mtime": 1780840719.9832048,
+    "hash": "48239d8238c94ae6a82e83c1d144adcb"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\pipecat_engine_custom_tools.py": {
+    "mtime": 1780840719.9832048,
+    "hash": "7810301fd4dfacdf2c15dea869672ad7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\pipecat_engine_variable_extractor.py": {
+    "mtime": 1780840719.984205,
+    "hash": "fc805ae5dadce441db372fc2bf18eff6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\text_chat_logs.py": {
+    "mtime": 1780840719.9862049,
+    "hash": "38c2fe636ed085ebbe2c51c3f4b65dd7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\text_chat_runner.py": {
+    "mtime": 1780840719.9872055,
+    "hash": "06a5739f60606280ff01364c6f1c2936"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\text_chat_session_service.py": {
+    "mtime": 1780840719.9872055,
+    "hash": "5c4ff8f1fd587dfcc5ecb79a0ad6098f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\trigger_paths.py": {
+    "mtime": 1780840719.989208,
+    "hash": "52d575a63b3a9d926fdb1a47a3c328f1"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\workflow_graph.py": {
+    "mtime": 1780840719.989208,
+    "hash": "d901e01e6424362870e043449bdc4d57"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\__init__.py": {
+    "mtime": 1780840719.977205,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\node_specs\\constants.py": {
+    "mtime": 1780840719.981204,
+    "hash": "ff7a287ff689aa15d29b843cdb455a48"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\node_specs\\model_spec.py": {
+    "mtime": 1780840719.9822042,
+    "hash": "db8fab76e3e53a1519072a0127d01598"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\node_specs\\_base.py": {
+    "mtime": 1780840719.981204,
+    "hash": "9f320d5c267d00970f46d3ac30561b0d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\node_specs\\__init__.py": {
+    "mtime": 1780840719.980205,
+    "hash": "1176cb3a9ef13551b294571fbc10f0f7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\node_specs\\__main__.py": {
+    "mtime": 1780840719.980205,
+    "hash": "d4a45b5bc96bd5d0722c9f7028ea57be"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\qa\\analysis.py": {
+    "mtime": 1780840719.984205,
+    "hash": "ce761720f99cc316e43c2b62d9418387"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\qa\\conversation.py": {
+    "mtime": 1780840719.984205,
+    "hash": "5364bdabfdc01c63860385556fefea5a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\qa\\llm_config.py": {
+    "mtime": 1780840719.985207,
+    "hash": "f25f562521565aaa43ee5a9a0d50beda"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\qa\\metrics.py": {
+    "mtime": 1780840719.985207,
+    "hash": "2b04a09b8847ee54458d01ea7f7f2796"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\qa\\node_summary.py": {
+    "mtime": 1780840719.9862049,
+    "hash": "a9390bcdd54b5544ec3f396e8e7576bd"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\qa\\tracing.py": {
+    "mtime": 1780840719.9862049,
+    "hash": "75ce0a2a4d28d1ab1a7e8f66ee15e20b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\qa\\__init__.py": {
+    "mtime": 1780840719.984205,
+    "hash": "98d1f3df25530f15a5fa349209105b0e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\tools\\calculator.py": {
+    "mtime": 1780840719.9872055,
+    "hash": "305cbc2e6e43ce2ea57cf9cca1d12e11"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\tools\\custom_tool.py": {
+    "mtime": 1780840719.9882047,
+    "hash": "2440591f65f2af1c5421c835407ab42d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\tools\\knowledge_base.py": {
+    "mtime": 1780840719.9882047,
+    "hash": "d6e1551eed90b0dcd92c64aedee169cb"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\tools\\mcp_tool.py": {
+    "mtime": 1780840719.9882047,
+    "hash": "cbc14eb571b014d1d566a3c4e49a929f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\tools\\timezone.py": {
+    "mtime": 1780840719.989208,
+    "hash": "e419c878ace30f20c9baed274dd188d0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\workflow\\tools\\__init__.py": {
+    "mtime": 1780840719.9872055,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tasks\\arq.py": {
+    "mtime": 1780840719.990205,
+    "hash": "ae08a8650c0186957ad62b57f5b783c8"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tasks\\campaign_tasks.py": {
+    "mtime": 1780840719.990205,
+    "hash": "a00412ae373d2beed3a129137c33d285"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tasks\\function_names.py": {
+    "mtime": 1780840719.990205,
+    "hash": "548907e579a8ed049fc709f694722396"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tasks\\knowledge_base_processing.py": {
+    "mtime": 1780840719.9912057,
+    "hash": "c21e525d910b108c9cd7f9ba42afd059"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tasks\\run_integrations.py": {
+    "mtime": 1780840719.9912057,
+    "hash": "c680b13a10de76fbdb0bcbde5724eccd"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tasks\\s3_upload.py": {
+    "mtime": 1780840719.992205,
+    "hash": "9df8315a4b678108614d31cef54ba0e0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tasks\\__init__.py": {
+    "mtime": 1780840719.990205,
+    "hash": "81051bcc2cf1bedf378224b0a93e2877"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\conftest.py": {
+    "mtime": 1780840719.992205,
+    "hash": "c8194c338f4ef53209f1708cfbb8dc01"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_add_call_disposition_code.py": {
+    "mtime": 1780840720.0002055,
+    "hash": "b4e698e292b50fc9d8ef0ac01edbcfa7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_aggregation_fix.py": {
+    "mtime": 1780840720.0012054,
+    "hash": "e5a81e0a62f7db513535573b9d1035d2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_azure_speech_service_factory.py": {
+    "mtime": 1780840720.0012054,
+    "hash": "2d078a9e1bd8de9155266add56af82fd"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_camb_tts_integration.py": {
+    "mtime": 1780840720.0012054,
+    "hash": "7257a26b320d563005d360c8d15d8f58"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_campaign_call_dispatcher.py": {
+    "mtime": 1780840720.0012054,
+    "hash": "592071b98770a8f129b0f6fb53497da5"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_campaign_tasks.py": {
+    "mtime": 1780840720.0022068,
+    "hash": "c51407f775ff4626d54d125f69afdbae"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_circuit_breaker.py": {
+    "mtime": 1780840720.0022068,
+    "hash": "5353718545ec4e7fd862466f292b765c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_cost_calculator.py": {
+    "mtime": 1780840720.0022068,
+    "hash": "86e7f2832741a4e2888c955f8c1144f3"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_custom_tools.py": {
+    "mtime": 1780840720.0032053,
+    "hash": "d203ef99088955bdf47dc5ad4fca368b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_custom_tools_context_integration.py": {
+    "mtime": 1780840720.0032053,
+    "hash": "9e17b7ecfa9477db18f5bf56972781cd"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_display_options_evaluator.py": {
+    "mtime": 1780840720.0032053,
+    "hash": "cb2df2c12bc60dc0952bde13c682212c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_dograh_sdk.py": {
+    "mtime": 1780840720.004208,
+    "hash": "e4a2919060e89db739514af17a1cb608"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_dograh_sdk_typed.py": {
+    "mtime": 1780840720.004208,
+    "hash": "a806e6c990b0aca23a459520731910be"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_dto.py": {
+    "mtime": 1780840720.004208,
+    "hash": "d756f9289a5828b310c7c2e37270efa2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_from_number_pool_isolation.py": {
+    "mtime": 1780840720.0052056,
+    "hash": "14d0e49b6e0cbc222b97c01a132c16f7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_gemini_live_reconnect_tool_results.py": {
+    "mtime": 1780840720.0052056,
+    "hash": "5cd114c706f54f3c90328d2c0f8aa46d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_get_backend_endpoints.py": {
+    "mtime": 1780840720.0052056,
+    "hash": "d8b6555b4438805c888b70c51d8d0428"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_google_stt_service_factory.py": {
+    "mtime": 1780840720.0052056,
+    "hash": "b0abe3571ce427fb4e12835b8534ecdf"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_google_tts_service_factory.py": {
+    "mtime": 1780840720.0062075,
+    "hash": "aa8bcad15389d7c82be031b102716ea6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_google_vertex_llm_service_factory.py": {
+    "mtime": 1780840720.0062075,
+    "hash": "3585b9a7a460b4e6cd76dc36ac3ee2e2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_grok_realtime_wrapper.py": {
+    "mtime": 1780840720.0062075,
+    "hash": "b4c364651f1b0adc4f23c3bb84761581"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_is_private_ip_candidate.py": {
+    "mtime": 1780840720.0072043,
+    "hash": "49846fa4a43841427c1968e1059c5406"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_json_parser.py": {
+    "mtime": 1780840720.0072043,
+    "hash": "af093c62edb26f78a97e25609cc0f690"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_layout.py": {
+    "mtime": 1780840720.0072043,
+    "hash": "70db6a584d42421ac756861007cbaf84"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_masked_key_rejection.py": {
+    "mtime": 1780840720.0072043,
+    "hash": "a7e3f0b6fe24adafa04e64e28323998a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_mcp_auth.py": {
+    "mtime": 1780840720.008207,
+    "hash": "416cfe4b81f471d1c16c97a4ce37353f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_mcp_custom_tool_manager.py": {
+    "mtime": 1780840720.008207,
+    "hash": "8fb7fff880557a444b75acfe4252adfc"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_mcp_docs_search.py": {
+    "mtime": 1780840720.008207,
+    "hash": "dd2c1d479c36e3255b3cde0c876c567e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_mcp_get_workflow.py": {
+    "mtime": 1780840720.008207,
+    "hash": "7dca10d6901b10e99c9cbe7eb709f91a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_mcp_instructions_drift.py": {
+    "mtime": 1780840720.0092049,
+    "hash": "a64d8b2d391d458f260ad1582213af13"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_mcp_integration.py": {
+    "mtime": 1780840720.0092049,
+    "hash": "6d77e93f3a2ca6dc336098aae6195932"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_mcp_save_workflow.py": {
+    "mtime": 1780840720.0092049,
+    "hash": "dc6f00c75aa46a66317636a9e988d87b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_mcp_tool_creation.py": {
+    "mtime": 1780840720.0102053,
+    "hash": "43dbef029bed5a957b746ff32682c795"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_mcp_tool_definition.py": {
+    "mtime": 1780840720.0102053,
+    "hash": "a06f76166bce2217ffd7cef11e32e26e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_mcp_tool_route.py": {
+    "mtime": 1780840720.0112066,
+    "hash": "9072e2e0e9e0d792417d76d6bd740c94"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_mcp_tool_session.py": {
+    "mtime": 1780840720.0112066,
+    "hash": "1131ea1b03bfbcd1ee2016382c206bf8"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_message_sanitization.py": {
+    "mtime": 1780840720.0112066,
+    "hash": "657d918074a9483affe190b79d0fa381"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_minimax_service_factory.py": {
+    "mtime": 1780840720.0112066,
+    "hash": "9bf3acde5bb4c505bf997653436d06f6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_mps_service_key_client.py": {
+    "mtime": 1780840720.012206,
+    "hash": "c5e50bc5359a1c10d9abb006e9518dc2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_node_specs.py": {
+    "mtime": 1780840720.012206,
+    "hash": "6a79330af4c8e9e51c86a223f6d3929f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_openai_realtime_initial_context.py": {
+    "mtime": 1780840720.012206,
+    "hash": "c81ac78d8fd4f69756ed0cea85aba461"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_pipecat_engine_callbacks.py": {
+    "mtime": 1780840720.0132048,
+    "hash": "029fe61a79da3139954b01bbee3207e4"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_pipecat_engine_context_update.py": {
+    "mtime": 1780840720.0132048,
+    "hash": "e0dac3a596eaf073c8071efb1d13eac4"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_pipecat_engine_end_call.py": {
+    "mtime": 1780840720.0132048,
+    "hash": "c6cca628d6ed3cee225adeb9daad52b7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_pipecat_engine_node_switch_with_user_speech.py": {
+    "mtime": 1780840720.0142047,
+    "hash": "885340352fe0b63a152d6ad3b0f2e729"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_pipecat_engine_tool_calls.py": {
+    "mtime": 1780840720.0142047,
+    "hash": "ad8626feefd32839766b98c2cdc3dd24"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_pipecat_engine_transition_mute.py": {
+    "mtime": 1780840720.0142047,
+    "hash": "ebde50c6f6b46ebedc6997374f65e633"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_pipecat_engine_variable_extraction.py": {
+    "mtime": 1780840720.015205,
+    "hash": "bff43070e365dea26b361fc70301a52d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_pipeline_cancellation.py": {
+    "mtime": 1780840720.015205,
+    "hash": "e391b30e1102d243c06133ec584fde94"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_pre_call_fetch.py": {
+    "mtime": 1780840720.015205,
+    "hash": "4a40d63505f4bc6d1fde90c9b06407f6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_public_agent_routes.py": {
+    "mtime": 1780840720.016206,
+    "hash": "d3b65383f30b976ff610e1c8ec032e4e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_public_embed_cors.py": {
+    "mtime": 1780840720.016206,
+    "hash": "2aca08028e3f9d2a178fdcf861cb577b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_public_signaling_origin.py": {
+    "mtime": 1780840720.016206,
+    "hash": "426fbdabc05b2ba80d097c94e5bc7c40"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_realtime_feedback_events.py": {
+    "mtime": 1780840720.0172043,
+    "hash": "45b43dc81ce580f17cda232d796d3230"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_realtime_feedback_observer.py": {
+    "mtime": 1780840720.0172043,
+    "hash": "b068fcf44d2c8b9853bc9821930c33d4"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_realtime_message_append.py": {
+    "mtime": 1780840720.0172043,
+    "hash": "69522f2d057eb4d8f23d1cbebd97b245"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_recording_router_processor.py": {
+    "mtime": 1780840720.018204,
+    "hash": "b8447a98b940c453abbe89fbc145b26a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_resolve_effective_config.py": {
+    "mtime": 1780840720.018204,
+    "hash": "ec08685fe10c21bc9ecf3040564feb63"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_run_pipeline_realtime_turn_config.py": {
+    "mtime": 1780840720.018204,
+    "hash": "1ae0d8c1b9c8f87aad564308fec66763"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_run_usage_response.py": {
+    "mtime": 1780840720.0192068,
+    "hash": "66fd8fe364e425263afe7e4a71ef247b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_sarvam_service_factory.py": {
+    "mtime": 1780840720.0192068,
+    "hash": "e12955498dc5bd725adff79e4578fdcc"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_sdk_sync.py": {
+    "mtime": 1780840720.0192068,
+    "hash": "8e599e6afbaec195779ec24b5e9c7c79"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_speaches_service_factory.py": {
+    "mtime": 1780840720.0192068,
+    "hash": "da68f50fce56201299f20b0d975dc160"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_telephony_factory.py": {
+    "mtime": 1780840720.0202065,
+    "hash": "782b65f893a649d2b7db854039066829"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_telephony_routes.py": {
+    "mtime": 1780840720.0202065,
+    "hash": "46ead88f5942956f47272c6bc6e44533"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_text_and_audio_playback.py": {
+    "mtime": 1780840720.0202065,
+    "hash": "919905172ebbb49ad612af9676b0c721"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_text_chat_logs.py": {
+    "mtime": 1780840720.0212061,
+    "hash": "ca4399f2cc4d5ef52bebcac7577c8c0d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_text_chat_session_service.py": {
+    "mtime": 1780840720.0212061,
+    "hash": "1ff440d582f2e71c521c2edc256ffb42"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_trigger_path_validation.py": {
+    "mtime": 1780840720.0212061,
+    "hash": "c23031dacae770947da5000ae23a473c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_ts_bridge.py": {
+    "mtime": 1780840720.0222056,
+    "hash": "912a453dc74365aecbde1f01bc909c75"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_tts_endframe_with_audio_write_failure.py": {
+    "mtime": 1780840720.0222056,
+    "hash": "e0763f67adf8f9c10d9662bf78dd5fa2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_ultravox_realtime_wrapper.py": {
+    "mtime": 1780840720.0222056,
+    "hash": "08f5d0e0eb6036f10e5ca7da6ecc5d1a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_unregistered_function_call.py": {
+    "mtime": 1780840720.0222056,
+    "hash": "0b55f2205df94d98fa3f850daf640af2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_user_configured_service_url_security.py": {
+    "mtime": 1780840720.0232046,
+    "hash": "e98a07f74c04ec7fd41541c81d454e2f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_user_email_case_insensitive.py": {
+    "mtime": 1780840720.0232046,
+    "hash": "63837873c08d075c618b59f28516fc79"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_user_idle_handler.py": {
+    "mtime": 1780840720.0232046,
+    "hash": "4bcdf90e6b225daf8f9ed7335ea7a47a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_user_muting_during_bot_speech.py": {
+    "mtime": 1780840720.0242045,
+    "hash": "6055318a7e6d48add0ef9e04cb9620a4"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_voicemail_detector.py": {
+    "mtime": 1780840720.0242045,
+    "hash": "0cbade01b77b60998eb3a29965256c9d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_workflow_create_route.py": {
+    "mtime": 1780840720.0242045,
+    "hash": "5991929572dbec2c0a8ab909349c04ac"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_workflow_graph_constraints.py": {
+    "mtime": 1780840720.0242045,
+    "hash": "7a078e6af27546633ec10f3c291e1887"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_workflow_list_route.py": {
+    "mtime": 1780840720.0252051,
+    "hash": "86fdc9bac424e7f57c2742955f69807b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_workflow_qa_masking.py": {
+    "mtime": 1780840720.0252051,
+    "hash": "551f6ff217122103168e982b0d77b4c6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_workflow_run_cost.py": {
+    "mtime": 1780840720.0252051,
+    "hash": "cd95c59233c9a3c33fbdf1819218341d"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_workflow_text_chat.py": {
+    "mtime": 1780840720.0262048,
+    "hash": "942f4a05e153a4aa0146a911adf6264b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\test_workflow_versioning.py": {
+    "mtime": 1780840720.0262048,
+    "hash": "441abf17b8c8ec224e2bff7c72f0320a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\__init__.py": {
+    "mtime": 1780840719.992205,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\integrations\\test_run_pipeline.py": {
+    "mtime": 1780840719.9972057,
+    "hash": "35341060af46c78e44870915486854da"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\integrations\\test_run_pipeline_text_greeting.py": {
+    "mtime": 1780840719.9972057,
+    "hash": "8e486e86836cb2a2342b1e164e3235e1"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\integrations\\_run_pipeline_helpers.py": {
+    "mtime": 1780840719.9962063,
+    "hash": "ce2d666567030dcdd95a1b253e1fcfd2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\integrations\\__init__.py": {
+    "mtime": 1780840719.9962063,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\support\\mcp_mock_server.py": {
+    "mtime": 1780840719.9982057,
+    "hash": "66397cd6cc3b3b0ad600628e8d27e673"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\support\\__init__.py": {
+    "mtime": 1780840719.9972057,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\telephony\\test_call_transfer_manager.py": {
+    "mtime": 1780840719.999207,
+    "hash": "0b1da56706ca08d109d05b5edd769e64"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\telephony\\plivo\\test_routes.py": {
+    "mtime": 1780840719.9982057,
+    "hash": "ed7c889f1ed103166745101a079ff2f5"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\telephony\\telnyx\\test_provider.py": {
+    "mtime": 1780840719.999207,
+    "hash": "940e682e75fdef31ca69358369b5c420"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\telephony\\telnyx\\__init__.py": {
+    "mtime": 1780840719.9982057,
+    "hash": "3478793cf4d0505dcf4c1f42c1b31f81"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\telephony\\twilio\\test_routes.py": {
+    "mtime": 1780840719.999207,
+    "hash": "0b6efba8a52cc014853ec889f11bac74"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\tests\\telephony\\vobiz\\test_routes.py": {
+    "mtime": 1780840720.0002055,
+    "hash": "01894d05e7abb780caf685854b8c4d69"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\utils\\api_key.py": {
+    "mtime": 1780840720.0262048,
+    "hash": "2f5fcbd37415f096bd0ad973f7430d62"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\utils\\artifacts.py": {
+    "mtime": 1780840720.0272057,
+    "hash": "764cf8433390bc3a91f1ed607cd4af08"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\utils\\audio_converter.py": {
+    "mtime": 1780840720.0272057,
+    "hash": "f911f3ce0e591895b9ad1be626c0e5a2"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\utils\\auth.py": {
+    "mtime": 1780840720.0272057,
+    "hash": "bff071f1fbfc706133f2dd03185bceb0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\utils\\common.py": {
+    "mtime": 1780840720.0282068,
+    "hash": "088d9cddd3e4e739524ad5f281592aa4"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\utils\\credential_auth.py": {
+    "mtime": 1780840720.0282068,
+    "hash": "a5e21f1cbb307276307643386cfe91f8"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\utils\\telephony_address.py": {
+    "mtime": 1780840720.0282068,
+    "hash": "a7f7f4e8d0c38a695219d919557d2315"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\utils\\telephony_helper.py": {
+    "mtime": 1780840720.0282068,
+    "hash": "136ba2a47fb94edaf2057e36ed9c60f7"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\utils\\template_renderer.py": {
+    "mtime": 1780840720.029208,
+    "hash": "277bc14f00c40cb52ffccf66b003b12e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\utils\\transcript.py": {
+    "mtime": 1780840720.029208,
+    "hash": "92f3928a1f16ea4ec7edee98b462ec77"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\utils\\tunnel.py": {
+    "mtime": 1780840720.029208,
+    "hash": "6c4fbc6afe98f0ccd6a95f4c65e0d03f"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\utils\\url_security.py": {
+    "mtime": 1780840720.029208,
+    "hash": "22a44661649bfc2fd5b632e0bf6e825c"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\utils\\worker.py": {
+    "mtime": 1780840720.030206,
+    "hash": "384453e532cb30631439f5cfbb1e2a3a"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\AGENTS.md": {
+    "mtime": 1780840719.7899382,
+    "hash": "72872e2c8a71b0867529edff38b8ab1e"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\CLAUDE.md": {
+    "mtime": 1780840719.7909384,
+    "hash": "771faa62feb60b7de901a397aebb29b0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\requirements.dev.txt": {
+    "mtime": 1780840719.8981109,
+    "hash": "e9c2fc53767fb0a69d36e15d61c0e183"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\requirements.txt": {
+    "mtime": 1780840719.8981109,
+    "hash": "05c1761c95a97a4194f17d0c975ea72b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\campaign\\readme.md": {
+    "mtime": 1780840719.9141083,
+    "hash": "fafec27505eb6aeb711e7f222b3c2cd6"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\gender\\model.txt": {
+    "mtime": 1780840719.934111,
+    "hash": "4e253bbb7f3bd8c0ecfa57edeeb74937"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\gender\\README.md": {
+    "mtime": 1780840719.9251082,
+    "hash": "a1349807e693e4290a3212befaa0d237"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\integrations\\AGENTS.md": {
+    "mtime": 1780840719.935109,
+    "hash": "1b88b3ed09f531dfab995e9927f43f00"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\pricing\\README.md": {
+    "mtime": 1780840719.9481084,
+    "hash": "c32f1ab9204382d237616a5a34567819"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\AGENTS.md": {
+    "mtime": 1780840719.9531097,
+    "hash": "a04ca55d8cce2ae3abcde4f63b65c328"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\README.md": {
+    "mtime": 1780840719.9531097,
+    "hash": "80c21b7b03a439b409df3ba686c13501"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\AGENTS.md": {
+    "mtime": 1780840719.9551103,
+    "hash": "a017facd93deca05e4d734eac735d7b8"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\services\\telephony\\providers\\CLAUDE.md": {
+    "mtime": 1780840719.9551103,
+    "hash": "771faa62feb60b7de901a397aebb29b0"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\assets\\office-ambience-16000-mono.wav": {
+    "mtime": 1780840719.840937,
+    "hash": "497f6282dc7946debe93cdf6798b404b"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\assets\\office-ambience-8000-mono.wav": {
+    "mtime": 1780840719.8539393,
+    "hash": "56059f235fb104569aa52ac212ef1cfb"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\assets\\transfer_hold_ring_16000.wav": {
+    "mtime": 1780840719.8539393,
+    "hash": "1f9e6174d8b08658fdeab5f9adda40ab"
+  },
+  "G:\\cansoft\\dograh_emm\\api\\assets\\transfer_hold_ring_8000.wav": {
+    "mtime": 1780840719.8539393,
+    "hash": "ae19064cfdb402c96dd41e0ad0cbae2b"
+  }
+}

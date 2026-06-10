@@ -11,6 +11,8 @@ from api.db.models import WorkflowRunTextSessionModel
 from api.db.workflow_run_text_session_client import (
     WorkflowRunTextSessionRevisionConflictError,
 )
+from api.tasks.arq import enqueue_job
+from api.tasks.function_names import FunctionNames
 from api.services.pricing.workflow_run_cost import (
     apply_usage_delta_to_organization,
     build_workflow_run_cost_info,
@@ -275,6 +277,20 @@ async def execute_pending_text_chat_turn(
         cost_info = await build_workflow_run_cost_info(workflow_run)
         if cost_info is not None:
             await db_client.update_workflow_run(run_id, cost_info=cost_info)
+
+    if execution.is_completed:
+        # Enqueue post-workflow completion tasks (like webhooks) for Text Chat
+        try:
+            await enqueue_job(
+                FunctionNames.PROCESS_WORKFLOW_COMPLETION,
+                run_id,
+                None,  # No audio temp path
+                None,  # No transcript temp path
+            )
+        except Exception as e:
+            logger.error(
+                f"Failed to enqueue process_workflow_completion for text chat run {run_id}: {e}"
+            )
 
     return await _reload_text_chat_session(run_id)
 

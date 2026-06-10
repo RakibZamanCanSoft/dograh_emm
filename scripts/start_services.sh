@@ -38,7 +38,7 @@ CPU_CORES=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
 FASTAPI_WORKERS=${FASTAPI_WORKERS:-$CPU_CORES}
 
 ###############################################################################
-### 1b) Safety check — refuse to start over running services
+### 1b) Safety check â€” refuse to start over running services
 ###############################################################################
 
 if [[ -d "$RUN_DIR" ]]; then
@@ -84,7 +84,7 @@ echo "Node $NODE_VERSION detected (>= 22.6 required)"
 ### 2) Define services
 ###############################################################################
 
-# Map "service name" → "command to run"
+# Map "service name" â†’ "command to run"
 # Using arrays for bash 3.2 compatibility
 SERVICE_NAMES=(
   "ari_manager"
@@ -163,7 +163,7 @@ echo "Latest symlink: $LATEST_LINK -> $TIMESTAMP"
 for i in "${!SERVICE_NAMES[@]}"; do
   name="${SERVICE_NAMES[$i]}"
   cmd="${SERVICE_COMMANDS[$i]}"
-  echo "→ Starting $name"
+  echo "â†’ Starting $name"
 
   (
     cd "$BASE_DIR"
@@ -219,12 +219,12 @@ fi
 ###############################################################################
 
 echo
-echo "──────────────────────────────────────────────────"
+echo "â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"
 echo "Mode: PRODUCTION"
 echo ""
 for name in "${SERVICE_NAMES[@]}"; do
   pid=$(<"$RUN_DIR/$name.pid")
-  echo "✓ $name (PID $pid) → $LOG_DIR/$name.log"
+  echo "âœ“ $name (PID $pid) â†’ $LOG_DIR/$name.log"
 done
 echo ""
 echo "  Rotation: ${LOG_ROTATION_SIZE:-100 MB}"
@@ -233,4 +233,4 @@ echo "  Compression: ${LOG_COMPRESSION:-gz}"
 echo "Logs: tail -f $LOG_DIR/*.log"
 echo "Rotated logs: ls $LOG_DIR/*.log.*"
 echo "To stop: ./scripts/stop_services.sh"
-echo "──────────────────────────────────────────────────"
+echo "â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€"

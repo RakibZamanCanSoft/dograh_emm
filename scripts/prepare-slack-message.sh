@@ -115,7 +115,7 @@ PAYLOAD=$(cat <<EOF
       "type": "header",
       "text": {
         "type": "plain_text",
-        "text": "📢 New Announcement",
+        "text": "ðŸ“¢ New Announcement",
         "emoji": true
       }
     },

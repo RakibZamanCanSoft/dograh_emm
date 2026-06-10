@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Intentionally no `http://localhost:PORT` URLs below — VS Code's terminal
+# Intentionally no `http://localhost:PORT` URLs below â€” VS Code's terminal
 # URL detector adds any printed URL to its auto-forwarded-ports list and
 # then polls it, which produces ECONNREFUSED log spam every ~20s for ports
 # that aren't bound yet. The Ports panel auto-detects bound ports anyway.

@@ -22,9 +22,9 @@ if ! git rev-parse --git-dir > /dev/null 2>&1; then
     exit 1
 fi
 
-echo -e "${BLUE}╔══════════════════════════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║              Dograh Contributor Bootstrap                    ║${NC}"
-echo -e "${BLUE}╚══════════════════════════════════════════════════════════════╝${NC}"
+echo -e "${BLUE}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${NC}"
+echo -e "${BLUE}â•‘              Dograh Contributor Bootstrap                    â•‘${NC}"
+echo -e "${BLUE}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${NC}"
 echo ""
 
 ###############################################################################
@@ -59,27 +59,27 @@ if $needs_fork_prompt; then
         git remote remove origin
     fi
     git remote add origin "$FORK_URL"
-    echo -e "${GREEN}✓ origin set to $FORK_URL${NC}"
+    echo -e "${GREEN}âœ“ origin set to $FORK_URL${NC}"
 else
-    echo -e "${GREEN}✓ origin already set: $current_origin${NC}"
+    echo -e "${GREEN}âœ“ origin already set: $current_origin${NC}"
 fi
 
 existing_upstream=$(git remote get-url upstream 2>/dev/null || echo "")
 if [[ -z "$existing_upstream" ]]; then
     git remote add upstream "$UPSTREAM_URL"
-    echo -e "${GREEN}✓ upstream set to $UPSTREAM_URL${NC}"
+    echo -e "${GREEN}âœ“ upstream set to $UPSTREAM_URL${NC}"
 elif [[ "$existing_upstream" != "$UPSTREAM_URL" && "$existing_upstream" != "$canonical_ssh" ]]; then
     echo -e "${YELLOW}upstream currently points at $existing_upstream (expected $UPSTREAM_URL).${NC}"
     echo -e "${YELLOW}Reset upstream to dograh-hq/dograh? [y/N]:${NC}"
     read -r -p "> " RESET_UPSTREAM
     if [[ "$RESET_UPSTREAM" =~ ^[Yy] ]]; then
         git remote set-url upstream "$UPSTREAM_URL"
-        echo -e "${GREEN}✓ upstream reset to $UPSTREAM_URL${NC}"
+        echo -e "${GREEN}âœ“ upstream reset to $UPSTREAM_URL${NC}"
     else
         echo -e "${YELLOW}Leaving upstream alone.${NC}"
     fi
 else
-    echo -e "${GREEN}✓ upstream already set${NC}"
+    echo -e "${GREEN}âœ“ upstream already set${NC}"
 fi
 
 echo ""
@@ -92,7 +92,7 @@ echo ""
 
 echo -e "${BLUE}[2/4] Initializing pipecat submodule${NC}"
 git submodule update --init --recursive
-echo -e "${GREEN}✓ submodules initialized${NC}"
+echo -e "${GREEN}âœ“ submodules initialized${NC}"
 echo ""
 
 ###############################################################################
@@ -127,7 +127,7 @@ if [[ -d "$VENV_PATH" && -f "$VENV_PATH/bin/activate" ]]; then
         echo -e "${RED}Error: existing venv uses Python ${VENV_VERSION:-unknown}. Remove $VENV_PATH and re-run with Python 3.13.${NC}"
         exit 1
     fi
-    echo -e "${GREEN}✓ venv already exists at $VENV_PATH (Python $VENV_VERSION)${NC}"
+    echo -e "${GREEN}âœ“ venv already exists at $VENV_PATH (Python $VENV_VERSION)${NC}"
 else
     PY="$(find_python_313 || true)"
     if [[ -z "$PY" ]]; then
@@ -135,7 +135,7 @@ else
         exit 1
     fi
     "$PY" -m venv "$VENV_PATH"
-    echo -e "${GREEN}✓ venv created at $VENV_PATH using $PY ($("$PY" --version))${NC}"
+    echo -e "${GREEN}âœ“ venv created at $VENV_PATH using $PY ($("$PY" --version))${NC}"
 fi
 echo ""
 
@@ -148,12 +148,12 @@ for pair in "api/.env.example|api/.env" "api/.env.test.example|api/.env.test" "u
     src="${pair%|*}"
     dst="${pair#*|}"
     if [[ -f "$dst" ]]; then
-        echo -e "${GREEN}✓ $dst already exists${NC}"
+        echo -e "${GREEN}âœ“ $dst already exists${NC}"
     elif [[ -f "$src" ]]; then
         cp "$src" "$dst"
-        echo -e "${GREEN}✓ created $dst from $src${NC}"
+        echo -e "${GREEN}âœ“ created $dst from $src${NC}"
     else
-        echo -e "${YELLOW}⚠ $src not found, skipping${NC}"
+        echo -e "${YELLOW}âš  $src not found, skipping${NC}"
     fi
 done
 echo ""
@@ -162,9 +162,9 @@ echo ""
 ### Done
 ###############################################################################
 
-echo -e "${GREEN}╔══════════════════════════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║                  Bootstrap complete                          ║${NC}"
-echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${NC}"
+echo -e "${GREEN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${NC}"
+echo -e "${GREEN}â•‘                  Bootstrap complete                          â•‘${NC}"
+echo -e "${GREEN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${NC}"
 echo ""
 echo -e "${YELLOW}Next steps:${NC}"
 echo "  1. source venv/bin/activate"

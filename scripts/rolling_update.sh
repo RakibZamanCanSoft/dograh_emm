@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# rolling_update.sh — Zero-downtime rolling update using dual-band port strategy
+# rolling_update.sh â€” Zero-downtime rolling update using dual-band port strategy
 #
 # Usage:
 #   ./scripts/rolling_update.sh
@@ -106,7 +106,7 @@ rollback_new_workers() {
   local new_base
   new_base=$(band_base_port "$new_band")
 
-  log_error "ROLLING BACK — killing new band $new_band workers"
+  log_error "ROLLING BACK â€” killing new band $new_band workers"
 
   for ((w = 0; w < FASTAPI_WORKERS; w++)); do
     local port=$((new_base + w))
@@ -143,8 +143,8 @@ NEW_BAND=$(opposite_band "$OLD_BAND")
 OLD_BASE=$(band_base_port "$OLD_BAND")
 NEW_BASE=$(band_base_port "$NEW_BAND")
 
-log_info "Current band: $OLD_BAND (ports ${OLD_BASE}–$((OLD_BASE + FASTAPI_WORKERS - 1)))"
-log_info "New band:     $NEW_BAND (ports ${NEW_BASE}–$((NEW_BASE + FASTAPI_WORKERS - 1)))"
+log_info "Current band: $OLD_BAND (ports ${OLD_BASE}â€“$((OLD_BASE + FASTAPI_WORKERS - 1)))"
+log_info "New band:     $NEW_BAND (ports ${NEW_BASE}â€“$((NEW_BASE + FASTAPI_WORKERS - 1)))"
 
 # Verify at least one old worker is running
 old_running=0
@@ -212,7 +212,7 @@ else
 fi
 
 if ! alembic -c "$BASE_DIR/api/alembic.ini" upgrade head; then
-  log_error "Alembic migration failed. Aborting — nothing has been touched."
+  log_error "Alembic migration failed. Aborting â€” nothing has been touched."
   exit 1
 fi
 log_info "Migrations complete"
@@ -221,7 +221,7 @@ TS_VALIDATOR_DIR="$BASE_DIR/api/mcp_server/ts_validator"
 if [[ -f "$TS_VALIDATOR_DIR/package.json" ]]; then
   log_info "Installing ts_validator npm dependencies"
   if ! (cd "$TS_VALIDATOR_DIR" && npm install); then
-    log_error "npm install for ts_validator failed. Aborting — nothing has been touched."
+    log_error "npm install for ts_validator failed. Aborting â€” nothing has been touched."
     exit 1
   fi
 fi
@@ -339,7 +339,7 @@ done
 sed -e "s|{{UVICORN_UPSTREAM_SERVERS}}|${UPSTREAM_SERVERS}|" \
     "$NGINX_UPSTREAM_TEMPLATE" | sudo tee "$NGINX_UPSTREAM_CONF" > /dev/null
 
-log_info "Generated nginx upstream config with $FASTAPI_WORKERS workers (ports ${NEW_BASE}–$((NEW_BASE + FASTAPI_WORKERS - 1)))"
+log_info "Generated nginx upstream config with $FASTAPI_WORKERS workers (ports ${NEW_BASE}â€“$((NEW_BASE + FASTAPI_WORKERS - 1)))"
 
 # Validate config
 if ! sudo nginx -t 2>/dev/null; then
@@ -358,9 +358,9 @@ if ! sudo nginx -t 2>/dev/null; then
   exit 1
 fi
 
-# Reload nginx (graceful — finishes in-flight requests to old upstream)
+# Reload nginx (graceful â€” finishes in-flight requests to old upstream)
 sudo systemctl reload nginx
-log_info "nginx reloaded — traffic now routed to band $NEW_BAND"
+log_info "nginx reloaded â€” traffic now routed to band $NEW_BAND"
 
 ###############################################################################
 ### PHASE 5: DRAIN OLD WORKERS
@@ -486,11 +486,11 @@ echo "$NEW_BAND" > "$RUN_DIR/active_band"
 log_info "active_band set to $NEW_BAND"
 
 echo
-echo "══════════════════════════════════════════════════"
+echo "â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"
 echo "  Rolling update completed successfully"
 echo ""
-echo "  Band:      $OLD_BAND → $NEW_BAND"
-echo "  Workers:   $FASTAPI_WORKERS (ports ${NEW_BASE}–$((NEW_BASE + FASTAPI_WORKERS - 1)))"
+echo "  Band:      $OLD_BAND â†’ $NEW_BAND"
+echo "  Workers:   $FASTAPI_WORKERS (ports ${NEW_BASE}â€“$((NEW_BASE + FASTAPI_WORKERS - 1)))"
 echo "  Services:  ${RESTART_NAMES[*]}"
 echo "  Logs:      $LOG_DIR"
-echo "══════════════════════════════════════════════════"
+echo "â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"

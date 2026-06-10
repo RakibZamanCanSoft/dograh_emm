@@ -32,10 +32,10 @@ REPO="dograh-hq/dograh"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
 echo -e "${BLUE}"
-echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║                  Dograh Remote Update                        ║"
-echo "║  Refresh deployment files and validate runtime config        ║"
-echo "╚══════════════════════════════════════════════════════════════╝"
+echo "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—"
+echo "â•‘                  Dograh Remote Update                        â•‘"
+echo "â•‘  Refresh deployment files and validate runtime config        â•‘"
+echo "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•"
 echo -e "${NC}"
 
 [[ -f docker-compose.yaml ]] || dograh_fail "docker-compose.yaml not found in $(pwd)"
@@ -137,7 +137,7 @@ done
 [[ -n "$RESOLVED_TAG" ]] || dograh_fail "could not find a git tag matching '$TARGET_VERSION'"
 
 if [[ "$RESOLVED_TAG" != "$TARGET_VERSION" ]]; then
-    dograh_success "✓ Resolved '$TARGET_VERSION' to git tag '$RESOLVED_TAG'"
+    dograh_success "âœ“ Resolved '$TARGET_VERSION' to git tag '$RESOLVED_TAG'"
 fi
 
 TARGET_VERSION="$RESOLVED_TAG"
@@ -153,7 +153,7 @@ esac
 
 if [[ -n "$IMAGE_TAG" ]]; then
     if curl -fsI "https://hub.docker.com/v2/repositories/dograhai/dograh-api/tags/$IMAGE_TAG/" >/dev/null 2>&1; then
-        dograh_success "✓ Image tag :$IMAGE_TAG found on Docker Hub"
+        dograh_success "âœ“ Image tag :$IMAGE_TAG found on Docker Hub"
     else
         dograh_warn "Warning: image tag :$IMAGE_TAG not found on Docker Hub - leaving images at :latest"
         IMAGE_TAG=""
@@ -200,7 +200,7 @@ do
     if [[ -f "$f" ]]; then
         mkdir -p "$(dirname "$f")"
         cp -p "$f" "$f.bak.$TIMESTAMP"
-        echo -e "  ${GREEN}✓ $f → $f.bak.$TIMESTAMP${NC}"
+        echo -e "  ${GREEN}âœ“ $f â†’ $f.bak.$TIMESTAMP${NC}"
     fi
 done
 
@@ -212,21 +212,21 @@ rm -f nginx.conf turnserver.conf
 if [[ -n "$IMAGE_TAG" ]]; then
     sed -i.tmp -E "s#(dograh-(api|ui)):latest#\1:$IMAGE_TAG#g" docker-compose.yaml
     rm -f docker-compose.yaml.tmp
-    dograh_success "✓ docker-compose.yaml updated; images pinned to :$IMAGE_TAG"
+    dograh_success "âœ“ docker-compose.yaml updated; images pinned to :$IMAGE_TAG"
 else
-    dograh_success "✓ docker-compose.yaml updated (image tags left at :latest)"
+    dograh_success "âœ“ docker-compose.yaml updated (image tags left at :latest)"
 fi
 
 echo -e "${BLUE}[3/3] Synchronizing environment and validating init-based remote config...${NC}"
 dograh_set_env_key .env FASTAPI_WORKERS "$FASTAPI_WORKERS"
 dograh_prepare_remote_install "$(pwd)"
 docker compose config -q
-dograh_success "✓ Remote init configuration validated"
+dograh_success "âœ“ Remote init configuration validated"
 
 echo ""
-echo -e "${GREEN}╔══════════════════════════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║                   Update Prepared!                           ║${NC}"
-echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${NC}"
+echo -e "${GREEN}â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—${NC}"
+echo -e "${GREEN}â•‘                   Update Prepared!                           â•‘${NC}"
+echo -e "${GREEN}â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•${NC}"
 echo ""
 echo -e "Backups: ${BLUE}*.bak.$TIMESTAMP${NC}"
 echo ""
