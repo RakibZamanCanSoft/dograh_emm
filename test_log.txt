@@ -1,0 +1,80 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0 -- /workspaces/dograh/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /workspaces/dograh/api
+configfile: pytest.ini
+plugins: aiohttp-1.1.1, asyncio-1.4.0, anyio-4.13.0, typeguard-4.5.2
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=session, asyncio_default_test_loop_scope=session
+collecting ... 2026-06-11 16:14:30.422 | [1mINFO[0m | __init__.py:14 | ᓚᘏᗢ Pipecat 1.1.1.dev555 (Python 3.13.13 (main, Apr  8 2026, 09:49:30) [GCC 13.3.0]) ᓚᘏᗢ
+collected 1 item
+
+api/tests/test_workflow_text_chat.py::test_text_chat_message_executes_assistant_turn 2026-06-11 16:14:33.900 | [34m[1mDEBUG[0m | conftest.py:66 | Using selector: EpollSelector
+
+-------------------------------- live log setup --------------------------------
+DEBUG    asyncio:selector_events.py:64 Using selector: EpollSelector
+
+ Using existing test database: test_db
+ Running migrations on test_db...
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+ Migrations complete!
+2026-06-11 16:14:37.674 | [1mINFO[0m | storage.py:81 | ENVIRONMENT=test — using NullFileSystem (no storage backend)
+2026-06-11 16:14:42.244 | [34m[1mDEBUG[0m | connection.py:67 | [SCTP] USERDATA_MAX_LENGTH set to 1100
+2026-06-11 16:14:44.079 | [34m[1mDEBUG[0m | local_smart_turn_v3.py:68 | Loading Local Smart Turn v3.x model from /workspaces/dograh/pipecat/src/pipecat/audio/turn/smart_turn/data/smart-turn-v3.2-cpu.onnx...
+2026-06-11 16:14:44.195 | [34m[1mDEBUG[0m | local_smart_turn_v3.py:78 | Loaded Local Smart Turn v3.x
+2026-06-11 16:14:44.196 | [1mINFO[0m | audio_config.py:56 | AudioConfig initialized: transport_in=16000Hz, transport_out=24000Hz, vad=16000Hz, pipeline=16000Hz, buffer=5.0s
+2026-06-11 16:14:44.197 | [34m[1mDEBUG[0m | pipeline_builder.py:192 | Setting pipeline audio params - in: 16000Hz, out: 24000Hz
+2026-06-11 16:14:44.199 | [34m[1mDEBUG[0m | runner.py:190 | WorkerRunner 'runner-8d6e09c5': added worker 'PipelineWorker#0'
+2026-06-11 16:14:44.200 | [34m[1mDEBUG[0m | runner.py:233 | WorkerRunner 'runner-8d6e09c5': started running
+2026-06-11 16:14:44.200 | [34m[1mDEBUG[0m | runner.py:387 | WorkerRunner 'runner-8d6e09c5': starting worker 'PipelineWorker#0'
+2026-06-11 16:14:44.201 | [34m[1mDEBUG[0m | worker.py:950 | PipelineWorker#0: Starting. Waiting for StartFrame#0 to reach the end of the pipeline...
+2026-06-11 16:14:44.203 | [34m[1mDEBUG[0m | turn_trace_observer.py:183 | Started tracing for Conversation 15
+2026-06-11 16:14:44.203 | [34m[1mDEBUG[0m | turn_trace_observer.py:245 | Started tracing for Turn 1
+2026-06-11 16:14:44.204 | [34m[1mDEBUG[0m | registry.py:132 | Worker 'PipelineWorker#0' ready (local)
+2026-06-11 16:14:44.205 | [34m[1mDEBUG[0m | runner.py:439 | WorkerRunner 'runner-8d6e09c5': broadcasting registry: ['PipelineWorker#0']
+2026-06-11 16:14:44.205 | [34m[1mDEBUG[0m | base_worker.py:1060 | Worker 'PipelineWorker#0': activated
+2026-06-11 16:14:44.205 | [34m[1mDEBUG[0m | worker.py:953 | PipelineWorker#0: StartFrame#0 reached the end of the pipeline, pipeline is now ready.
+2026-06-11 16:14:44.210 | [34m[1mDEBUG[0m | pipecat_engine.py:200 | PipecatEngine initialized
+2026-06-11 16:14:44.210 | [34m[1mDEBUG[0m | pipecat_engine.py:552 | Executing node: name: Start allow_interrupt: False is_end: False
+2026-06-11 16:14:44.210 | [34m[1mDEBUG[0m | pipecat_engine.py:333 | Registering function end_call to transition to node end with LLM
+2026-06-11 16:14:44.211 | [1mINFO[0m | ai_service.py:132 | MockLLMService#0: updated settings fields: {'system_instruction'}
+2026-06-11 16:14:44.211 | [34m[1mDEBUG[0m | llm_service.py:439 | MockLLMService#0: System instruction composed: You are a helpful assistant.
+2026-06-11 16:14:44.212 | [34m[1mDEBUG[0m | pipecat_engine.py:685 | Playing text greeting via TTS
+2026-06-11 16:14:44.213 | [34m[1mDEBUG[0m | llm_response_universal.py:1235 | LLMAssistantAggregator#0 push_aggregation called - self._aggregation = Welcome to the workflow tester.
+2026-06-11 16:14:44.414 | [34m[1mDEBUG[0m | worker.py:889 | Cancelling pipeline worker PipelineWorker#0
+2026-06-11 16:14:44.414 | [34m[1mDEBUG[0m | worker.py:971 | PipelineWorker#0: Closing. Waiting for CancelFrame#0(reason: text_chat_turn_complete) to reach the end of the pipeline...
+2026-06-11 16:14:44.415 | [34m[1mDEBUG[0m | worker.py:963 | PipelineWorker#0: CancelFrame#0(reason: text_chat_turn_complete) reached the end of the pipeline.
+2026-06-11 16:14:44.416 | [34m[1mDEBUG[0m | base_object.py:165 | PipelineWorker#0: waiting on event handlers to finish ['on_pipeline_finished']...
+2026-06-11 16:14:44.416 | [34m[1mDEBUG[0m | turn_trace_observer.py:193 | Ending Turn 1 due to conversation end
+2026-06-11 16:14:44.417 | [34m[1mDEBUG[0m | turn_trace_observer.py:211 | Ended tracing for Conversation 15
+2026-06-11 16:14:44.417 | [34m[1mDEBUG[0m | worker.py:721 | Pipeline worker PipelineWorker#0 is finishing...
+2026-06-11 16:14:44.417 | [34m[1mDEBUG[0m | worker.py:726 | Pipeline worker PipelineWorker#0 has finished
+2026-06-11 16:14:44.418 | [34m[1mDEBUG[0m | runner.py:271 | WorkerRunner 'runner-8d6e09c5': finished running
+2026-06-11 16:14:44.439 | [1mINFO[0m | workflow_run_cost.py:63 | Updated organization usage with 0.0 Dograh Tokens and 0.0s duration for org 51
+FAILED
+
+=================================== FAILURES ===================================
+________________ test_text_chat_message_executes_assistant_turn ________________
+api/tests/test_workflow_text_chat.py:244: in test_text_chat_message_executes_assistant_turn
+    assert message_response.status_code == 200
+E   assert 500 == 200
+E    +  where 500 = <Response [500 Internal Server Error]>.status_code
+------------------------------ Captured log setup ------------------------------
+DEBUG    asyncio:selector_events.py:64 Using selector: EpollSelector
+=============================== warnings summary ===============================
+tests/test_workflow_text_chat.py::test_text_chat_message_executes_assistant_turn
+  /workspaces/dograh/api/routes/credentials.py:37: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class CredentialResponse(BaseModel):
+
+tests/test_workflow_text_chat.py::test_text_chat_message_executes_assistant_turn
+  /workspaces/dograh/api/schemas/service_key.py:15: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class ServiceKeyResponse(ServiceKeyBase):
+
+tests/test_workflow_text_chat.py::test_text_chat_message_executes_assistant_turn
+  /workspaces/dograh/api/schemas/service_key.py:29: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class CreateServiceKeyResponse(BaseModel):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED api/tests/test_workflow_text_chat.py::test_text_chat_message_executes_assistant_turn
+======================== 1 failed, 3 warnings in 20.48s ========================

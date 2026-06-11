@@ -1,0 +1,90 @@
+{
+  "properties": {
+    "provider": {
+      "const": "openai",
+      "default": "openai",
+      "title": "Provider",
+      "type": "string"
+    },
+    "api_key": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      ],
+      "title": "Api Key"
+    },
+    "model": {
+      "allow_custom_input": true,
+      "default": "tts-1",
+      "description": "OpenAI TTS model.",
+      "examples": [
+        "tts-1",
+        "tts-1-hd",
+        "gpt-4o-mini-tts"
+      ],
+      "title": "Model",
+      "type": "string"
+    },
+    "voice": {
+      "allow_custom_input": true,
+      "default": "alloy",
+      "description": "OpenAI TTS voice name.",
+      "examples": [
+        "alloy",
+        "echo",
+        "fable",
+        "onyx",
+        "nova",
+        "shimmer"
+      ],
+      "title": "Voice",
+      "type": "string"
+    },
+    "instructions": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Optional instructions to guide voice synthesis behavior (e.g. 'Speak in a cheerful and positive tone.').",
+      "title": "Instructions"
+    },
+    "speed": {
+      "anyOf": [
+        {
+          "maximum": 4.0,
+          "minimum": 0.25,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": 1.0,
+      "description": "Voice speed control (0.25 to 4.0, default 1.0).",
+      "title": "Speed"
+    },
+    "base_url": {
+      "default": "https://api.openai.com/v1",
+      "description": "Override only if using an OpenAI-compatible API (e.g. local TTS, proxy).",
+      "title": "Base Url",
+      "type": "string"
+    }
+  },
+  "required": [
+    "api_key"
+  ],
+  "title": "OpenAI",
+  "type": "object"
+}

@@ -360,7 +360,7 @@ async def test_client_factory(db_session):
 
         try:
             async with AsyncClient(
-                transport=ASGITransport(app=app), base_url="http://test"
+                transport=ASGITransport(app=app, raise_app_exceptions=True), base_url="http://test"
             ) as client:
                 yield client
         finally:

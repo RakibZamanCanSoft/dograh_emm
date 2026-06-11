@@ -525,8 +525,10 @@ OPENAI_REALTIME_VOICES = [
     "alloy",
     "ash",
     "ballad",
+    "cedar",
     "coral",
     "echo",
+    "marin",
     "sage",
     "shimmer",
     "verse",
@@ -870,7 +872,7 @@ class GoogleTTSConfiguration(BaseTTSConfiguration):
     )
 
 
-OPENAI_TTS_MODELS = ["gpt-4o-mini-tts"]
+OPENAI_TTS_MODELS = ["tts-1", "tts-1-hd", "gpt-4o-mini-tts"]
 
 
 @register_tts
@@ -878,13 +880,30 @@ class OpenAITTSService(BaseTTSConfiguration):
     model_config = OPENAI_PROVIDER_MODEL_CONFIG
     provider: Literal[ServiceProviders.OPENAI] = ServiceProviders.OPENAI
     model: str = Field(
-        default="gpt-4o-mini-tts",
+        default="tts-1",
         description="OpenAI TTS model.",
-        json_schema_extra={"examples": OPENAI_TTS_MODELS},
+        json_schema_extra={
+            "examples": OPENAI_TTS_MODELS,
+            "allow_custom_input": True,
+        },
     )
     voice: str = Field(
         default="alloy",
         description="OpenAI TTS voice name.",
+        json_schema_extra={
+            "examples": ["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
+            "allow_custom_input": True,
+        },
+    )
+    instructions: str | None = Field(
+        default=None,
+        description="Optional instructions to guide voice synthesis behavior (e.g. 'Speak in a cheerful and positive tone.').",
+    )
+    speed: float | None = Field(
+        default=1.0,
+        ge=0.25,
+        le=4.0,
+        description="Voice speed control (0.25 to 4.0, default 1.0).",
     )
     base_url: str = Field(
         default="https://api.openai.com/v1",
@@ -902,11 +921,12 @@ class DograhTTSService(BaseTTSConfiguration):
     model: str = Field(
         default="default",
         description="Dograh TTS tier.",
-        json_schema_extra={"examples": DOGRAH_TTS_MODELS},
+        json_schema_extra={"examples": DOGRAH_TTS_MODELS, "allow_custom_input": True},
     )
     voice: str = Field(
         default="default",
         description="Voice preset.",
+        json_schema_extra={"allow_custom_input": True},
     )
     speed: float = Field(default=1.0, ge=0.5, le=2.0, description="Speed of the voice.")
 
@@ -1177,7 +1197,7 @@ class CartesiaSTTConfiguration(BaseSTTConfiguration):
     )
 
 
-OPENAI_STT_MODELS = ["gpt-4o-transcribe"]
+OPENAI_STT_MODELS = ["whisper-1"]
 
 
 @register_stt
@@ -1185,9 +1205,12 @@ class OpenAISTTConfiguration(BaseSTTConfiguration):
     model_config = OPENAI_PROVIDER_MODEL_CONFIG
     provider: Literal[ServiceProviders.OPENAI] = ServiceProviders.OPENAI
     model: str = Field(
-        default="gpt-4o-transcribe",
+        default="whisper-1",
         description="OpenAI transcription model.",
-        json_schema_extra={"examples": OPENAI_STT_MODELS},
+        json_schema_extra={
+            "examples": OPENAI_STT_MODELS,
+            "allow_custom_input": True,
+        },
     )
     base_url: str = Field(
         default="https://api.openai.com/v1",

@@ -10,7 +10,7 @@ from api.services.workflow.node_specs import get_spec
 # Regex for matching {{ variable }} template placeholders.
 # Captures: group(1) = variable path, group(2) = filter name, group(3) = filter value.
 # Shared with api.utils.template_renderer via import.
-TEMPLATE_VAR_PATTERN = r"\{\{\s*([^|\s}]+)(?:\s*\|\s*([^:}]+)(?::([^}]+))?)?\s*\}\}"
+TEMPLATE_VAR_PATTERN = r"\{\{\s*([^|}]*?)(?:\s*\|\s*([^:}]+)(?::([^}]+))?)?\s*\}\}"
 
 # Variables injected by the system at runtime, not from source data.
 _SYSTEM_VARIABLES = {"campaign_id", "provider", "source_uuid"}
@@ -24,8 +24,8 @@ def extract_template_variables(text: str) -> Set[str]:
         var_name = match.group(1).strip()
         filter_name = match.group(2).strip() if match.group(2) else None
 
-        # Skip nested paths (runtime-resolved, e.g. gathered_context.city)
-        if "." in var_name:
+        # Skip nested paths (runtime-resolved, e.g. gathered_context.city or gathered_context['City'])
+        if "." in var_name or "[" in var_name:
             continue
         # Skip variables with a fallback (they have a default value)
         # Supports both {{var | default}} and legacy {{var | fallback:default}}

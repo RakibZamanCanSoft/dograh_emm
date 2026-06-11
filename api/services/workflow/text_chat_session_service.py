@@ -203,6 +203,7 @@ async def execute_pending_text_chat_turn(
             checkpoint=checkpoint,
         )
     except Exception as e:
+        logger.exception("Text chat run failed")
         await _mark_pending_turn_failed(
             run_id=run_id,
             text_session=text_session,

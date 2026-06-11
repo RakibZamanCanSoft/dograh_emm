@@ -312,12 +312,25 @@ def create_tts_service(user_config, audio_config: "AudioConfig"):
         if base_url:
             _validate_runtime_service_url(base_url, "base_url")
             kwargs["base_url"] = base_url
+        voice = getattr(user_config.tts, "voice", None)
+        instructions = getattr(user_config.tts, "instructions", None)
+        speed = getattr(user_config.tts, "speed", None)
+        
+        settings = OpenAITTSSettings(model=user_config.tts.model)
+        if voice:
+            settings.voice = voice.lower()
+        if instructions:
+            settings.instructions = instructions
+        if speed and speed != 1.0:
+            settings.speed = speed
+
         return OpenAITTSService(
             api_key=user_config.tts.api_key,
-            settings=OpenAITTSSettings(model=user_config.tts.model),
+            settings=settings,
             text_filters=[xml_function_tag_filter],
             skip_aggregator_types=["recording_router", "recording"],
             silence_time_s=1.0,
+            sample_rate=24000,
             **kwargs,
         )
     elif user_config.tts.provider == ServiceProviders.GOOGLE.value:

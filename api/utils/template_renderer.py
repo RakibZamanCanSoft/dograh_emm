@@ -16,27 +16,33 @@ _CURRENT_WEEKDAY_PREFIX = "current_weekday"
 
 def get_nested_value(obj: Any, path: str) -> Any:
     """
-    Get a nested value from a dictionary using dot notation.
+    Get a nested value from a dictionary using dot notation or bracket notation.
 
     Args:
         obj: The object to traverse (dict or any)
-        path: Dot-separated path (e.g., "a.b.c")
+        path: Dot-separated path (e.g., "a.b.c" or "a['b']")
 
     Returns:
         The value at the path, or None if not found
 
     Examples:
         get_nested_value({"a": {"b": 1}}, "a.b") -> 1
-        get_nested_value({"a": {"b": {"c": 2}}}, "a.b.c") -> 2
+        get_nested_value({"a": {"b c": 1}}, "a['b c']") -> 1
         get_nested_value({"a": 1}, "a.b") -> None
     """
     if not path:
         return obj
 
+    # Support bracket notation: gathered_context['Preferred Name'] -> gathered_context.Preferred Name
+    path = re.sub(r"\['([^']+)'\]", r".\1", path)
+    path = re.sub(r'\["([^"]+)"\]', r".\1", path)
+
     keys = path.split(".")
     current = obj
 
     for key in keys:
+        if not key:
+            continue
         if isinstance(current, dict):
             current = current.get(key)
         else:

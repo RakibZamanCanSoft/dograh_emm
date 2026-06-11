@@ -100,16 +100,16 @@ def create_audio_config(transport_type: str) -> AudioConfig:
         WorkflowRunMode.WEBRTC.value,
         WorkflowRunMode.SMALLWEBRTC.value,
     ):
-        rate = 16000
+        rate = 24000
     else:
         logger.warning(
             f"Unknown transport type: {transport_type}, using default config"
         )
-        rate = 16000
+        rate = 24000
 
     return AudioConfig(
-        transport_in_sample_rate=rate,
+        transport_in_sample_rate=min(rate, 16000),
         transport_out_sample_rate=rate,
-        vad_sample_rate=rate,
-        pipeline_sample_rate=rate,
+        vad_sample_rate=min(rate, 16000),
+        pipeline_sample_rate=min(rate, 16000),
     )

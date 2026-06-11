@@ -220,7 +220,7 @@ async def test_text_chat_message_executes_assistant_turn(
         with (
             patch(
                 "api.services.workflow.text_chat_runner.create_llm_service",
-                side_effect=llm_responses,
+                side_effect=[mock for mock in llm_responses for _ in (0, 1)],
             ),
             patch(
                 "api.services.workflow.text_chat_runner.db_client.has_active_recordings",
@@ -241,7 +241,7 @@ async def test_text_chat_message_executes_assistant_turn(
                     "expected_revision": created["revision"],
                 },
             )
-            assert message_response.status_code == 200
+            assert message_response.status_code == 200, message_response.json()
             run_response = await client.get(
                 f"/api/v1/workflow/{workflow.id}/runs/{created['workflow_run_id']}"
             )
@@ -350,7 +350,7 @@ async def test_text_chat_executes_deferred_tool_calls_after_text_response(
         with (
             patch(
                 "api.services.workflow.text_chat_runner.create_llm_service",
-                side_effect=llm_responses,
+                side_effect=[mock for mock in llm_responses for _ in (0, 1)],
             ),
             patch(
                 "api.services.workflow.text_chat_runner.db_client.has_active_recordings",
@@ -506,7 +506,7 @@ async def test_text_chat_chains_multiple_follow_up_completions_in_one_turn(
         with (
             patch(
                 "api.services.workflow.text_chat_runner.create_llm_service",
-                side_effect=llm_responses,
+                side_effect=[mock for mock in llm_responses for _ in (0, 1)],
             ),
             patch(
                 "api.services.workflow.text_chat_runner.db_client.has_active_recordings",
@@ -614,7 +614,7 @@ async def test_text_chat_greeting_only_plays_on_fresh_node_entry(
         with (
             patch(
                 "api.services.workflow.text_chat_runner.create_llm_service",
-                side_effect=llm_responses,
+                side_effect=[mock for mock in llm_responses for _ in (0, 1)],
             ),
             patch(
                 "api.services.workflow.text_chat_runner.db_client.has_active_recordings",
@@ -788,7 +788,7 @@ async def test_text_chat_rewind_reuses_checkpoint_snapshot(
         with (
             patch(
                 "api.services.workflow.text_chat_runner.create_llm_service",
-                side_effect=llm_responses,
+                side_effect=[mock for mock in llm_responses for _ in (0, 1)],
             ),
             patch(
                 "api.services.workflow.text_chat_runner.db_client.has_active_recordings",
