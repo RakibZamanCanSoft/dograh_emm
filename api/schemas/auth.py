@@ -5,6 +5,7 @@ class SignupRequest(BaseModel):
     email: EmailStr
     password: str
     name: str | None = None
+    admin_secret: str | None = None
 
     @field_validator("password")
     @classmethod

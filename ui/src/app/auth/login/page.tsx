@@ -80,12 +80,14 @@ export default function LoginPage() {
               {loading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            Don&apos;t have an account?{" "}
-            <Link href="/auth/signup" className="text-primary underline-offset-4 hover:underline">
-              Sign up
-            </Link>
-          </p>
+          {process.env.NEXT_PUBLIC_DISABLE_NEW_REGISTRATIONS?.trim() !== "true" && (
+            <p className="mt-4 text-center text-sm text-muted-foreground">
+              Don&apos;t have an account?{" "}
+              <Link href="/auth/signup" className="text-primary underline-offset-4 hover:underline">
+                Sign up
+              </Link>
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>

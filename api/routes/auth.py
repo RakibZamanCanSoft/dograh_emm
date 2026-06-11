@@ -8,6 +8,7 @@ from api.schemas.auth import AuthResponse, LoginRequest, SignupRequest, UserResp
 from api.services.auth.depends import create_user_configuration_with_mps_key, get_user
 from api.services.posthog_client import capture_event
 from api.utils.auth import create_jwt_token, hash_password, verify_password
+from api.constants import DISABLE_NEW_REGISTRATIONS, ADMIN_SIGNUP_SECRET
 
 router = APIRouter(
     prefix="/auth",
@@ -17,6 +18,11 @@ router = APIRouter(
 
 @router.post("/signup", response_model=AuthResponse)
 async def signup(request: SignupRequest):
+    is_admin_bypass = ADMIN_SIGNUP_SECRET and request.admin_secret == ADMIN_SIGNUP_SECRET
+    
+    if DISABLE_NEW_REGISTRATIONS and not is_admin_bypass:
+        raise HTTPException(status_code=403, detail="Registration is disabled on this instance")
+
     # Check if email is already taken
     existing_user = await db_client.get_user_by_email(request.email)
     if existing_user:

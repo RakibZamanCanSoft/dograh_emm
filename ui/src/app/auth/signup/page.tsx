@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useState, Suspense, useEffect } from "react";
 import { toast } from "sonner";
 
 import { signupApiV1AuthSignupPost } from "@/client/sdk.gen";
@@ -10,7 +11,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function SignupPage() {
+function SignupForm() {
+  const searchParams = useSearchParams();
+  const [secret, setSecret] = useState<string | null>(searchParams.get("secret"));
+
+  useEffect(() => {
+    if (!secret && typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlSecret = urlParams.get("secret");
+      if (urlSecret) setSecret(urlSecret);
+    }
+  }, [secret]);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -33,7 +45,7 @@ export default function SignupPage() {
 
     try {
       const res = await signupApiV1AuthSignupPost({
-        body: { email, password },
+        body: { email, password, admin_secret: secret } as any,
       });
 
       if (res.error || !res.data) {
@@ -56,6 +68,26 @@ export default function SignupPage() {
       setLoading(false);
     }
   };
+
+  if (process.env.NEXT_PUBLIC_DISABLE_NEW_REGISTRATIONS?.trim() === "true" && !secret) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl text-destructive">Registration Disabled</CardTitle>
+            <CardDescription>
+              This instance does not accept new registrations. Please contact your administrator if you need an account.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Link href="/auth/login" className="text-primary underline-offset-4 hover:underline">
+              Return to Sign In
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
@@ -114,5 +146,13 @@ export default function SignupPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-background" />}>
+      <SignupForm />
+    </Suspense>
   );
 }

@@ -26,6 +26,7 @@ COPY --from=deps /app/node_modules ./node_modules
 
 # Copy all files needed for build
 COPY ui/package*.json ./
+COPY ui/.env* ./
 COPY ui/tsconfig.json ./
 COPY ui/next.config.ts ./
 COPY ui/components.json ./
