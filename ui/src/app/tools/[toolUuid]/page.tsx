@@ -290,18 +290,14 @@ export default function ToolDetailPage() {
     const handleSave = async () => {
         if (!tool) return;
 
+        const normalizedTransferDestination = transferDestination.trim();
+
         // Validation based on tool type
         if (tool.category === "calculator") {
             // No validation needed for built-in tools
         } else if (tool.category === "transfer_call") {
-            // Validate destination for Transfer Call tools (supports both E.164 and SIP endpoints)
-            const e164Pattern = /^\+[1-9]\d{1,14}$/;
-            const sipPattern = /^(PJSIP|SIP)\/[\w\-\.@]+$/i;
-            const isValidE164 = e164Pattern.test(transferDestination);
-            const isValidSip = sipPattern.test(transferDestination);
-
-            if (!transferDestination || (!isValidE164 && !isValidSip)) {
-                setError("Please enter a valid phone number (E.164 format) or SIP endpoint (e.g., PJSIP/1234)");
+            if (!normalizedTransferDestination) {
+                setError("Please enter a transfer destination");
                 return;
             }
         } else if (tool.category === "mcp") {
@@ -382,7 +378,7 @@ export default function ToolDetailPage() {
                         schema_version: 1,
                         type: "transfer_call",
                         config: {
-                            destination: transferDestination,
+                            destination: normalizedTransferDestination,
                             messageType: transferMessageType,
                             customMessage: transferMessageType === "custom" ? customMessage : undefined,
                             audioRecordingId: transferMessageType === "audio" ? transferAudioRecordingId || undefined : undefined,
@@ -518,7 +514,7 @@ const data = await response.json();`;
 
     if (loading || !user) {
         return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center">
                 <div className="space-y-4">
                     <Skeleton className="h-12 w-64" />
                     <Skeleton className="h-64 w-96" />
@@ -529,7 +525,7 @@ const data = await response.json();`;
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-background">
+            <div className="min-h-screen">
                 <div className="container mx-auto px-4 py-8">
                     <div className="max-w-4xl mx-auto space-y-6">
                         <Skeleton className="h-8 w-48" />
@@ -542,7 +538,7 @@ const data = await response.json();`;
 
     if (!tool) {
         return (
-            <div className="min-h-screen bg-background">
+            <div className="min-h-screen">
                 <div className="container mx-auto px-4 py-8">
                     <div className="max-w-4xl mx-auto text-center">
                         <h1 className="text-2xl font-bold mb-4">Tool not found</h1>
@@ -563,7 +559,7 @@ const data = await response.json();`;
     const categoryConfig = getCategoryConfig(tool.category as ToolCategory);
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen">
             <div className="container mx-auto px-4 py-8">
                 <div className="max-w-4xl mx-auto">
                     {/* Header */}
