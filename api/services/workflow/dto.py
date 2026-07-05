@@ -661,6 +661,7 @@ class TriggerNodeData(BaseNodeData):
     property_order=(
         "name",
         "enabled",
+        "trigger_mode",
         "http_method",
         "endpoint_url",
         "credential_uuid",
@@ -675,6 +676,17 @@ class TriggerNodeData(BaseNodeData):
         "enabled": {
             "display_name": "Enabled",
             "description": "When false, the webhook is skipped at run time.",
+        },
+        "trigger_mode": {
+            "display_name": "Trigger Mode",
+            "description": "Determine which calls will trigger this webhook.",
+            "options": [
+                PropertyOption(value="all", label="All Calls"),
+                PropertyOption(value="production", label="Production Calls Only"),
+                PropertyOption(value="test_audio", label="Test Audio Only"),
+                PropertyOption(value="test_chat", label="Test Chat Only"),
+            ],
+            "spec_default": "all",
         },
         "http_method": {
             "display_name": "HTTP Method",
@@ -725,6 +737,7 @@ class TriggerNodeData(BaseNodeData):
 )
 class WebhookNodeData(BaseNodeData):
     enabled: bool = spec_field(default=True, ui_type=PropertyType.boolean)
+    trigger_mode: Optional[str] = spec_field(default="all", ui_type=PropertyType.options)
     http_method: Optional[str] = spec_field(default=None, ui_type=PropertyType.options)
     endpoint_url: Optional[str] = spec_field(default=None, ui_type=PropertyType.url)
     credential_uuid: Optional[str] = spec_field(

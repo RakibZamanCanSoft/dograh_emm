@@ -313,6 +313,24 @@ async def run_integrations_post_workflow_run(_ctx, workflow_run_id: int):
                 continue
 
             webhook_data = webhook_node.data
+
+            trigger_mode = getattr(webhook_data, "trigger_mode", "all")
+            run_mode = workflow_run.mode
+            should_run = False
+            
+            if trigger_mode == "all":
+                should_run = True
+            elif trigger_mode == "production":
+                should_run = run_mode not in ("textchat", "smallwebrtc", "webrtc")
+            elif trigger_mode == "test_audio":
+                should_run = run_mode in ("smallwebrtc", "webrtc")
+            elif trigger_mode == "test_chat":
+                should_run = run_mode == "textchat"
+                
+            if not should_run:
+                logger.info(f"Skipping webhook '{webhook_data.name}': trigger_mode '{trigger_mode}' does not match run mode '{run_mode}'")
+                continue
+
             try:
                 await _execute_webhook_node(
                     webhook_data=webhook_data,
