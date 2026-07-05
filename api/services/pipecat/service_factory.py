@@ -477,7 +477,6 @@ def create_tts_service(
             text_filters=[xml_function_tag_filter],
             skip_aggregator_types=["recording_router", "recording"],
             silence_time_s=1.0,
-            sample_rate=24000,
             **kwargs,
         )
     elif user_config.tts.provider == ServiceProviders.GOOGLE.value:
