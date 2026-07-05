@@ -127,9 +127,19 @@ def create_stt_service(
         if base_url:
             _validate_runtime_service_url(base_url, "base_url")
             kwargs["base_url"] = base_url
+            
+        settings_kwargs = {"model": user_config.stt.model}
+        language = getattr(user_config.stt, "language", None)
+        if language:
+            settings_kwargs["language"] = language
+            
+        prompt = getattr(user_config.stt, "prompt", None)
+        if prompt:
+            settings_kwargs["prompt"] = prompt
+            
         return OpenAISTTService(
             api_key=user_config.stt.api_key,
-            settings=OpenAISTTSettings(model=user_config.stt.model),
+            settings=OpenAISTTSettings(**settings_kwargs),
             **kwargs,
         )
     elif user_config.stt.provider == ServiceProviders.GOOGLE.value:
@@ -586,6 +596,7 @@ def create_llm_service_from_provider(
     location: str | None = None,
     credentials: str | None = None,
     temperature: float | None = None,
+    reasoning_effort: str | None = "none",
 ):
     """Create an LLM service from explicit provider/model/api_key.
 
@@ -598,11 +609,15 @@ def create_llm_service_from_provider(
             _validate_runtime_service_url(base_url, "base_url")
             kwargs["base_url"] = base_url
         if "gpt-5" in model:
+            extra_params = {"verbosity": "low"}
+            if reasoning_effort and reasoning_effort != "none":
+                extra_params["reasoning_effort"] = reasoning_effort
+            
             return OpenAILLMService(
                 api_key=api_key,
                 settings=OpenAILLMSettings(
                     model=model,
-                    extra={"reasoning_effort": "minimal", "verbosity": "low"},
+                    extra=extra_params,
                 ),
                 **kwargs,
             )
@@ -873,6 +888,7 @@ def create_llm_service(user_config):
     kwargs = {}
     if provider == ServiceProviders.OPENAI.value:
         kwargs["base_url"] = user_config.llm.base_url
+        kwargs["reasoning_effort"] = getattr(user_config.llm, "reasoning_effort", "none")
     elif provider == ServiceProviders.OPENROUTER.value:
         kwargs["base_url"] = user_config.llm.base_url
     elif provider == ServiceProviders.AZURE.value:

@@ -525,18 +525,21 @@ class ARIConnection:
             phone_row = await db_client.find_active_phone_number_for_inbound(
                 self.organization_id, called_number, "ari"
             )
-            if (
-                not phone_row
-                or phone_row.telephony_configuration_id
-                != self.telephony_configuration_id
-            ):
+            if not phone_row:
                 logger.warning(
                     f"[ARI org={self.organization_id}] Inbound call to extension "
                     f"{called_number} on channel {channel_id} — no matching phone "
-                    f"number registered for config {self.telephony_configuration_id}, "
-                    f"hanging up"
+                    f"number registered, hanging up"
                 )
                 await self._delete_channel(channel_id)
+                return
+                
+            if phone_row.telephony_configuration_id != self.telephony_configuration_id:
+                logger.debug(
+                    f"[ARI org={self.organization_id}] Inbound call to extension "
+                    f"{called_number} on channel {channel_id} belongs to config "
+                    f"{phone_row.telephony_configuration_id}, ignoring in config {self.telephony_configuration_id}"
+                )
                 return
 
             inbound_workflow_id = phone_row.inbound_workflow_id

@@ -319,6 +319,10 @@ class OpenAILLMService(BaseLLMConfiguration):
         default="https://api.openai.com/v1",
         description="Override only if using an OpenAI-compatible API (e.g. local LLM, proxy).",
     )
+    reasoning_effort: Literal["none", "low", "medium", "high"] = Field(
+        default="none",
+        description="Reasoning effort for o1/o3 models. Do not use with gpt-5.4 or when tools are enabled.",
+    )
 
 
 @register_llm
@@ -1215,6 +1219,15 @@ class OpenAISTTConfiguration(BaseSTTConfiguration):
     base_url: str = Field(
         default="https://api.openai.com/v1",
         description="Override only if using an OpenAI-compatible API (e.g. local STT, proxy).",
+    )
+    language: str | None = Field(
+        default=None,
+        description="ISO-639-1 language code (e.g., 'en' for English). Leave blank to auto-detect.",
+        json_schema_extra={"examples": ["en", "es", "fr", "de", "hi", "zh"], "allow_custom_input": True},
+    )
+    prompt: str | None = Field(
+        default=None,
+        description="Optional prompt to guide the transcription (e.g., 'Transcribe in English letters only.').",
     )
 
 
