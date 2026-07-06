@@ -60,8 +60,8 @@ $Lines = @(
     "    echo `"[*] Please log into the droplet and run: cd ~/dograh && ./scripts/setup_remote.sh`"",
     "else",
     "    echo `"[*] Building Docker images from source and restarting...`"",
-    "    sed -i 's/\r//g' scripts/*.sh deploy/templates/*.template 2>/dev/null || true",
-    "    chmod +x scripts/*.sh 2>/dev/null || true",
+    "    find scripts deploy -type f -name '*.sh' -o -name '*.template' | xargs sed -i 's/\r//g' 2>/dev/null || true",
+    "    find scripts -type f -name '*.sh' -exec chmod +x {} + 2>/dev/null || true",
     "    docker compose --profile remote up -d --build",
     "    echo `"[*] Server successfully updated and restarted!`"",
     "fi"
