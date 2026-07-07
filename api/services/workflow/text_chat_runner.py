@@ -379,6 +379,7 @@ async def _wait_for_quiescence(
     response_window: _ResponseWindowState,
     runner_task: asyncio.Task,
     activity_marker: int,
+    engine: PipecatEngine,
     timeout_seconds: float = TEXT_CHAT_TURN_TIMEOUT_SECONDS,
 ) -> None:
     loop = asyncio.get_running_loop()
@@ -401,6 +402,11 @@ async def _wait_for_quiescence(
             and (time.monotonic() - capture_processor.last_activity_at)
             >= TEXT_CHAT_IDLE_SETTLE_SECONDS
         ):
+            if getattr(engine, "_call_disposed", False):
+                # The call is ending (e.g. end_call tool used).
+                # We should not time out; we must wait for the EndFrame to stop the pipeline.
+                await asyncio.sleep(0.05)
+                continue
             return
 
         await asyncio.sleep(0.05)
@@ -656,6 +662,7 @@ async def execute_text_chat_pending_turn(
                 response_window=response_window,
                 runner_task=runner_task,
                 activity_marker=opening_marker,
+                engine=engine,
             )
 
         if pending_user_message is not None:
@@ -668,6 +675,7 @@ async def execute_text_chat_pending_turn(
                 response_window=response_window,
                 runner_task=runner_task,
                 activity_marker=generation_marker,
+                engine=engine,
             )
     finally:
         try:

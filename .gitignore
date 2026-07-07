@@ -32,3 +32,9 @@ credentials.json
 docs/superpowers/
 .gstack/
 scripts/generate_voice_dataset.py
+
+# Scratch test files
+test*.py
+test*.txt
+test*.html
+test_widget.html

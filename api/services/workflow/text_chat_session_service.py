@@ -4,6 +4,8 @@ from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
+from loguru import logger
+
 from api.db import db_client
 from api.db.models import WorkflowRunTextSessionModel
 from api.db.workflow_run_text_session_client import (

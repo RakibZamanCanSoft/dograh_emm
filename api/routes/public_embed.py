@@ -210,8 +210,9 @@ async def build_public_embed_preflight_response(
 ) -> Response | None:
     """Handle embed preflights before global CORSMiddleware rejects external sites."""
     public_embed_prefix = f"{api_prefix.rstrip('/')}/public/embed"
+    public_text_embed_prefix = f"{api_prefix.rstrip('/')}/public/text-embed"
 
-    if path == f"{public_embed_prefix}/init":
+    if path == f"{public_embed_prefix}/init" or path == f"{public_text_embed_prefix}/init":
         if requested_method.upper() != "POST":
             return Response(status_code=405)
         return _cors_response(origin, "POST, OPTIONS")
@@ -229,6 +230,17 @@ async def build_public_embed_preflight_response(
             return Response(status_code=405)
         session_token = path[len(turn_credentials_prefix) :].split("/", 1)[0]
         return await _turn_credentials_preflight_response(session_token, origin)
+
+    text_msg_suffix = "/messages"
+    if path.startswith(f"{public_text_embed_prefix}/") and path.endswith(text_msg_suffix):
+        if requested_method.upper() != "POST":
+            return Response(status_code=405)
+        return _cors_response(origin, "POST, OPTIONS")
+
+    if path.startswith(f"{public_text_embed_prefix}/") and not path.endswith(text_msg_suffix):
+        if requested_method.upper() != "GET":
+            return Response(status_code=405)
+        return _cors_response(origin, "GET, OPTIONS")
 
     return None
 

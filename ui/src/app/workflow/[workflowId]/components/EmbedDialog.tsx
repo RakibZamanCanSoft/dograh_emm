@@ -67,6 +67,7 @@ export function EmbedDialog({
     const [buttonText, setButtonText] = useState("Talk to Agent");
     const [buttonColor, setButtonColor] = useState("#10b981");
     const [callToActionText, setCallToActionText] = useState("Click to start voice conversation");
+    const [widgetType, setWidgetType] = useState<"voice" | "text">("voice");
 
     const loadEmbedToken = useCallback(async () => {
         setLoading(true);
@@ -223,6 +224,50 @@ export function EmbedDialog({
                             <>
                                 <Separator />
 
+                                {/* Widget Type Selection */}
+                                <div className="space-y-4">
+                                    <Label>Widget Type</Label>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <button
+                                            type="button"
+                                            onClick={() => setWidgetType("voice")}
+                                            className={`p-4 rounded-lg border-2 transition-all ${
+                                                widgetType === "voice"
+                                                    ? "border-primary bg-primary/5"
+                                                    : "border-muted hover:border-muted-foreground/20"
+                                            }`}
+                                        >
+                                            <div className="space-y-2">
+                                                <div className="font-medium flex items-center justify-center gap-2">
+                                                    <Mic className="h-4 w-4" /> Voice Chat
+                                                </div>
+                                                <div className="text-xs text-muted-foreground">
+                                                    Voice-based conversational AI widget
+                                                </div>
+                                            </div>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setWidgetType("text")}
+                                            className={`p-4 rounded-lg border-2 transition-all ${
+                                                widgetType === "text"
+                                                    ? "border-primary bg-primary/5"
+                                                    : "border-muted hover:border-muted-foreground/20"
+                                            }`}
+                                        >
+                                            <div className="space-y-2">
+                                                <div className="font-medium flex items-center justify-center gap-2">
+                                                    <Rocket className="h-4 w-4" /> Text Chat
+                                                </div>
+                                                <div className="text-xs text-muted-foreground">
+                                                    Text-based conversational AI widget
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+                                <Separator />
+
                                 {/* Allowed Domains */}
                                 <div className="space-y-3">
                                     <Label>
@@ -276,6 +321,7 @@ export function EmbedDialog({
                                 </div>
 
                                 {/* Embed Mode Selection */}
+                                {widgetType === "voice" && (
                                 <div className="space-y-4">
                                     <Label>Embed Mode</Label>
                                     <div className="grid grid-cols-3 gap-4">
@@ -329,6 +375,7 @@ export function EmbedDialog({
                                         </button>
                                     </div>
                                 </div>
+                                )}
 
                                 {/* Configuration based on mode */}
                                 <div className="space-y-4">
@@ -564,7 +611,12 @@ document.getElementById('talk-btn').addEventListener('click', () => {
                                                 <Button
                                                     size="sm"
                                                     variant="outline"
-                                                    onClick={() => copyToClipboard(embedToken.embed_script)}
+                                                    onClick={() => {
+                                                        const scriptToCopy = widgetType === "text" 
+                                                            ? embedToken.embed_script.replace("dograh-widget.js", "dograh-text-widget.js").replace("Dograh Voice Widget", "Dograh Text Chat Widget") 
+                                                            : embedToken.embed_script;
+                                                        copyToClipboard(scriptToCopy);
+                                                    }}
                                                 >
                                                     {copied ? (
                                                         <>
@@ -581,11 +633,11 @@ document.getElementById('talk-btn').addEventListener('click', () => {
                                             </div>
                                             <div className="relative">
                                                 <pre className="bg-muted/50 rounded-lg p-4 text-xs overflow-x-auto whitespace-pre-wrap break-all">
-                                                    <code>{embedToken.embed_script}</code>
+                                                    <code>{widgetType === "text" ? embedToken.embed_script.replace("dograh-widget.js", "dograh-text-widget.js").replace("Dograh Voice Widget", "Dograh Text Chat Widget") : embedToken.embed_script}</code>
                                                 </pre>
                                             </div>
                                             <p className="text-xs text-muted-foreground">
-                                                Add this script to your website&apos;s HTML to enable the voice widget.
+                                                Add this script to your website&apos;s HTML to enable the {widgetType === "text" ? "text" : "voice"} widget.
                                                 Configuration changes will apply automatically without re-embedding.
                                             </p>
                                         </div>
