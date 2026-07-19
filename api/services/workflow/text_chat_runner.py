@@ -51,7 +51,7 @@ from api.services.workflow.pipecat_engine import PipecatEngine
 from api.services.workflow.workflow_graph import WorkflowGraph
 
 TEXT_CHAT_CHECKPOINT_VERSION = 1
-TEXT_CHAT_TURN_TIMEOUT_SECONDS = 60.0
+TEXT_CHAT_TURN_TIMEOUT_SECONDS = 180.0
 TEXT_CHAT_IDLE_SETTLE_SECONDS = 0.2
 TEXT_CHAT_INTERNAL_CANCEL_REASON = "text_chat_turn_complete"
 
