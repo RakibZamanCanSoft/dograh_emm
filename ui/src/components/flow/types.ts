@@ -10,7 +10,18 @@ export enum NodeType {
 
 export type FlowNodeData = {
     prompt?: string;
+    /** Chat-optimised prompt for agentNode (used when channel is text-chat). */
+    prompt_chat?: string;
+    /**
+     * Channel mode for agentNode dual-prompt.
+     * - "call"         → only `prompt` is used (voice calls).
+     * - "chat"         → only `prompt_chat` is used (text chat).
+     * - "call_and_chat"→ `prompt` for voice, `prompt_chat` for text chat.
+     * Defaults to "call" for backward compatibility.
+     */
+    channel_mode?: 'call' | 'chat' | 'call_and_chat';
     name: string;
+
     is_start?: boolean;
     is_end?: boolean;
     invalid?: boolean;

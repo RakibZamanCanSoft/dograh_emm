@@ -568,6 +568,9 @@ async def execute_text_chat_pending_turn(
         embeddings_base_url=embeddings_base_url,
         has_recordings=has_recordings,
         context_compaction_enabled=context_compaction_enabled,
+        # Signal that this is a text-chat session so compose_system_prompt_for_node
+        # picks the chat-optimised prompt without touching call_context_vars.
+        is_text_chat=True,
     )
     engine._gathered_context = dict(base_checkpoint["gathered_context"])
 

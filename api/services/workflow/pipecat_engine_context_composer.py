@@ -52,6 +52,7 @@ def compose_system_prompt_for_node(
     workflow: "WorkflowGraph",
     format_prompt: Callable[[str], str],
     has_recordings: bool,
+    channel: str = "",
 ) -> str:
     """Compose the full system prompt text for a workflow node.
 
@@ -64,16 +65,41 @@ def compose_system_prompt_for_node(
         workflow: The full workflow graph (needed for global node prompt).
         format_prompt: Callable to render template variables in prompts.
         has_recordings: Whether any node in the workflow uses recordings.
+        channel: The active channel provider string (e.g. "textchat" for
+            text-chat sessions; a telephony provider name for voice calls).
+            Used to select the correct prompt on agentNodes that have
+            channel_mode set to "call_and_chat" or "chat".
 
     Returns:
         The composed system prompt text.
     """
+    # Resolve channel once — used for both global and node prompt selection.
+    is_text_chat = channel == "textchat"
+
     global_prompt = ""
     if workflow.global_node_id and node.add_global_prompt:
         global_node = workflow.nodes[workflow.global_node_id]
-        global_prompt = format_prompt(global_node.prompt)
+        global_channel_mode = getattr(global_node, "channel_mode", "call")
+        global_prompt_chat = getattr(global_node, "prompt_chat", None)
+        if is_text_chat and global_channel_mode in ("chat", "call_and_chat") and global_prompt_chat:
+            raw_global = global_prompt_chat
+        else:
+            raw_global = global_node.prompt
+        global_prompt = format_prompt(raw_global) if raw_global else ""
 
-    formatted_node_prompt = format_prompt(node.prompt)
+    # Channel-aware prompt selection for dual-prompt nodes.
+    # "textchat" → use chat-optimised prompt when available.
+    # Everything else (telnyx, twilio, webrtc, …) → use call prompt.
+    # Graceful fallback: if no chat prompt is set, always use the call prompt.
+    node_channel_mode = getattr(node, "channel_mode", "call")
+    node_prompt_chat = getattr(node, "prompt_chat", None)
+
+    if is_text_chat and node_channel_mode in ("chat", "call_and_chat") and node_prompt_chat:
+        raw_node_prompt = node_prompt_chat
+    else:
+        raw_node_prompt = node.prompt
+
+    formatted_node_prompt = format_prompt(raw_node_prompt) if raw_node_prompt else ""
 
     parts = [p for p in (global_prompt, formatted_node_prompt) if p]
 
@@ -81,6 +107,7 @@ def compose_system_prompt_for_node(
         parts.append(RECORDING_RESPONSE_MODE_INSTRUCTIONS)
 
     return "\n\n".join(parts)
+
 
 
 async def compose_functions_for_node(

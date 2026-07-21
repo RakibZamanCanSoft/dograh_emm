@@ -21,6 +21,37 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/lib/auth';
 import logger from '@/lib/logger';
 
+type AgentType = 'inbound' | 'outbound' | 'chat' | 'call_and_chat';
+
+const AGENT_TYPE_OPTIONS: { value: AgentType; label: string; description: string }[] = [
+    {
+        value: 'inbound',
+        label: 'Inbound Call (Users call AI)',
+        description: 'Users will call your AI agent by phone or WebRTC.',
+    },
+    {
+        value: 'outbound',
+        label: 'Outbound Call (AI calls users)',
+        description: 'Your AI agent will initiate phone calls to users.',
+    },
+    {
+        value: 'chat',
+        label: 'Chat Agent (Text only)',
+        description: 'Users will interact with your agent via a website chat widget.',
+    },
+    {
+        value: 'call_and_chat',
+        label: 'Call + Chat Agent (Voice & Text)',
+        description: 'Your agent will handle both phone calls and website chat.',
+    },
+];
+
+/** Map our agent types to the call_type value the MPS API expects. */
+function toCallType(agentType: AgentType): 'inbound' | 'outbound' {
+    if (agentType === 'outbound') return 'outbound';
+    return 'inbound';
+}
+
 export default function CreateWorkflowPage() {
     const router = useRouter();
     const { user, getAccessToken } = useAuth();
@@ -29,9 +60,11 @@ export default function CreateWorkflowPage() {
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [workflowId, setWorkflowId] = useState<string | null>(null);
 
-    const [callType, setCallType] = useState<'inbound' | 'outbound'>('inbound');
+    const [agentType, setAgentType] = useState<AgentType>('inbound');
     const [useCase, setUseCase] = useState('');
     const [activityDescription, setActivityDescription] = useState('');
+
+    const selectedOption = AGENT_TYPE_OPTIONS.find((o) => o.value === agentType)!;
 
     const handleCreateWorkflow = async () => {
         if (!useCase || !activityDescription) {
@@ -50,12 +83,16 @@ export default function CreateWorkflowPage() {
         try {
             const accessToken = await getAccessToken();
 
-            // Call the API to create workflow from template
+            // Call the API to create workflow from template.
+            // call_type is the required field MPS understands; agent_type carries
+            // our extended concept (chat / call_and_chat) for the backend interceptor.
             const response = await createWorkflowFromTemplateApiV1WorkflowCreateTemplatePost({
                 body: {
-                    call_type: callType,
+                    call_type: toCallType(agentType),
                     use_case: useCase,
                     activity_description: activityDescription,
+                    // @ts-expect-error – agent_type is our custom extension not yet in the generated SDK
+                    agent_type: agentType,
                 },
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -67,7 +104,7 @@ export default function CreateWorkflowPage() {
                 setShowSuccessModal(true);
             }
         } catch (err) {
-            setError('Failed to create workflow. Please try again.');
+            setError('Failed to create agent. Please try again.');
             logger.error(`Error creating workflow: ${err}`);
         } finally {
             setIsLoading(false);
@@ -83,9 +120,9 @@ export default function CreateWorkflowPage() {
         <div className="min-h-screen">
             <div className="container mx-auto px-4 py-8 max-w-2xl">
                 <div className="mb-6">
-                    <h1 className="text-3xl font-bold mb-2">Create Voice Agent</h1>
+                    <h1 className="text-3xl font-bold mb-2">Create Agent</h1>
                     <p className="text-muted-foreground">
-                        Tell us about your use case and we&apos;ll create a customized voice agent for you
+                        Tell us about your use case and we&apos;ll create a customized agent for you
                     </p>
                 </div>
 
@@ -93,27 +130,29 @@ export default function CreateWorkflowPage() {
                     <CardHeader>
                         <CardTitle>Agent Details</CardTitle>
                         <CardDescription>
-                            Configure your voice agent settings
+                            Configure your agent settings
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="space-y-2">
-                            <Label htmlFor="call-type">Call Type</Label>
-                            <Select value={callType} onValueChange={(value) => setCallType(value as 'inbound' | 'outbound')}>
-                                <SelectTrigger id="call-type">
-                                    <SelectValue placeholder="Select type" />
+                            <Label htmlFor="agent-type">Agent Type</Label>
+                            <Select
+                                value={agentType}
+                                onValueChange={(value) => setAgentType(value as AgentType)}
+                            >
+                                <SelectTrigger id="agent-type">
+                                    <SelectValue placeholder="Select agent type" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="inbound">
-                                        Inbound (Users call AI)
-                                    </SelectItem>
-                                    <SelectItem value="outbound">
-                                        Outbound (AI calls users)
-                                    </SelectItem>
+                                    {AGENT_TYPE_OPTIONS.map((opt) => (
+                                        <SelectItem key={opt.value} value={opt.value}>
+                                            {opt.label}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                             <p className="text-sm text-muted-foreground">
-                                Choose whether users will call your AI or your AI will call users
+                                {selectedOption.description}
                             </p>
                         </div>
 
@@ -126,7 +165,7 @@ export default function CreateWorkflowPage() {
                                 onChange={(e) => setUseCase(e.target.value)}
                             />
                             <p className="text-sm text-muted-foreground">
-                                Describe the primary purpose of your voice agent
+                                Describe the primary purpose of your agent
                             </p>
                         </div>
 
@@ -134,13 +173,13 @@ export default function CreateWorkflowPage() {
                             <Label htmlFor="activity-description">Activity Description</Label>
                             <Textarea
                                 id="activity-description"
-                                placeholder="Describe briefly what your voice agent will do (e.g., Qualify leads for real estate, Screen candidates for roles, Handle customer support). This will be a prompt to an LLM."
+                                placeholder="Describe briefly what your agent will do (e.g., Qualify leads for real estate, Screen candidates for roles, Handle customer support). This will be a prompt to an LLM."
                                 value={activityDescription}
                                 onChange={(e) => setActivityDescription(e.target.value)}
                                 className="min-h-[100px]"
                             />
                             <p className="text-sm text-muted-foreground">
-                                This description will be used to generate the AI prompt for your voice agent
+                                This description will be used to generate the AI prompt for your agent
                             </p>
                         </div>
 
@@ -174,10 +213,10 @@ export default function CreateWorkflowPage() {
 
                             <div className="text-center space-y-2">
                                 <h3 className="text-lg font-semibold">
-                                    Creating Your Workflow
+                                    Creating Your Agent
                                 </h3>
                                 <p className="text-sm text-muted-foreground max-w-xs">
-                                    We&apos;re setting up your voice agent with your specifications. This will just take a moment...
+                                    We&apos;re setting up your agent with your specifications. This will just take a moment...
                                 </p>
                             </div>
                         </div>
@@ -193,18 +232,20 @@ export default function CreateWorkflowPage() {
                             <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            Workflow Created Successfully!
+                            Agent Created Successfully!
                         </DialogTitle>
                         <DialogDescription asChild>
                             <div className="mt-4 space-y-3">
                                 <p>
-                                    A voice agent workflow has been generated for your use case, with some artificial data and sample actions.
+                                    An agent workflow has been generated for your use case, with some artificial data and sample actions.
                                 </p>
+                                {(agentType === 'chat' || agentType === 'call_and_chat') && (
+                                    <p>
+                                        Multi-channel instructions have been added to your agent&apos;s global prompt so it behaves appropriately for both voice calls and text chat.
+                                    </p>
+                                )}
                                 <p>
-                                    The voice bot is pre-set to communicate in English with an American accent.
-                                </p>
-                                <p>
-                                    Next steps would be to test the voice bot in the editor, and then modify it to suit your use case.
+                                    Next steps would be to test the agent in the editor, and then modify it to suit your use case.
                                 </p>
                             </div>
                         </DialogDescription>

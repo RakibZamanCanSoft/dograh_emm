@@ -78,6 +78,7 @@ class PipecatEngine:
         embeddings_api_version: Optional[str] = None,
         has_recordings: bool = False,
         context_compaction_enabled: bool = False,
+        is_text_chat: bool = False,
     ):
         self.task = task
         self.llm = llm
@@ -152,6 +153,10 @@ class PipecatEngine:
         self._context_summarization_manager: Optional[ContextSummarizationManager] = (
             None
         )
+        # Whether this engine is serving a text-chat session.  When True,
+        # compose_system_prompt_for_node will pick the chat-optimised prompt
+        # even if call_context_vars does not carry a "provider" key.
+        self._is_text_chat: bool = is_text_chat
 
     async def _get_organization_id(self) -> Optional[int]:
         """Get and cache the organization ID from workflow run."""
@@ -539,6 +544,12 @@ class PipecatEngine:
             workflow=self.workflow,
             format_prompt=self._format_prompt,
             has_recordings=self._has_recordings,
+            # Use the explicit is_text_chat flag first; fall back to the legacy
+            # call_context_vars["provider"] == "textchat" check for voice paths
+            # where the telephony provider name is stored in that key.
+            channel="textchat"
+            if self._is_text_chat
+            else self._call_context_vars.get("provider", ""),
         )
         functions = await compose_functions_for_node(
             node=node,

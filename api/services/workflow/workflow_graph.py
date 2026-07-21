@@ -95,6 +95,9 @@ class Node:
         self.pre_call_fetch_credential_uuid = getattr(
             data, "pre_call_fetch_credential_uuid", None
         )
+        # Channel-aware dual prompt fields (agentNode only; safe to getattr on all).
+        self.channel_mode: str = getattr(data, "channel_mode", "call")
+        self.prompt_chat: str | None = getattr(data, "prompt_chat", None)
 
         self.data = data
 
@@ -250,6 +253,9 @@ class WorkflowGraph:
             ):
                 if node.prompt:
                     variables |= extract_template_variables(node.prompt)
+                # Also scan the chat-specific prompt on all prompted node types.
+                if node.prompt_chat:
+                    variables |= extract_template_variables(node.prompt_chat)
 
             # greeting is only relevant on the start node
             if node.node_type == NodeType.startNode and node.greeting:

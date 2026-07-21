@@ -1,16 +1,19 @@
 import { NodeProps, NodeToolbar, Position } from "@xyflow/react";
 import * as LucideIcons from "lucide-react";
-import { Check, Circle, Copy, Edit, type LucideIcon, Trash2Icon } from "lucide-react";
+import { Check, Circle, Copy, Edit, Phone, MessageSquare, type LucideIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { useWorkflow } from "@/app/workflow/[workflowId]/contexts/WorkflowContext";
 import type { NodeSpec } from "@/client/types.gen";
 import { DocumentBadges } from "@/components/flow/DocumentBadges";
+import { MentionTextarea } from "@/components/flow/MentionTextarea";
 import { NodeEditForm, useNodeSpecs } from "@/components/flow/renderer";
 import { ToolBadges } from "@/components/flow/ToolBadges";
 import { FlowNodeData } from "@/components/flow/types";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NODE_DOCUMENTATION_URLS } from "@/constants/documentation";
 import { useAppConfig } from "@/context/AppConfigContext";
@@ -222,8 +225,8 @@ function CanvasPreview({
         const truncated = !url
             ? "Not configured"
             : url.length > 30
-            ? url.slice(0, 30) + "..."
-            : url;
+                ? url.slice(0, 30) + "..."
+                : url;
         return (
             <div className="space-y-2">
                 <div className="flex items-center gap-2">
@@ -275,6 +278,65 @@ function CanvasPreview({
     // Default: prompt preview + tool/document badges (when spec declares them).
     const hasToolRefs = spec.properties.some((p) => p.type === "tool_refs");
     const hasDocRefs = spec.properties.some((p) => p.type === "document_refs");
+
+    // For all four prompted node types with dual prompts,
+    // show channel badge + relevant prompt preview.
+    if (["agentNode", "startCall", "endCall", "globalNode"].includes(spec.name)) {
+        const channelMode = data.channel_mode ?? "call";
+        const previewPrompt =
+            channelMode === "chat"
+                ? (data.prompt_chat || data.prompt || "No prompt configured")
+                : (data.prompt || "No prompt configured");
+        return (
+            <>
+                {channelMode !== "call" && (
+                    <div className="flex items-center gap-1.5 mb-2">
+                        {channelMode === "call_and_chat" ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-purple-100 dark:bg-purple-900/30 px-2 py-0.5 text-[10px] font-medium text-purple-700 dark:text-purple-300">
+                                <Phone className="h-2.5 w-2.5" />
+                                <MessageSquare className="h-2.5 w-2.5" />
+                                Call + Chat
+                            </span>
+                        ) : (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-[10px] font-medium text-blue-700 dark:text-blue-300">
+                                <MessageSquare className="h-2.5 w-2.5" />
+                                Chat
+                            </span>
+                        )}
+                    </div>
+                )}
+                <p className="text-sm text-muted-foreground line-clamp-4 leading-relaxed">
+                    {previewPrompt}
+                </p>
+                {hasToolRefs && data.tool_uuids && data.tool_uuids.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-border/50">
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
+                            <LucideIcons.Wrench className="h-3 w-3" />
+                            <span>Tools:</span>
+                        </div>
+                        <ToolBadges
+                            toolUuids={data.tool_uuids}
+                            onStaleUuidsDetected={onStaleTools}
+                            mcpToolFilters={data.mcp_tool_filters}
+                        />
+                    </div>
+                )}
+                {hasDocRefs && data.document_uuids && data.document_uuids.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-border/50">
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
+                            <LucideIcons.FileText className="h-3 w-3" />
+                            <span>Documents:</span>
+                        </div>
+                        <DocumentBadges
+                            documentUuids={data.document_uuids}
+                            onStaleUuidsDetected={onStaleDocuments}
+                        />
+                    </div>
+                )}
+            </>
+        );
+    }
+
     return (
         <>
             <p className="text-sm text-muted-foreground line-clamp-5 leading-relaxed">
@@ -313,11 +375,10 @@ function StatusDot({ enabled }: { enabled: boolean }) {
     return (
         <div className="flex items-center gap-1.5">
             <Circle
-                className={`h-2 w-2 ${
-                    enabled
-                        ? "fill-green-500 text-green-500"
-                        : "fill-gray-400 text-gray-400"
-                }`}
+                className={`h-2 w-2 ${enabled
+                    ? "fill-green-500 text-green-500"
+                    : "fill-gray-400 text-gray-400"
+                    }`}
             />
             <span className="text-xs text-muted-foreground">
                 {enabled ? "Enabled" : "Disabled"}
@@ -455,6 +516,132 @@ function TriggerWebhookUrls({ endpoints }: { endpoints: TriggerEndpoints }) {
     );
 }
 
+// ─── PromptedNodeEditor ──────────────────────────────────────────────────
+// Custom prompt editing UI for all prompted nodes (startCall, agentNode,
+// endCall, globalNode). Shows a channel-mode dropdown and renders prompt
+// textareas based on the selected mode.
+
+type ChannelMode = 'call' | 'chat' | 'call_and_chat';
+
+// Node types that support the dual-prompt / channel-mode feature.
+const DUAL_PROMPT_NODE_TYPES = new Set(["agentNode", "startCall", "endCall", "globalNode"]);
+
+const CHANNEL_MODE_OPTIONS: { value: ChannelMode; label: string; description: string }[] = [
+    { value: 'call', label: 'Call', description: 'Only used on voice calls' },
+    { value: 'chat', label: 'Chat', description: 'Only used in text chat' },
+    { value: 'call_and_chat', label: 'Call + Chat', description: 'Separate optimised prompts per channel' },
+];
+
+function AgentNodePromptEditor({
+    values,
+    onChange,
+    recordings,
+}: {
+    values: Record<string, unknown>;
+    onChange: (next: Record<string, unknown>) => void;
+    recordings?: import("@/client/types.gen").RecordingResponseSchema[];
+}) {
+    const channelMode = (values.channel_mode as ChannelMode | undefined) ?? 'call';
+    const callPrompt = (values.prompt as string | undefined) ?? '';
+    const chatPrompt = (values.prompt_chat as string | undefined) ?? '';
+
+    const set = (patch: Partial<Record<string, unknown>>) =>
+        onChange({ ...values, ...patch });
+
+    return (
+        <div className="space-y-4">
+            {/* Channel mode selector */}
+            <div className="space-y-1.5">
+                <Label htmlFor="agent-channel-mode">Channel Mode</Label>
+                <Select
+                    value={channelMode}
+                    onValueChange={(v) => set({ channel_mode: v as ChannelMode })}
+                >
+                    <SelectTrigger id="agent-channel-mode" className="w-full">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {CHANNEL_MODE_OPTIONS.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                                <div className="flex flex-col">
+                                    <span>{opt.label}</span>
+                                    <span className="text-xs text-muted-foreground">{opt.description}</span>
+                                </div>
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+
+            {/* Prompt area — conditional on channel mode */}
+            {channelMode === 'call_and_chat' ? (
+                <Tabs defaultValue="call" className="w-full">
+                    <TabsList className="w-full">
+                        <TabsTrigger value="call" className="flex-1 gap-1.5">
+                            <Phone className="h-3.5 w-3.5" />
+                            Call Prompt
+                        </TabsTrigger>
+                        <TabsTrigger value="chat" className="flex-1 gap-1.5">
+                            <MessageSquare className="h-3.5 w-3.5" />
+                            Chat Prompt
+                        </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="call" className="mt-3 space-y-1">
+                        <p className="text-xs text-muted-foreground">
+                            Used for <strong>voice call</strong> sessions. Keep voice-optimised language.
+                        </p>
+                        <MentionTextarea
+                            value={callPrompt}
+                            onChange={(v) => set({ prompt: v })}
+                            placeholder="Agent system prompt for voice calls..."
+                            recordings={recordings}
+                        />
+                    </TabsContent>
+
+                    <TabsContent value="chat" className="mt-3 space-y-1">
+                        <p className="text-xs text-muted-foreground">
+                            Used for <strong>text chat</strong> sessions. Optimise for typing, not speaking.
+                        </p>
+                        <MentionTextarea
+                            value={chatPrompt}
+                            onChange={(v) => set({ prompt_chat: v })}
+                            placeholder="Agent system prompt for text chat..."
+                            recordings={recordings}
+                        />
+                    </TabsContent>
+                </Tabs>
+            ) : channelMode === 'chat' ? (
+                <div className="space-y-1.5">
+                    <Label>Chat Prompt</Label>
+                    <p className="text-xs text-muted-foreground">
+                        Used for <strong>text chat</strong> sessions.
+                    </p>
+                    <MentionTextarea
+                        value={chatPrompt}
+                        onChange={(v) => set({ prompt_chat: v, prompt: v })}
+                        placeholder="Agent system prompt for text chat..."
+                        recordings={recordings}
+                    />
+                </div>
+            ) : (
+                <div className="space-y-1.5">
+                    <Label>Call Prompt</Label>
+                    <p className="text-xs text-muted-foreground">
+                        Used for <strong>voice call</strong> sessions.
+                    </p>
+                    <MentionTextarea
+                        value={callPrompt}
+                        onChange={(v) => set({ prompt: v })}
+                        placeholder="Agent system prompt for voice calls..."
+                        recordings={recordings}
+                    />
+                </div>
+            )}
+        </div>
+    );
+}
+
 // ─── GenericNode ──────────────────────────────────────────────────────────
 
 interface GenericNodeProps extends NodeProps {
@@ -485,12 +672,20 @@ export const GenericNode = memo(({ data, selected, id, type }: GenericNodeProps)
     // ── Form state ─────────────────────────────────────────────────────
     // mcp_tool_filters is not a spec property, so seedValues won't carry it;
     // seed merges it back in alongside the spec-derived values.
+    // For agentNode we also carry the spec-excluded dual-prompt fields.
     const seed = useCallback(
         () =>
             spec
-                ? { ...seedValues(data, spec), mcp_tool_filters: data.mcp_tool_filters }
+                ? {
+                    ...seedValues(data, spec),
+                    mcp_tool_filters: data.mcp_tool_filters,
+                    ...(DUAL_PROMPT_NODE_TYPES.has(type) ? {
+                        channel_mode: data.channel_mode ?? "call",
+                        prompt_chat: data.prompt_chat ?? "",
+                    } : {}),
+                }
                 : {},
-        [data, spec],
+        [data, spec, type],
     );
 
     const [values, setValues] = useState<Record<string, unknown>>(seed);
@@ -560,11 +755,17 @@ export const GenericNode = memo(({ data, selected, id, type }: GenericNodeProps)
         if (!spec) return false;
         const baseline = seedValues(data, spec);
         if (propertyNames.some((n) => values[n] !== baseline[n])) return true;
-        return (
+        if (
             JSON.stringify(values.mcp_tool_filters ?? {}) !==
             JSON.stringify(data.mcp_tool_filters ?? {})
-        );
-    }, [values, data, spec, propertyNames]);
+        ) return true;
+        // Check dual-prompt fields for all prompted node types.
+        if (DUAL_PROMPT_NODE_TYPES.has(type)) {
+            if (values.channel_mode !== (data.channel_mode ?? "call")) return true;
+            if (values.prompt_chat !== (data.prompt_chat ?? "")) return true;
+        }
+        return false;
+    }, [values, data, spec, propertyNames, type]);
 
     const handleSave = async () => {
         if (!spec) return;
@@ -666,28 +867,69 @@ export const GenericNode = memo(({ data, selected, id, type }: GenericNodeProps)
             >
                 {open && spec && (
                     <div className="grid gap-4">
-                        <NodeEditForm
-                            spec={spec}
-                            values={values}
-                            onChange={setValues}
-                            context={{
-                                tools: tools ?? [],
-                                documents: documents ?? [],
-                                recordings: recordings ?? [],
-                                mcpToolFilters:
-                                    (values.mcp_tool_filters as
-                                        | Record<string, string[]>
-                                        | undefined) ?? {},
-                                onMcpToolFiltersChange: (next) =>
-                                    setValues((prev) => ({
-                                        ...prev,
-                                        mcp_tool_filters:
-                                            Object.keys(next).length > 0
-                                                ? next
-                                                : undefined,
-                                    })),
-                            }}
-                        />
+                        {DUAL_PROMPT_NODE_TYPES.has(type) ? (
+                            // Prompted nodes: custom dual-prompt editor + rest of form
+                            // (excluding the spec's 'prompt' property which is
+                            // rendered by AgentNodePromptEditor instead).
+                            <>
+                                <AgentNodePromptEditor
+                                    values={values}
+                                    onChange={setValues}
+                                    recordings={recordings ?? []}
+                                />
+                                <NodeEditForm
+                                    spec={{
+                                        ...spec,
+                                        properties: spec.properties.filter(
+                                            (p) => p.name !== "prompt"
+                                        ),
+                                    }}
+                                    values={values}
+                                    onChange={setValues}
+                                    context={{
+                                        tools: tools ?? [],
+                                        documents: documents ?? [],
+                                        recordings: recordings ?? [],
+                                        mcpToolFilters:
+                                            (values.mcp_tool_filters as
+                                                | Record<string, string[]>
+                                                | undefined) ?? {},
+                                        onMcpToolFiltersChange: (next) =>
+                                            setValues((prev) => ({
+                                                ...prev,
+                                                mcp_tool_filters:
+                                                    Object.keys(next).length > 0
+                                                        ? next
+                                                        : undefined,
+                                            })),
+                                    }}
+                                />
+                            </>
+                        ) : (
+                            // All other node types: standard generic form.
+                            <NodeEditForm
+                                spec={spec}
+                                values={values}
+                                onChange={setValues}
+                                context={{
+                                    tools: tools ?? [],
+                                    documents: documents ?? [],
+                                    recordings: recordings ?? [],
+                                    mcpToolFilters:
+                                        (values.mcp_tool_filters as
+                                            | Record<string, string[]>
+                                            | undefined) ?? {},
+                                    onMcpToolFiltersChange: (next) =>
+                                        setValues((prev) => ({
+                                            ...prev,
+                                            mcp_tool_filters:
+                                                Object.keys(next).length > 0
+                                                    ? next
+                                                    : undefined,
+                                        })),
+                                }}
+                            />
+                        )}
                         {type === "trigger" && (
                             <TriggerWebhookUrls
                                 endpoints={buildTriggerEndpoints(data.trigger_path, webhookBaseUrl)}

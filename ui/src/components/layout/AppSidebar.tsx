@@ -18,6 +18,7 @@ import {
   Megaphone,
   Phone,
   Settings,
+  Sparkles,
   TrendingUp,
   UserRound,
   Workflow,
@@ -102,6 +103,11 @@ const NAV_SECTIONS: SidebarNavSection[] = [
         title: "Models",
         url: "/model-configurations",
         icon: Brain,
+      },
+      {
+        title: "Prompt Refactor",
+        url: "/prompt-refactor-model",
+        icon: Sparkles,
       },
       {
         title: "Telephony",

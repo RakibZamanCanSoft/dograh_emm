@@ -343,6 +343,11 @@ class StartCallNodeData(
     pre_call_fetch_credential_uuid: Optional[str] = spec_field(
         default=None, ui_type=PropertyType.credential_ref
     )
+    # Channel-aware dual prompt (same pattern as AgentNodeData).
+    channel_mode: Literal["call", "chat", "call_and_chat"] = spec_field(
+        default="call", spec_exclude=True
+    )
+    prompt_chat: Optional[str] = spec_field(default=None, spec_exclude=True)
 
 
 @node_spec(
@@ -428,7 +433,19 @@ class AgentNodeData(
     _ExtractionNodeDataMixin,
     _ToolDocumentRefsMixin,
 ):
-    pass
+    # Channel mode controls which prompt is used at runtime.
+    # "call"         → only the standard `prompt` (call-optimised) is used.
+    # "chat"         → only `prompt_chat` is used for text-chat sessions.
+    # "call_and_chat"→ `prompt` for voice, `prompt_chat` for text-chat.
+    # spec_exclude=True keeps it out of the generic form renderer; the custom
+    # AgentNode editor in GenericNode.tsx owns this field.
+    channel_mode: Literal["call", "chat", "call_and_chat"] = spec_field(
+        default="call", spec_exclude=True
+    )
+    # Chat-optimised version of the prompt; populated by the Agent Builder when
+    # channel_mode is "chat" or "call_and_chat".
+    prompt_chat: Optional[str] = spec_field(default=None, spec_exclude=True)
+
 
 
 @node_spec(
@@ -510,6 +527,11 @@ class EndCallNodeData(
     _ExtractionNodeDataMixin,
 ):
     is_end: bool = spec_field(default=True, spec_exclude=True)
+    # Channel-aware dual prompt (same pattern as AgentNodeData).
+    channel_mode: Literal["call", "chat", "call_and_chat"] = spec_field(
+        default="call", spec_exclude=True
+    )
+    prompt_chat: Optional[str] = spec_field(default=None, spec_exclude=True)
 
 
 @node_spec(
@@ -574,7 +596,11 @@ class EndCallNodeData(
     },
 )
 class GlobalNodeData(BaseNodeData, _PromptedNodeDataMixin):
-    pass
+    # Channel-aware dual prompt (same pattern as AgentNodeData).
+    channel_mode: Literal["call", "chat", "call_and_chat"] = spec_field(
+        default="call", spec_exclude=True
+    )
+    prompt_chat: Optional[str] = spec_field(default=None, spec_exclude=True)
 
 
 @node_spec(

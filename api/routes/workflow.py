@@ -321,6 +321,39 @@ class CreateWorkflowTemplateRequest(BaseModel):
     call_type: Literal[CallType.INBOUND.value, CallType.OUTBOUND.value]
     use_case: str
     activity_description: str
+    # New agent_type field: 'inbound', 'outbound', 'chat', 'call_and_chat'
+    # When not provided, falls back to call_type for backwards compatibility.
+    agent_type: Optional[str] = None
+
+
+# ---------------------------------------------------------------------------
+# Agent name extraction helpers (used for title correction - no LLM needed)
+# ---------------------------------------------------------------------------
+
+_AGENT_NAME_PATTERNS = [
+    re.compile(r"\byou are ([A-Za-z]+)\b", re.IGNORECASE),
+    re.compile(r"\bi am ([A-Za-z]+)\b", re.IGNORECASE),
+    re.compile(r"\bmy name is ([A-Za-z]+)\b", re.IGNORECASE),
+    re.compile(r"\bI'm ([A-Za-z]+)\b", re.IGNORECASE),
+]
+
+
+def _extract_agent_name_from_description(activity_description: str) -> Optional[str]:
+    """Try to pull the intended agent name from 'You are <Name>' / 'I am <Name>' etc."""
+    for pat in _AGENT_NAME_PATTERNS:
+        m = pat.search(activity_description)
+        if m:
+            return m.group(1)  # preserves original capitalisation
+    return None
+
+
+def _extract_generated_name(text: str) -> Optional[str]:
+    """Pull the name MPS chose for the agent out of any text string."""
+    m = re.search(r"you are ([A-Za-z]+)", text, re.IGNORECASE)
+    if m:
+        return m.group(1)
+    return None
+
 
 
 @router.post("/{workflow_id}/validate")
@@ -489,10 +522,22 @@ async def create_workflow_from_template(
         HTTPException: If MPS API call fails
     """
     try:
+        # Determine the effective call type to send to MPS.
+        # 'chat' and 'call_and_chat' are our local concept; MPS only understands
+        # 'inbound' / 'outbound', so we map chat-type agents to 'inbound'.
+        agent_type = request.agent_type or request.call_type
+        is_chat_agent = agent_type in ("chat", "call_and_chat")
+        mps_call_type = "inbound" if is_chat_agent else request.call_type.upper()
+        logger.debug(
+            f"[agent_builder] agent_type={agent_type!r} is_chat_agent={is_chat_agent} "
+            f"mps_call_type={mps_call_type!r} request.call_type={request.call_type!r}"
+        )
+
+
         # Call MPS API to generate workflow using the client
         if DEPLOYMENT_MODE == "oss":
             workflow_data = await mps_service_key_client.call_workflow_api(
-                call_type=request.call_type.upper(),
+                call_type=mps_call_type.upper(),
                 use_case=request.use_case,
                 activity_description=request.activity_description,
                 created_by=str(user.provider_id),
@@ -502,7 +547,7 @@ async def create_workflow_from_template(
                 raise HTTPException(status_code=400, detail="No organization selected")
 
             workflow_data = await mps_service_key_client.call_workflow_api(
-                call_type=request.call_type.upper(),
+                call_type=mps_call_type.upper(),
                 use_case=request.use_case,
                 activity_description=request.activity_description,
                 organization_id=user.selected_organization_id,
@@ -512,6 +557,60 @@ async def create_workflow_from_template(
         # Regenerate trigger UUIDs to avoid conflicts with existing triggers
         workflow_def = regenerate_trigger_uuids(
             workflow_data.get("workflow_definition", {})
+        )
+
+        # Determine the final workflow name, correcting agent name if MPS chose a wrong one.
+        # We do this before _post_process_chat_workflow so we still have the original
+        # MPS-generated name to compare against.
+        intended_name_for_title = _extract_agent_name_from_description(request.activity_description)
+        raw_workflow_name = workflow_data.get("name", f"{request.use_case} - {request.call_type}")
+        if intended_name_for_title:
+            # Extract the name MPS used in the raw title (e.g. "Sam" in "Sam - Inbound call")
+            name_in_title = _extract_generated_name(raw_workflow_name)
+            if name_in_title and name_in_title.lower() != intended_name_for_title.lower():
+                raw_workflow_name = re.sub(
+                    r"\b" + re.escape(name_in_title) + r"\b",
+                    intended_name_for_title,
+                    raw_workflow_name,
+                    flags=re.IGNORECASE,
+                )
+
+
+        # Post-process the generated workflow definition:
+        # 1. Fix agent name in all prompts (fast, regex — LLM may have used a different name)
+        # 2. LLM-powered prompt refactoring for chat / call_and_chat agents
+        #    (sends each node prompt through an LLM to intelligently rewrite
+        #    voice-biased language rather than doing crude string replacement).
+        from api.services.workflow.prompt_refactor import refactor_workflow_prompts
+
+        # Name correction via regex — applied to ALL agent types (call, chat, call_and_chat).
+        # IMPORTANT: use word-boundary anchors \b to avoid corrupting words that
+        # contain the name as a substring (e.g. "same" → "emmae" bug).
+        intended_name = _extract_agent_name_from_description(request.activity_description)
+        if intended_name:
+            for node in workflow_def.get("nodes", []):
+                node_data = node.get("data")
+                if not isinstance(node_data, dict):
+                    continue
+                prompt = node_data.get("prompt", "")
+                if not prompt:
+                    continue
+                generated_name = _extract_generated_name(prompt)
+                if generated_name and generated_name.lower() != intended_name.lower():
+                    node_data["prompt"] = re.sub(
+                        r"\b" + re.escape(generated_name) + r"\b",
+                        intended_name,
+                        prompt,
+                        flags=re.IGNORECASE,
+                    )
+
+        # LLM refactoring: uses the API key stored in Build → Prompt Refactor Model.
+        from api.services.workflow.prompt_refactor import refactor_workflow_prompts
+
+        await refactor_workflow_prompts(
+            workflow_def,
+            agent_type=agent_type,
+            organization_id=user.selected_organization_id,
         )
 
         trigger_paths = extract_trigger_paths(workflow_def) if workflow_def else []
@@ -524,11 +623,12 @@ async def create_workflow_from_template(
                 raise HTTPException(status_code=409, detail=str(e))
 
         workflow = await db_client.create_workflow(
-            name=workflow_data.get("name", f"{request.use_case} - {request.call_type}"),
+            name=raw_workflow_name,
             workflow_definition=workflow_def,
             user_id=user.id,
             organization_id=user.selected_organization_id,
         )
+
 
         capture_event(
             distinct_id=str(user.provider_id),
