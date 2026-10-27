@@ -1,12 +1,15 @@
 from unittest.mock import patch
 
+import pytest
 from google.genai.types import GenerateContentConfig, LiveConnectConfig
 from pipecat.adapters.schemas.function_schema import FunctionSchema
 from pipecat.adapters.schemas.tools_schema import ToolsSchema
+from pipecat.adapters.services.gemini_live_adapter import GeminiLiveLLMAdapter
 
 from api.services.configuration.registry import ServiceProviders
 from api.services.pipecat.gemini_json_schema_adapter import (
     DograhGeminiJSONSchemaAdapter,
+    DograhGeminiLiveJSONSchemaAdapter,
 )
 from api.services.pipecat.realtime.gemini_live import DograhGeminiLiveLLMService
 from api.services.pipecat.realtime.gemini_live_vertex import (
@@ -98,13 +101,13 @@ def test_google_llm_service_factory_uses_dograh_service_class():
     ) as mock_service:
         result = create_llm_service_from_provider(
             provider=ServiceProviders.GOOGLE.value,
-            model="gemini-2.5-flash",
+            model="gemini-3.5-flash",
             api_key="test-api-key",
         )
 
     assert result is mock_service.return_value
     assert mock_service.call_args.kwargs["api_key"] == "test-api-key"
-    assert mock_service.call_args.kwargs["settings"].model == "gemini-2.5-flash"
+    assert mock_service.call_args.kwargs["settings"].model == "gemini-3.5-flash"
 
 
 def test_google_vertex_llm_service_factory_uses_dograh_service_class():
@@ -127,10 +130,34 @@ def test_google_vertex_llm_service_factory_uses_dograh_service_class():
 
 
 def test_gemini_live_service_classes_use_dograh_gemini_adapter_class():
-    assert DograhGeminiLiveLLMService.adapter_class is DograhGeminiJSONSchemaAdapter
+    assert DograhGeminiLiveLLMService.adapter_class is DograhGeminiLiveJSONSchemaAdapter
     # Vertex Live inherits adapter_class from DograhGeminiLiveLLMService via MRO.
     assert (
-        DograhGeminiLiveVertexLLMService.adapter_class is DograhGeminiJSONSchemaAdapter
+        DograhGeminiLiveVertexLLMService.adapter_class
+        is DograhGeminiLiveJSONSchemaAdapter
+    )
+    # The Live adapter must keep upstream's tool-call-to-text conversion for
+    # seeded contexts (GeminiLiveLLMAdapter) alongside the JSON Schema fix.
+    assert issubclass(DograhGeminiLiveJSONSchemaAdapter, GeminiLiveLLMAdapter)
+    assert issubclass(DograhGeminiLiveJSONSchemaAdapter, DograhGeminiJSONSchemaAdapter)
+    assert (
+        DograhGeminiLiveJSONSchemaAdapter.to_provider_tools_format
+        is DograhGeminiJSONSchemaAdapter.to_provider_tools_format
+    )
+
+
+def test_vertex_live_inherits_dograh_node_transition_lifecycle():
+    assert (
+        DograhGeminiLiveVertexLLMService._requires_node_transition_context_aggregation
+        is DograhGeminiLiveLLMService._requires_node_transition_context_aggregation
+    )
+    assert (
+        DograhGeminiLiveVertexLLMService._run_or_defer_function_calls
+        is DograhGeminiLiveLLMService._run_or_defer_function_calls
+    )
+    assert (
+        DograhGeminiLiveVertexLLMService._reconnect_for_node_transition
+        is DograhGeminiLiveLLMService._reconnect_for_node_transition
     )
 
 
@@ -158,3 +185,61 @@ def test_gemini_live_config_accepts_json_schema_tools():
     # Gemini Live validates tools through LiveConnectConfig rather than
     # GenerateContentConfig; it must also accept the raw JSON Schema payload.
     LiveConnectConfig(tools=tools)
+
+
+@pytest.mark.parametrize("same_connection", [False, True])
+def test_signature_scopes_preserve_own_history_and_import_foreign_tools(
+    same_connection,
+):
+    from pipecat.processors.aggregators.llm_context import LLMContext
+    from pipecat.services.settings import LLMSettings
+
+    own = DograhGeminiJSONSchemaAdapter()
+    own.signature_scope = "primary-connection"
+    own.signature_settings = LLMSettings(model="primary-model")
+    backup = DograhGeminiJSONSchemaAdapter()
+    backup.signature_scope = (
+        own.signature_scope if same_connection else "backup-connection"
+    )
+    backup.signature_settings = LLMSettings(
+        model="backup-model" if same_connection else "primary-model"
+    )
+    signature = own.create_llm_specific_message(
+        {
+            "type": "thought_signature",
+            "signature": b"original-signature",
+            "bookmark": {"function_call": "call-1"},
+        }
+    )
+    messages = [
+        {"role": "user", "content": "book"},
+        {
+            "role": "assistant",
+            "tool_calls": [
+                {
+                    "id": "call-1",
+                    "type": "function",
+                    "function": {"name": "book", "arguments": "{}"},
+                }
+            ],
+        },
+        signature,
+        {"role": "tool", "tool_call_id": "call-1", "content": "Booked"},
+    ]
+    context = LLMContext(messages=messages)
+    assert signature in own.get_messages(context)
+    assert signature not in backup.get_messages(context)
+    original = own.get_llm_invocation_params(context)["messages"]
+    imported = backup.get_llm_invocation_params(context)["messages"]
+    assert any(
+        part.thought_signature == b"original-signature"
+        for message in original
+        for part in message.parts or []
+    )
+    assert any(
+        part.function_call
+        and part.thought_signature == b"skip_thought_signature_validator"
+        for message in imported
+        for part in message.parts or []
+    )
+    assert context.messages == messages

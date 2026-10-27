@@ -4,6 +4,8 @@ from typing import Any
 
 from pipecat.adapters.schemas.tools_schema import AdapterType, ToolsSchema
 from pipecat.adapters.services.gemini_adapter import GeminiLLMAdapter
+from pipecat.adapters.services.gemini_live_adapter import GeminiLiveLLMAdapter
+from pipecat.services.settings import LLMSettings
 
 
 class DograhGeminiJSONSchemaAdapter(GeminiLLMAdapter):
@@ -16,6 +18,19 @@ class DograhGeminiJSONSchemaAdapter(GeminiLLMAdapter):
     by that model. ``parameters_json_schema`` is the Google GenAI field intended
     for full JSON Schema payloads.
     """
+
+    signature_scope: str | None = None
+    signature_settings: LLMSettings | None = None
+
+    @property
+    def id_for_llm_specific_messages(self) -> str:
+        # Universal text/tool history can cross connections, opaque signatures
+        # cannot. Pipecat filters messages by this ID and supplies its existing
+        # placeholder signatures when importing another model's tool history.
+        if self.signature_scope:
+            model = self.signature_settings.model if self.signature_settings else ""
+            return f"google/{self.signature_scope}/{model}"
+        return super().id_for_llm_specific_messages
 
     def to_provider_tools_format(
         self, tools_schema: ToolsSchema
@@ -37,3 +52,16 @@ class DograhGeminiJSONSchemaAdapter(GeminiLLMAdapter):
             custom_gemini_tools = tools_schema.custom_tools.get(AdapterType.GEMINI, [])
 
         return formatted_standard_tools + custom_gemini_tools
+
+
+class DograhGeminiLiveJSONSchemaAdapter(
+    GeminiLiveLLMAdapter, DograhGeminiJSONSchemaAdapter
+):
+    """Gemini Live adapter with the JSON Schema tool-parameter fix.
+
+    Combines :class:`GeminiLiveLLMAdapter` (tool calls and results converted to
+    text, which is all Gemini Live's API accepts when seeding a session) with
+    the ``parameters_json_schema`` tool formatting above.
+    """
+
+    pass

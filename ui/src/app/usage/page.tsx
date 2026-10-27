@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Download, Globe } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Download, Globe } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import TimezoneSelect, { type ITimezoneOption } from 'react-timezone-select';
@@ -11,10 +11,10 @@ import type { DailyUsageBreakdownResponse, OrganizationPreferences, UsageHistory
 import { CallTypeCell } from '@/components/CallTypeCell';
 import { DailyUsageTable } from '@/components/DailyUsageTable';
 import { FilterBuilder } from '@/components/filters/FilterBuilder';
+import { PageLayout, PageSection } from '@/components/layout/PageLayout';
 import { MediaPreviewButton, MediaPreviewDialog } from '@/components/MediaPreviewDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Table,
     TableBody,
@@ -24,20 +24,20 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { useUserConfig } from '@/context/UserConfigContext';
+import { useDispositionCodes } from '@/hooks/useDispositionCodes';
 import { detailFromError } from '@/lib/apiError';
 import { useAuth } from '@/lib/auth';
-import { usageFilterAttributes } from '@/lib/filterAttributes';
+import { formatDateTime, getLocalTimezone } from '@/lib/dateTime';
+import { usageFilterAttributes, withDispositionCodeOptions } from '@/lib/filterAttributes';
 import { decodeFiltersFromURL, encodeFiltersToURL } from '@/lib/filters';
 import type { ActiveFilter, DateRangeValue, FilterAttribute, NumberFilterOption } from '@/types/filters';
 
-// Get local timezone
-const getLocalTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-const buildAgentFilterAttributes = (
+const buildUsageFilterAttributes = (
     agentOptions: NumberFilterOption[] | null,
-    isLoadingAgentOptions: boolean
+    isLoadingAgentOptions: boolean,
+    dispositionCodes: string[]
 ): FilterAttribute[] => {
-    return usageFilterAttributes.map(attribute => {
+    return withDispositionCodeOptions(usageFilterAttributes, dispositionCodes).map(attribute => {
         if (attribute.id !== 'workflowId') {
             return attribute;
         }
@@ -75,12 +75,22 @@ export default function UsagePage() {
         return pageParam ? parseInt(pageParam, 10) : 1;
     });
     const [isExecutingFilters, setIsExecutingFilters] = useState(false);
+    // Sort state (initialized from URL). Sorting is server-side because the
+    // listing is paginated — sorting the current page client-side would only
+    // reorder the 50 rows in hand.
+    const [sortBy, setSortBy] = useState<string | null>(() => {
+        return searchParams.get('sort_by') || null;
+    });
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(() => {
+        return searchParams.get('sort_order') === 'asc' ? 'asc' : 'desc';
+    });
     const [isDownloadingReport, setIsDownloadingReport] = useState(false);
     const [agentFilterOptions, setAgentFilterOptions] = useState<NumberFilterOption[] | null>(null);
     const [isLoadingAgentFilterOptions, setIsLoadingAgentFilterOptions] = useState(false);
+    const { codes: dispositionCodes } = useDispositionCodes();
     const availableUsageFilterAttributes = useMemo(
-        () => buildAgentFilterAttributes(agentFilterOptions, isLoadingAgentFilterOptions),
-        [agentFilterOptions, isLoadingAgentFilterOptions]
+        () => buildUsageFilterAttributes(agentFilterOptions, isLoadingAgentFilterOptions, dispositionCodes),
+        [agentFilterOptions, isLoadingAgentFilterOptions, dispositionCodes]
     );
 
     // Daily usage breakdown state (only for paid orgs)
@@ -143,7 +153,12 @@ export default function UsagePage() {
     };
 
     // Fetch usage history
-    const fetchUsageHistory = useCallback(async (page: number, filters?: ActiveFilter[]) => {
+    const fetchUsageHistory = useCallback(async (
+        page: number,
+        filters?: ActiveFilter[],
+        sortByParam?: string | null,
+        sortOrderParam?: 'asc' | 'desc'
+    ) => {
         if (!auth.isAuthenticated) return;
         setIsLoadingHistory(true);
         try {
@@ -152,6 +167,8 @@ export default function UsagePage() {
                     page,
                     limit: 50,
                     ...buildUsageQueryParams(filters),
+                    ...(sortByParam && { sort_by: sortByParam }),
+                    ...(sortOrderParam && { sort_order: sortOrderParam }),
                 },
             });
 
@@ -222,7 +239,7 @@ export default function UsagePage() {
         setPreferencesLoading(true);
         try {
             const response = await getPreferencesApiV1OrganizationsPreferencesGet();
-            const nextPreferences = response.data || {};
+            const nextPreferences: OrganizationPreferences = response.data || {};
             setPreferences(nextPreferences);
             setSelectedTimezone(nextPreferences.timezone || localTimezone);
         } catch (error) {
@@ -273,7 +290,6 @@ export default function UsagePage() {
             const tzValue = typeof timezone === 'string' ? timezone : timezone.value;
             const response = await savePreferencesApiV1OrganizationsPreferencesPut({
                 body: {
-                    ...preferences,
                     timezone: tzValue,
                 },
             });
@@ -324,9 +340,9 @@ export default function UsagePage() {
     // Initial load - fetch when auth becomes available
     useEffect(() => {
         if (auth.isAuthenticated) {
-            fetchUsageHistory(currentPage, appliedFilters);
+            fetchUsageHistory(currentPage, appliedFilters, sortBy, sortOrder);
         }
-    }, [auth.isAuthenticated, currentPage, appliedFilters, fetchUsageHistory]);
+    }, [auth.isAuthenticated, currentPage, appliedFilters, sortBy, sortOrder, fetchUsageHistory]);
 
     // Fetch daily usage when organizationPricing becomes available
     useEffect(() => {
@@ -336,11 +352,21 @@ export default function UsagePage() {
     }, [auth.isAuthenticated, organizationPricing, fetchDailyUsage]);
 
     // Update URL with query parameters
-    const updateUrlParams = useCallback((params: { page?: number; filters?: ActiveFilter[] }) => {
+    const updateUrlParams = useCallback((params: {
+        page?: number;
+        filters?: ActiveFilter[];
+        sortBy?: string | null;
+        sortOrder?: 'asc' | 'desc';
+    }) => {
         const newParams = new URLSearchParams();
 
         if (params.page !== undefined) {
             newParams.set('page', params.page.toString());
+        }
+
+        if (params.sortBy) {
+            newParams.set('sort_by', params.sortBy);
+            newParams.set('sort_order', params.sortOrder || 'desc');
         }
 
         // Add filters to URL if present
@@ -359,10 +385,10 @@ export default function UsagePage() {
         setIsExecutingFilters(true);
         setCurrentPage(1); // Reset to first page when applying filters
         setAppliedFilters(activeFilters);
-        updateUrlParams({ page: 1, filters: activeFilters });
-        await fetchUsageHistory(1, activeFilters);
+        updateUrlParams({ page: 1, filters: activeFilters, sortBy, sortOrder });
+        await fetchUsageHistory(1, activeFilters, sortBy, sortOrder);
         setIsExecutingFilters(false);
-    }, [activeFilters, fetchUsageHistory, updateUrlParams]);
+    }, [activeFilters, fetchUsageHistory, updateUrlParams, sortBy, sortOrder]);
 
     const handleFiltersChange = useCallback((filters: ActiveFilter[]) => {
         setActiveFilters(filters);
@@ -373,39 +399,36 @@ export default function UsagePage() {
         setCurrentPage(1);
         setActiveFilters([]);
         setAppliedFilters([]);
-        updateUrlParams({ page: 1, filters: [] }); // Clear filters from URL
-        await fetchUsageHistory(1, []); // Fetch all runs without filters
+        updateUrlParams({ page: 1, filters: [], sortBy, sortOrder }); // Clear filters from URL
+        await fetchUsageHistory(1, [], sortBy, sortOrder); // Fetch all runs without filters
         setIsExecutingFilters(false);
-    }, [fetchUsageHistory, updateUrlParams]);
+    }, [fetchUsageHistory, updateUrlParams, sortBy, sortOrder]);
 
     // Handle page change
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
-        updateUrlParams({ page: newPage, filters: appliedFilters });
-        fetchUsageHistory(newPage, appliedFilters);
+        updateUrlParams({ page: newPage, filters: appliedFilters, sortBy, sortOrder });
+        fetchUsageHistory(newPage, appliedFilters, sortBy, sortOrder);
     };
+
+    // Toggle sort direction on repeat clicks, otherwise start descending.
+    // The fetch effect above picks up the new state; page resets to 1 because
+    // the ordering of every page changes.
+    const handleSort = useCallback((field: string) => {
+        const newSortOrder = sortBy === field && sortOrder === 'desc' ? 'asc' : 'desc';
+        setSortBy(field);
+        setSortOrder(newSortOrder);
+        setCurrentPage(1);
+        updateUrlParams({ page: 1, filters: appliedFilters, sortBy: field, sortOrder: newSortOrder });
+    }, [sortBy, sortOrder, appliedFilters, updateUrlParams]);
 
     // Handle row click to navigate to workflow run
     const handleRowClick = (run: WorkflowRunUsageResponse) => {
         router.push(`/workflow/${run.workflow_id}/run/${run.id}`);
     };
 
-    // Format datetime for display with timezone support
-    const formatDateTime = (dateString: string) => {
-        const date = new Date(dateString);
-        const tzValue = typeof selectedTimezone === 'string' ? selectedTimezone : selectedTimezone.value;
-        // Use local timezone if none selected (during loading)
-        const effectiveTz = tzValue || localTimezone;
-        return date.toLocaleString('en-US', {
-            timeZone: effectiveTz,
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-        });
-    };
+    const timezoneValue = typeof selectedTimezone === 'string' ? selectedTimezone : selectedTimezone.value;
+    const effectiveTimezone = timezoneValue || localTimezone;
 
     // Format duration for display
     const formatDuration = (seconds: number) => {
@@ -417,101 +440,94 @@ export default function UsagePage() {
     };
 
     return (
-        <div className="container mx-auto p-6 space-y-6">
-            <div>
-                <div className="flex justify-between items-start">
-                    <div>
-                        <h1 className="text-3xl font-bold mb-2">Agent Runs</h1>
-                        <p className="text-muted-foreground">See all your Agent Runs across all Voice Agents. You can use filters to filter out required Agent Runs.</p>
-                    </div>
-                        <div className="flex items-center gap-2">
-                            <Globe className="h-4 w-4 text-muted-foreground" />
-                            <div className="w-[300px]">
-                                <TimezoneSelect
-                                    instanceId={timezoneSelectId}
-                                    value={selectedTimezone}
-                                    onChange={handleTimezoneChange}
-                                    isDisabled={savingTimezone || preferencesLoading}
-                                    placeholder={preferencesLoading ? "Loading..." : "Select timezone"}
-                                    styles={{
-                                        control: (base, state) => ({
-                                            ...base,
-                                            minHeight: '36px',
-                                            fontSize: '14px',
-                                            backgroundColor: 'var(--background)',
-                                            borderColor: state.isFocused ? 'var(--ring)' : 'var(--border)',
-                                            boxShadow: state.isFocused ? '0 0 0 2px color-mix(in srgb, var(--ring) 20%, transparent)' : 'none',
-                                            '&:hover': {
-                                                borderColor: 'var(--border)',
-                                            },
-                                        }),
-                                        menu: (base) => ({
-                                            ...base,
-                                            zIndex: 9999,
-                                            backgroundColor: 'var(--popover)',
-                                            border: '1px solid var(--border)',
-                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-                                        }),
-                                        menuList: (base) => ({
-                                            ...base,
-                                            backgroundColor: 'var(--popover)',
-                                            padding: 0,
-                                        }),
-                                        option: (base, state) => ({
-                                            ...base,
-                                            backgroundColor: state.isSelected
-                                                ? 'var(--accent)'
-                                                : state.isFocused
-                                                ? 'var(--accent)'
-                                                : 'var(--popover)',
-                                            color: 'var(--foreground)',
-                                            cursor: 'pointer',
-                                            '&:active': {
-                                                backgroundColor: 'var(--accent)',
-                                            },
-                                        }),
-                                        singleValue: (base) => ({
-                                            ...base,
-                                            color: 'var(--foreground)',
-                                        }),
-                                        input: (base) => ({
-                                            ...base,
-                                            color: 'var(--foreground)',
-                                        }),
-                                        placeholder: (base) => ({
-                                            ...base,
-                                            color: 'var(--muted-foreground)',
-                                        }),
-                                        indicatorSeparator: (base) => ({
-                                            ...base,
-                                            backgroundColor: 'var(--border)',
-                                        }),
-                                        dropdownIndicator: (base) => ({
-                                            ...base,
-                                            color: 'var(--muted-foreground)',
-                                            '&:hover': {
-                                                color: 'var(--foreground)',
-                                            },
-                                        }),
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    </div>
+        <PageLayout title="Agent Runs"
+            description="See all your Agent Runs across all Voice Agents. You can use filters to filter out required Agent Runs."
+            actions={<div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+                <div className="w-[260px] sm:w-[300px]">
+                    <TimezoneSelect
+                        instanceId={timezoneSelectId}
+                        value={selectedTimezone}
+                        onChange={handleTimezoneChange}
+                        isDisabled={savingTimezone || preferencesLoading}
+                        placeholder={preferencesLoading ? "Loading..." : "Select timezone"}
+                        styles={{
+                            control: (base, state) => ({
+                                ...base,
+                                minHeight: '36px',
+                                fontSize: '14px',
+                                backgroundColor: 'var(--background)',
+                                borderColor: state.isFocused ? 'var(--ring)' : 'var(--border)',
+                                boxShadow: state.isFocused ? '0 0 0 2px color-mix(in srgb, var(--ring) 20%, transparent)' : 'none',
+                                '&:hover': {
+                                    borderColor: 'var(--border)',
+                                },
+                            }),
+                            menu: (base) => ({
+                                ...base,
+                                zIndex: 9999,
+                                backgroundColor: 'var(--popover)',
+                                border: '1px solid var(--border)',
+                                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                            }),
+                            menuList: (base) => ({
+                                ...base,
+                                backgroundColor: 'var(--popover)',
+                                padding: 0,
+                            }),
+                            option: (base, state) => ({
+                                ...base,
+                                backgroundColor: state.isSelected
+                                    ? 'var(--accent)'
+                                    : state.isFocused
+                                        ? 'var(--accent)'
+                                        : 'var(--popover)',
+                                color: 'var(--foreground)',
+                                cursor: 'pointer',
+                                '&:active': {
+                                    backgroundColor: 'var(--accent)',
+                                },
+                            }),
+                            singleValue: (base) => ({
+                                ...base,
+                                color: 'var(--foreground)',
+                            }),
+                            input: (base) => ({
+                                ...base,
+                                color: 'var(--foreground)',
+                            }),
+                            placeholder: (base) => ({
+                                ...base,
+                                color: 'var(--muted-foreground)',
+                            }),
+                            indicatorSeparator: (base) => ({
+                                ...base,
+                                backgroundColor: 'var(--border)',
+                            }),
+                            dropdownIndicator: (base) => ({
+                                ...base,
+                                color: 'var(--muted-foreground)',
+                                '&:hover': {
+                                    color: 'var(--foreground)',
+                                },
+                            }),
+                        }}
+                    />
                 </div>
+            </div>}>
+            {/* Daily Usage Table - Only for paid organizations */}
+            {organizationPricing?.price_per_second_usd && (
+                <div>
+                    <DailyUsageTable
+                        data={dailyUsage}
+                        isLoading={isLoadingDaily}
+                    />
+                </div>
+            )}
 
-                {/* Daily Usage Table - Only for paid organizations */}
-                {organizationPricing?.price_per_second_usd && (
-                    <div className="mb-6">
-                        <DailyUsageTable
-                            data={dailyUsage}
-                            isLoading={isLoadingDaily}
-                        />
-                    </div>
-                )}
-
-                {/* Filter Builder */}
-                <div className="mb-6 space-y-3">
+            {/* Usage History */}
+            <PageSection title="All Runs" description="Every agent run across your organization, with usage details"
+                toolbar={<div className="space-y-3">
                     <FilterBuilder
                         availableAttributes={availableUsageFilterAttributes}
                         activeFilters={activeFilters}
@@ -533,153 +549,151 @@ export default function UsagePage() {
                             </Button>
                         </div>
                     )}
-                </div>
+                </div>}>
 
-                {/* Usage History */}
-                <Card>
-                    <CardHeader>
-                        <div className="flex justify-between items-start">
-                            <div className="space-y-1.5">
-                                <CardTitle>All Runs</CardTitle>
-                                <CardDescription>
-                                    Every agent run across your organization, with usage details
-                                </CardDescription>
-                            </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        {isLoadingHistory ? (
-                            <div className="animate-pulse space-y-3">
-                                {[...Array(5)].map((_, i) => (
-                                    <div key={i} className="h-12 bg-muted rounded"></div>
-                                ))}
-                            </div>
-                        ) : usageHistory && usageHistory.runs.length > 0 ? (
-                            <>
-                                <div className="bg-card border rounded-lg overflow-hidden shadow-sm">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow className="bg-muted/50">
-                                                <TableHead className="font-semibold">Run ID</TableHead>
-                                                <TableHead className="font-semibold">Agent Name</TableHead>
-                                                <TableHead className="font-semibold">Call Type</TableHead>
-                                                <TableHead className="font-semibold">Phone Number</TableHead>
-                                                <TableHead className="font-semibold">Disposition</TableHead>
-                                                <TableHead className="font-semibold">Date</TableHead>
-                                                <TableHead className="font-semibold text-right">Duration</TableHead>
-                                                {organizationPricing?.price_per_second_usd && (
-                                                    <TableHead className="font-semibold text-right">Cost (USD)</TableHead>
+                {isLoadingHistory ? (
+                    <div className="animate-pulse space-y-3">
+                        {[...Array(5)].map((_, i) => (
+                            <div key={i} className="h-12 bg-muted rounded"></div>
+                        ))}
+                    </div>
+                ) : usageHistory && usageHistory.runs.length > 0 ? (
+                    <>
+                        <div className="bg-card border rounded-lg overflow-hidden shadow-sm">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="bg-muted/50">
+                                        <TableHead className="font-semibold">Run ID</TableHead>
+                                        <TableHead className="font-semibold">Agent Name</TableHead>
+                                        <TableHead className="font-semibold">Call Type</TableHead>
+                                        <TableHead className="font-semibold">Phone Number</TableHead>
+                                        <TableHead className="font-semibold">Disposition</TableHead>
+                                        <TableHead className="font-semibold">Date</TableHead>
+                                        <TableHead
+                                            className="font-semibold text-right cursor-pointer hover:bg-muted/50 select-none"
+                                            onClick={() => handleSort('duration')}
+                                        >
+                                            <div className="flex items-center justify-end gap-1">
+                                                Duration
+                                                {sortBy === 'duration' ? (
+                                                    sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />
+                                                ) : (
+                                                    <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
                                                 )}
-                                                <TableHead className="font-semibold">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {usageHistory.runs.map((run) => (
-                                                <TableRow
-                                                    key={run.id}
-                                                >
-                                                    <TableCell
-                                                        className="font-mono text-sm cursor-pointer hover:underline"
-                                                        onClick={() => handleRowClick(run)}
-                                                    >
-                                                        #{run.id}
-                                                    </TableCell>
-                                                    <TableCell>{run.workflow_name || 'Unknown'}</TableCell>
-                                                    <TableCell>
-                                                        <CallTypeCell mode={run.mode} callType={run.call_type} />
-                                                    </TableCell>
-                                                    <TableCell className="text-sm">
-                                                        {(run.call_type === 'inbound'
-                                                            ? run.caller_number
-                                                            : run.called_number) || '-'}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {run.disposition ? (
-                                                            <Badge variant="default">
-                                                                {run.disposition}
-                                                            </Badge>
-                                                        ) : (
-                                                            <span className="text-sm text-muted-foreground">-</span>
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>{formatDateTime(run.created_at)}</TableCell>
-                                                    <TableCell className="text-right">
-                                                        {formatDuration(run.call_duration_seconds)}
-                                                    </TableCell>
-                                                    {organizationPricing?.price_per_second_usd && (
-                                                        <TableCell className="text-right font-medium">
-                                                            {run.charge_usd !== undefined && run.charge_usd !== null
-                                                                ? `$${run.charge_usd.toFixed(2)}`
-                                                                : '-'
-                                                            }
-                                                        </TableCell>
-                                                    )}
-                                                    <TableCell>
-                                                        <MediaPreviewButton
-                                                            recordingUrl={run.recording_url}
-                                                            transcriptUrl={run.transcript_url}
-                                                            runId={run.id}
-                                                            onOpenPreview={mediaPreview.openPreview}
-                                                        />
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-
-                                {/* Summary */}
-                                {appliedFilters.length > 0 && (
-                                    <div className="mt-4 p-3 bg-muted rounded-md">
-                                        <p className="text-sm text-muted-foreground">
-                                            Total for filtered period: <span className="font-semibold text-foreground">
-                                                {usageHistory.total_dograh_tokens.toLocaleString()} Dograh Tokens
-                                            </span>
-                                            {' • '}
-                                            <span className="font-semibold text-foreground">
-                                                {formatDuration(usageHistory.total_duration_seconds)}
-                                            </span>
-                                        </p>
-                                    </div>
-                                )}
-
-                                {/* Pagination */}
-                                {usageHistory.total_pages > 1 && (
-                                    <div className="flex items-center justify-between mt-6">
-                                        <p className="text-sm text-muted-foreground">
-                                            Page {usageHistory.page} of {usageHistory.total_pages} ({usageHistory.total_count} total runs)
-                                        </p>
-                                        <div className="flex gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handlePageChange(currentPage - 1)}
-                                                disabled={currentPage === 1}
+                                            </div>
+                                        </TableHead>
+                                        {organizationPricing?.price_per_second_usd && (
+                                            <TableHead className="font-semibold text-right">Cost (USD)</TableHead>
+                                        )}
+                                        <TableHead className="font-semibold">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {usageHistory.runs.map((run) => (
+                                        <TableRow
+                                            key={run.id}
+                                        >
+                                            <TableCell
+                                                className="font-mono text-sm cursor-pointer hover:underline"
+                                                onClick={() => handleRowClick(run)}
                                             >
-                                                <ChevronLeft className="h-4 w-4" />
-                                                Previous
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handlePageChange(currentPage + 1)}
-                                                disabled={currentPage === usageHistory.total_pages}
-                                            >
-                                                Next
-                                                <ChevronRight className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )}
-                            </>
-                        ) : (
-                            <p className="text-center py-8 text-muted-foreground">No runs found</p>
+                                                #{run.id}
+                                            </TableCell>
+                                            <TableCell>{run.workflow_name || 'Unknown'}</TableCell>
+                                            <TableCell>
+                                                <CallTypeCell mode={run.mode} callType={run.call_type} />
+                                            </TableCell>
+                                            <TableCell className="text-sm">
+                                                {(run.call_type === 'inbound'
+                                                    ? run.caller_number
+                                                    : run.called_number) || '-'}
+                                            </TableCell>
+                                            <TableCell>
+                                                {run.disposition ? (
+                                                    <Badge variant="default">
+                                                        {run.disposition}
+                                                    </Badge>
+                                                ) : (
+                                                    <span className="text-sm text-muted-foreground">-</span>
+                                                )}
+                                            </TableCell>
+                                            <TableCell>{formatDateTime(run.created_at, effectiveTimezone)}</TableCell>
+                                            <TableCell className="text-right">
+                                                {formatDuration(run.call_duration_seconds)}
+                                            </TableCell>
+                                            {organizationPricing?.price_per_second_usd && (
+                                                <TableCell className="text-right font-medium">
+                                                    {run.charge_usd !== undefined && run.charge_usd !== null
+                                                        ? `$${run.charge_usd.toFixed(2)}`
+                                                        : '-'
+                                                    }
+                                                </TableCell>
+                                            )}
+                                            <TableCell>
+                                                <MediaPreviewButton
+                                                    recordingUrl={run.recording_url}
+                                                    transcriptUrl={run.transcript_url}
+                                                    runId={run.id}
+                                                    onOpenPreview={mediaPreview.openPreview}
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+
+                        {/* Summary */}
+                        {appliedFilters.length > 0 && (
+                            <div className="mt-4 p-3 bg-muted rounded-md">
+                                <p className="text-sm text-muted-foreground">
+                                    Total for filtered period: <span className="font-semibold text-foreground">
+                                        {usageHistory.total_dograh_tokens.toLocaleString()} Dograh Tokens
+                                    </span>
+                                    {' • '}
+                                    <span className="font-semibold text-foreground">
+                                        {formatDuration(usageHistory.total_duration_seconds)}
+                                    </span>
+                                </p>
+                            </div>
                         )}
-                    </CardContent>
-                </Card>
 
-                {/* Media Preview Dialog */}
-                {mediaPreview.dialog}
-        </div>
+                        {/* Pagination */}
+                        {usageHistory.total_pages > 1 && (
+                            <div className="flex items-center justify-between mt-6">
+                                <p className="text-sm text-muted-foreground">
+                                    Page {usageHistory.page} of {usageHistory.total_pages} ({usageHistory.total_count} total runs)
+                                </p>
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        disabled={currentPage === 1}
+                                    >
+                                        <ChevronLeft className="h-4 w-4" />
+                                        Previous
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        disabled={currentPage === usageHistory.total_pages}
+                                    >
+                                        Next
+                                        <ChevronRight className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <p className="text-center py-8 text-muted-foreground">No runs found</p>
+                )}
+            </PageSection>
+
+            {/* Media Preview Dialog */}
+            {mediaPreview.dialog}
+        </PageLayout>
     );
 }

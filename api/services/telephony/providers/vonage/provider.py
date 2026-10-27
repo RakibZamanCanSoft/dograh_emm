@@ -4,7 +4,6 @@ Vonage (Nexmo) implementation of the TelephonyProvider interface.
 
 import hashlib
 import json
-import random
 import time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
@@ -14,13 +13,16 @@ from fastapi import HTTPException, Response
 from loguru import logger
 
 from api.enums import TelephonyCallStatus, WorkflowRunMode
+from api.services.telephony import ws_auth
 from api.services.telephony.base import (
     CallInitiationResult,
     NormalizedInboundData,
+    ProviderPhoneNumberLookupError,
     ProviderSyncResult,
     TelephonyProvider,
 )
 from api.utils.common import get_backend_endpoints
+from api.utils.telephony_address import normalize_telephony_address
 
 if TYPE_CHECKING:
     from fastapi import WebSocket
@@ -54,6 +56,7 @@ class VonageProvider(TelephonyProvider):
         self.private_key = config.get("private_key")
         self.signature_secret = config.get("signature_secret")
         self.from_numbers = config.get("from_numbers", [])
+        self.default_from_number = config.get("default_from_number")
 
         # Handle both single number (string) and multiple numbers (list)
         if isinstance(self.from_numbers, str):
@@ -93,9 +96,7 @@ class VonageProvider(TelephonyProvider):
 
         endpoint = f"{self.base_url}/v1/calls"
 
-        # Use provided from_number or select a random one
-        if from_number is None:
-            from_number = random.choice(self.from_numbers)
+        from_number = self.select_from_number(from_number)
         # Remove '+' prefix for Vonage
         from_number = from_number.replace("+", "")
         to_number = to_number.replace("+", "")
@@ -207,13 +208,16 @@ class VonageProvider(TelephonyProvider):
             return False
 
     async def get_webhook_response(
-        self, workflow_id: int, user_id: int, workflow_run_id: int
+        self, workflow_id: int, organization_id: int, workflow_run_id: int
     ) -> str:
         """
         Generate NCCO response for starting a call session.
         NCCO (Nexmo Call Control Objects) is JSON-based, unlike TwiML which is XML.
         """
         _, wss_backend_endpoint = await get_backend_endpoints()
+        ws_url = ws_auth.build_media_ws_url(
+            wss_backend_endpoint, workflow_id, organization_id, workflow_run_id
+        )
 
         # NCCO for WebSocket connection
         ncco = [
@@ -222,7 +226,7 @@ class VonageProvider(TelephonyProvider):
                 "endpoint": [
                     {
                         "type": "websocket",
-                        "uri": f"{wss_backend_endpoint}/api/v1/telephony/ws/{workflow_id}/{user_id}/{workflow_run_id}",
+                        "uri": ws_url,
                         "content-type": "audio/l16;rate=16000",  # 16kHz Linear PCM
                         "headers": {},
                     }
@@ -323,7 +327,7 @@ class VonageProvider(TelephonyProvider):
         self,
         websocket: "WebSocket",
         workflow_id: int,
-        user_id: int,
+        organization_id: int,
         workflow_run_id: int,
     ) -> None:
         """
@@ -338,14 +342,17 @@ class VonageProvider(TelephonyProvider):
 
         try:
             # Get workflow run to extract call UUID
-            workflow_run = await db_client.get_workflow_run(workflow_run_id)
+            workflow_run = await db_client.get_workflow_run(
+                workflow_run_id, organization_id=organization_id
+            )
             if not workflow_run:
                 logger.error(f"Workflow run {workflow_run_id} not found")
                 await websocket.close(code=4404, reason="Workflow run not found")
                 return
 
-            # Get workflow for organization info
-            workflow = await db_client.get_workflow(workflow_id, user_id)
+            workflow = await db_client.get_workflow(
+                workflow_id, organization_id=organization_id
+            )
             if not workflow:
                 logger.error(f"Workflow {workflow_id} not found")
                 await websocket.close(code=4404, reason="Workflow not found")
@@ -392,7 +399,7 @@ class VonageProvider(TelephonyProvider):
                 provider_name=self.PROVIDER_NAME,
                 workflow_id=workflow_id,
                 workflow_run_id=workflow_run_id,
-                user_id=user_id,
+                organization_id=organization_id,
                 call_id=call_uuid,
                 transport_kwargs={"call_uuid": call_uuid},
             )
@@ -675,6 +682,57 @@ class VonageProvider(TelephonyProvider):
             f"(triggered by address {address})"
         )
         return ProviderSyncResult(ok=True)
+
+    async def validate_phone_number(self, address: str) -> ProviderSyncResult:
+        """Verify PSTN ownership through Vonage's owned-numbers endpoint."""
+        normalized = normalize_telephony_address(address)
+        if normalized.address_type != "pstn":
+            return ProviderSyncResult(ok=True)
+        if not (self.api_key and self.api_secret):
+            raise ProviderPhoneNumberLookupError(
+                "Vonage API key and secret are required to validate "
+                "phone-number ownership"
+            )
+
+        expected = normalized.canonical.lstrip("+")
+        endpoint = "https://rest.nexmo.com/account/numbers"
+        params = {
+            "pattern": expected,
+            "search_pattern": 0,
+            "size": 100,
+        }
+        auth = aiohttp.BasicAuth(self.api_key, self.api_secret)
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(endpoint, params=params, auth=auth) as response:
+                    if response.status != 200:
+                        body = await response.text()
+                        raise ProviderPhoneNumberLookupError(
+                            f"Vonage API {response.status}: {body}",
+                            status_code=response.status,
+                        )
+                    data = await response.json()
+        except ProviderPhoneNumberLookupError:
+            raise
+        except Exception as e:
+            raise ProviderPhoneNumberLookupError(
+                f"Vonage phone-number lookup failed: {e}"
+            ) from e
+
+        owned = any(
+            str(item.get("msisdn") or item.get("number") or "").lstrip("+") == expected
+            for item in (data.get("numbers") or [])
+        )
+        if owned:
+            return ProviderSyncResult(ok=True)
+        return ProviderSyncResult(
+            ok=False,
+            message=(
+                f"Phone number {normalized.canonical} is not owned by this "
+                f"Vonage account ({self.api_key}). Add it in the Vonage "
+                "dashboard first."
+            ),
+        )
 
     async def start_inbound_stream(
         self,

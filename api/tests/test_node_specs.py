@@ -16,7 +16,9 @@ import pytest
 from pydantic import ValidationError
 
 from api.services.workflow.dto import (
+    PreCallFetchMode,
     ReactFlowDTO,
+    StartCallNodeData,
     all_node_type_names,
     get_node_data_model,
 )
@@ -28,11 +30,143 @@ from api.services.workflow.node_specs import (
     PropertyType,
     all_specs,
 )
+from api.services.workflow.workflow_graph import Node
 
 PLACEHOLDER_DESCRIPTION_PATTERN = re.compile(
     r"^\s*(todo|fixme|tbd|xxx|\.\.\.|placeholder|description|n/?a|\?)\s*\.?\s*$",
     re.IGNORECASE,
 )
+
+
+@pytest.mark.parametrize("threshold", [0, -1, 1.5, True, "3"])
+def test_greeting_interruption_threshold_requires_a_positive_integer(threshold):
+    with pytest.raises(ValidationError):
+        StartCallNodeData(name="Start", greeting_interrupt_min_words=threshold)
+
+
+def test_greeting_policy_defaults_and_runtime_round_trip():
+    data = StartCallNodeData(name="Start")
+    node = Node("start", "startCall", data)
+    assert node.allow_greeting_interrupt is True
+    assert node.greeting_interrupt_min_words == 2
+    configured = StartCallNodeData.model_validate(
+        {
+            **data.model_dump(),
+            "allow_greeting_interrupt": False,
+            "greeting_interrupt_min_words": 4,
+        }
+    )
+    node = Node("start", "startCall", configured)
+    assert node.allow_greeting_interrupt is False
+    assert node.greeting_interrupt_min_words == 4
+
+
+def test_greeting_policy_spec_order_and_visibility():
+    spec = next(spec for spec in all_specs() if spec.name == "startCall")
+    names = [prop.name for prop in spec.properties]
+    assert names.index("greeting_recording_id") < names.index(
+        "allow_greeting_interrupt"
+    )
+    assert names.index("allow_greeting_interrupt") < names.index(
+        "greeting_interrupt_min_words"
+    )
+    assert names.index("greeting_interrupt_min_words") < names.index("prompt")
+    threshold = next(
+        prop for prop in spec.properties if prop.name == "greeting_interrupt_min_words"
+    )
+    assert threshold.default == 2
+    assert threshold.min_value == 1
+    assert threshold.renderer_options.number_input.fractional is False
+    assert threshold.display_options.show == {"allow_greeting_interrupt": [True]}
+
+
+def test_greeting_recording_is_not_globally_required_by_sdk_specs():
+    spec = next(spec for spec in all_specs() if spec.name == "startCall")
+    recording = next(
+        prop for prop in spec.properties if prop.name == "greeting_recording_id"
+    )
+    assert recording.required is False
+    assert recording.display_options.show == {"greeting_type": ["audio"]}
+
+
+def test_legacy_pre_call_fetch_toggle_is_accepted_on_input():
+    """Old clients still send the pre-#638 boolean; it must not be ignored."""
+    enabled = StartCallNodeData.model_validate(
+        {"name": "Start", "prompt": "Open", "pre_call_fetch_enabled": True}
+    )
+    disabled = StartCallNodeData.model_validate(
+        {"name": "Start", "prompt": "Open", "pre_call_fetch_enabled": False}
+    )
+
+    assert enabled.pre_call_fetch_mode == PreCallFetchMode.always
+    assert disabled.pre_call_fetch_mode == PreCallFetchMode.disabled
+
+
+def test_legacy_pre_call_fetch_toggle_is_not_stored():
+    """The shim translates the flag; it never persists it back out."""
+    data = StartCallNodeData.model_validate(
+        {"name": "Start", "prompt": "Open", "pre_call_fetch_enabled": True}
+    )
+
+    assert "pre_call_fetch_enabled" not in data.model_dump()
+
+
+def test_pre_call_fetch_mode_defaults_to_disabled():
+    data = StartCallNodeData.model_validate({"name": "Start", "prompt": "Open"})
+
+    assert data.pre_call_fetch_mode == PreCallFetchMode.disabled
+
+
+@pytest.mark.parametrize("direction", ["inbound", "outbound", None])
+def test_legacy_pre_call_fetch_toggle_preserves_runtime_behavior(direction):
+    enabled_data = StartCallNodeData.model_validate(
+        {"name": "Start", "prompt": "Open", "pre_call_fetch_enabled": True}
+    )
+    disabled_data = StartCallNodeData.model_validate(
+        {"name": "Start", "prompt": "Open", "pre_call_fetch_enabled": False}
+    )
+
+    assert Node("enabled", "startCall", enabled_data).should_run_pre_call_fetch(
+        direction
+    )
+    assert not Node("disabled", "startCall", disabled_data).should_run_pre_call_fetch(
+        direction
+    )
+
+
+def test_explicit_pre_call_fetch_mode_wins_over_legacy_toggle():
+    data = StartCallNodeData.model_validate(
+        {
+            "name": "Start",
+            "prompt": "Open",
+            "pre_call_fetch_enabled": True,
+            "pre_call_fetch_mode": "inbound",
+        }
+    )
+
+    assert data.pre_call_fetch_mode == PreCallFetchMode.inbound
+
+
+@pytest.mark.parametrize(
+    ("mode", "direction", "expected"),
+    [
+        ("disabled", "inbound", False),
+        ("always", "inbound", True),
+        ("always", None, True),
+        ("inbound", "inbound", True),
+        ("inbound", "outbound", False),
+        ("outbound", "outbound", True),
+        ("outbound", "inbound", False),
+        ("outbound", None, False),
+    ],
+)
+def test_pre_call_fetch_mode_matches_call_direction(mode, direction, expected):
+    data = StartCallNodeData.model_validate(
+        {"name": "Start", "prompt": "Open", "pre_call_fetch_mode": mode}
+    )
+    node = Node("start", "startCall", data)
+
+    assert node.should_run_pre_call_fetch(direction) is expected
 
 
 def _walk_properties(props: list[PropertySpec], path: str = ""):
@@ -220,6 +354,8 @@ def test_all_registered_node_models_inherit_base_node_data():
                 "greeting_type",
                 "greeting",
                 "greeting_recording_id",
+                "allow_greeting_interrupt",
+                "greeting_interrupt_min_words",
                 "prompt",
                 "allow_interrupt",
                 "add_global_prompt",
@@ -230,7 +366,7 @@ def test_all_registered_node_models_inherit_base_node_data():
                 "extraction_variables",
                 "tool_uuids",
                 "document_uuids",
-                "pre_call_fetch_enabled",
+                "pre_call_fetch_mode",
                 "pre_call_fetch_url",
                 "pre_call_fetch_credential_uuid",
             ],
@@ -305,6 +441,8 @@ def test_all_registered_node_models_inherit_base_node_data():
                 "cost_tts_rate",
                 "cost_stt_rate",
                 "cost_telephony_rate",
+                "metadata_enabled",
+                "metadata_keys",
             ],
         ),
     ],
@@ -336,6 +474,18 @@ def test_tuner_cost_rate_fields_use_typed_renderer_options():
     )
 
 
+@pytest.mark.parametrize(
+    ("spec_name", "expected_docs_url"),
+    [
+        ("paygent", "https://docs.dograh.com/integrations/paygent"),
+        ("tuner", "https://docs.dograh.com/integrations/tuner"),
+    ],
+)
+def test_integration_node_docs_url(spec_name: str, expected_docs_url: str):
+    spec = next(spec for spec in all_specs() if spec.name == spec_name)
+    assert spec.docs_url == expected_docs_url
+
+
 def test_property_renderer_options_reject_unknown_hints():
     with pytest.raises(ValidationError):
         PropertyRendererOptions.model_validate({"layout": {"width": "half"}})
@@ -352,6 +502,7 @@ def test_property_renderer_options_reject_unknown_hints():
 _UI_ONLY_KEYS = frozenset(
     {
         "display_name",
+        "docs_url",
         "icon",
         "category",
         "version",
@@ -433,9 +584,16 @@ def test_to_mcp_dict_retains_authoring_signal_startcall():
 
     # Enum options project to bare values, dropping the UI label.
     assert props["greeting_type"]["options"] == [{"value": "text"}, {"value": "audio"}]
+    assert props["pre_call_fetch_mode"]["options"] == [
+        {"value": "disabled"},
+        {"value": "always"},
+        {"value": "inbound"},
+        {"value": "outbound"},
+    ]
 
     # Validation bounds survive (they constrain valid authored values).
-    assert props["delayed_start_duration"]["min_value"] == 0.1
+    assert props["delayed_start_duration"]["default"] == 1.2
+    assert props["delayed_start_duration"]["min_value"] == 0.0
     assert props["delayed_start_duration"]["max_value"] == 10.0
 
     # llm_hint survives where present (catalog-tool references).

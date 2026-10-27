@@ -7,13 +7,14 @@ idempotent, and the count only reaches zero when every registered run is gone.
 """
 
 import asyncio
+from unittest.mock import AsyncMock
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from api.routes import main as main_routes
-from api.services.pipecat import active_calls
+from api.services.observability import active_calls
 from api.services.pipecat import run_pipeline as run_pipeline_module
 
 
@@ -91,6 +92,12 @@ async def test_run_pipeline_counts_call_during_setup(monkeypatch):
         "get_workflow_run",
         fake_get_workflow_run,
     )
+    unregister_concurrency = AsyncMock()
+    monkeypatch.setattr(
+        run_pipeline_module.call_concurrency,
+        "unregister_active_call",
+        unregister_concurrency,
+    )
 
     task = asyncio.create_task(
         run_pipeline_module._run_pipeline(
@@ -108,6 +115,7 @@ async def test_run_pipeline_counts_call_during_setup(monkeypatch):
     with pytest.raises(RuntimeError, match="setup failed"):
         await asyncio.wait_for(task, timeout=1.0)
     assert active_calls.active_call_count() == 0
+    unregister_concurrency.assert_awaited_once_with(42)
 
 
 @pytest.mark.asyncio
@@ -122,6 +130,12 @@ async def test_webrtc_entrypoint_counts_call_during_setup(monkeypatch):
 
     monkeypatch.setattr(
         run_pipeline_module.db_client, "get_workflow", fake_get_workflow
+    )
+    unregister_concurrency = AsyncMock()
+    monkeypatch.setattr(
+        run_pipeline_module.call_concurrency,
+        "unregister_active_call",
+        unregister_concurrency,
     )
 
     task = asyncio.create_task(
@@ -140,6 +154,7 @@ async def test_webrtc_entrypoint_counts_call_during_setup(monkeypatch):
     with pytest.raises(RuntimeError, match="setup failed"):
         await asyncio.wait_for(task, timeout=1.0)
     assert active_calls.active_call_count() == 0
+    unregister_concurrency.assert_awaited_once_with(43)
 
 
 @pytest.mark.asyncio
@@ -155,6 +170,12 @@ async def test_telephony_entrypoint_counts_call_during_setup(monkeypatch):
     monkeypatch.setattr(
         run_pipeline_module.db_client, "get_workflow", fake_get_workflow
     )
+    unregister_concurrency = AsyncMock()
+    monkeypatch.setattr(
+        run_pipeline_module.call_concurrency,
+        "unregister_active_call",
+        unregister_concurrency,
+    )
 
     task = asyncio.create_task(
         run_pipeline_module.run_pipeline_telephony(
@@ -162,7 +183,7 @@ async def test_telephony_entrypoint_counts_call_during_setup(monkeypatch):
             provider_name="twilio",
             workflow_id=1,
             workflow_run_id=44,
-            user_id=7,
+            organization_id=7,
             call_id="call-1",
             transport_kwargs={},
         )
@@ -175,6 +196,7 @@ async def test_telephony_entrypoint_counts_call_during_setup(monkeypatch):
     with pytest.raises(RuntimeError, match="setup failed"):
         await asyncio.wait_for(task, timeout=1.0)
     assert active_calls.active_call_count() == 0
+    unregister_concurrency.assert_awaited_once_with(44)
 
 
 def test_active_calls_route_requires_configured_secret(monkeypatch):
@@ -217,4 +239,10 @@ def test_active_calls_route_returns_count_with_secret(monkeypatch):
     )
 
     assert response.status_code == 200
-    assert response.json() == {"active_calls": 1}
+    # loop_lag_* are defaulted fields on ActiveCallsResponse (the autoscaling
+    # saturation signal); the monitor isn't started in this test, so they read 0.
+    assert response.json() == {
+        "active_calls": 1,
+        "loop_lag_p95_ms": 0.0,
+        "loop_lag_max_ms": 0.0,
+    }

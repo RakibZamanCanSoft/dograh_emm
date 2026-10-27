@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional
 
 from loguru import logger
 from opentelemetry import trace
+from pipecat.utils.tracing.langfuse_helpers import mark_trace_public
 
 from api.db import db_client
 from api.services.gen_ai import build_embedding_service
@@ -84,8 +85,7 @@ async def retrieve_from_knowledge_base(
                 "knowledge_base_retrieval", context=parent_context
             ) as span:
                 try:
-                    # Mark trace as public for Langfuse
-                    span.set_attribute("langfuse.trace.public", True)
+                    mark_trace_public(span)
 
                     # Add operation metadata
                     span.set_attribute(
@@ -266,8 +266,7 @@ async def _perform_retrieval(
                 )
 
             # Search runs inside a workflow run: reuse the run's MPS correlation
-            # id (present only for v2 orgs; None otherwise → sent without the
-            # protocol). The Dograh-managed path forwards it via request metadata.
+            # id. The Dograh-managed path forwards it via request metadata.
             embedding_service = await build_embedding_service(
                 db_client=db_client,
                 provider=embeddings_provider,

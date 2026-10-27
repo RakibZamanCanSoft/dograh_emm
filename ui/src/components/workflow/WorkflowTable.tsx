@@ -36,6 +36,9 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { useOrganizationTimezone } from '@/hooks/useOrganizationTimezone';
+import { formatDate } from '@/lib/dateTime';
+
 interface Workflow {
     id: number;
     name: string;
@@ -64,6 +67,7 @@ export function WorkflowTable({
     currentFolderId = null,
 }: WorkflowTableProps) {
     const router = useRouter();
+    const organizationTimezone = useOrganizationTimezone();
     const [isPending, startTransition] = useTransition();
     const [loadingWorkflowId, setLoadingWorkflowId] = useState<number | null>(null);
     const [movingWorkflowId, setMovingWorkflowId] = useState<number | null>(null);
@@ -143,7 +147,18 @@ export function WorkflowTable({
                         {workflows.map((workflow) => (
                             <TableRow
                                 key={workflow.id}
-                                className={`hover:bg-accent transition-colors ${showArchived ? 'opacity-60' : ''}`}
+                                role="link"
+                                tabIndex={0}
+                                aria-label={`Edit ${workflow.name}`}
+                                className={`cursor-pointer hover:bg-muted/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring transition-colors ${showArchived ? 'opacity-60' : ''}`}
+                                onClick={() => handleEdit(workflow.id)}
+                                onKeyDown={(event) => {
+                                    if (event.target !== event.currentTarget) return;
+                                    if (event.key === 'Enter' || event.key === ' ') {
+                                        event.preventDefault();
+                                        handleEdit(workflow.id);
+                                    }
+                                }}
                             >
                                 <TableCell className="text-muted-foreground">
                                     {workflow.id}
@@ -152,18 +167,17 @@ export function WorkflowTable({
                                     {workflow.name}
                                 </TableCell>
                                 <TableCell>
-                                    {new Date(workflow.created_at).toLocaleDateString('en-US', {
-                                        year: 'numeric',
-                                        month: 'short',
-                                        day: 'numeric',
-                                    })}
+                                    {formatDate(workflow.created_at, organizationTimezone)}
                                 </TableCell>
                                 <TableCell className="text-center">
                                     <span className="inline-flex items-center justify-center min-w-[2rem] px-2 py-1 text-sm font-semibold bg-muted rounded-full">
                                         {workflow.total_runs || 0}
                                     </span>
                                 </TableCell>
-                                <TableCell className="text-right">
+                                <TableCell
+                                    className="text-right"
+                                    onClick={(event) => event.stopPropagation()}
+                                >
                                     <div className="flex justify-end gap-2">
                                         <Button
                                             variant="outline"

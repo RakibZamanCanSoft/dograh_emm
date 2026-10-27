@@ -1,5 +1,302 @@
 # Changelog
 
+## 1.49.0 (2026-10-12)
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+
+## What's Changed
+### Features
+* feat(qa): add Google Gemini as a QA LLM provider by @a6kme in https://github.com/dograh-hq/dograh/pull/848
+* feat: expose Deepgram TTS speed configuration by @a6kme in https://github.com/dograh-hq/dograh/pull/853
+* feat: expose model-aware LLM temperature settings by @a6kme in https://github.com/dograh-hq/dograh/pull/858
+* feat: add version name and version history in published agents by @a6kme in https://github.com/dograh-hq/dograh/pull/862
+* feat: Allow multiple providers and model configurations and enable LLM fallbacks  by @a6kme in https://github.com/dograh-hq/dograh/pull/866
+* feat: stream chat announcements and assistant replies by @a6kme in https://github.com/dograh-hq/dograh/pull/870
+* feat: workflow editor views for model configuration, variables and settings by @a6kme in https://github.com/dograh-hq/dograh/pull/871
+* feat(ui): mode picker and per-service provider tabs for model configurations by @a6kme in https://github.com/dograh-hq/dograh/pull/875
+* feat: MiniMax TTS over the bidirectional WebSocket API by @a6kme in https://github.com/dograh-hq/dograh/pull/880
+* feat: expand model configuration and provider voice catalogs by @a6kme in https://github.com/dograh-hq/dograh/pull/883
+### Bug Fixes
+* fix: return a clear 503 when the hosted service is unreachable for template workflows by @Rishxb-arch in https://github.com/dograh-hq/dograh/pull/851
+* fix: finish pending tools after hangup and unify transition deferral by @a6kme in https://github.com/dograh-hq/dograh/pull/857
+* fix: distinguish LLM fallback cancellations from failures by @a6kme in https://github.com/dograh-hq/dograh/pull/878
+* fix: pause campaigns on provider errors and deduplicate outcomes by @a6kme in https://github.com/dograh-hq/dograh/pull/882
+### Documentation
+* docs: note the quickstart's public tunnel and open signup by @Rishxb-arch in https://github.com/dograh-hq/dograh/pull/850
+
+## New Contributors
+* @Rishxb-arch made their first contribution in https://github.com/dograh-hq/dograh/pull/851
+
+**Full Changelog**: https://github.com/dograh-hq/dograh/compare/dograh-v1.48.0...dograh-v1.49.0
+
+## 1.48.0 (2026-10-02)
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+
+## What's Changed
+### Features
+* feat: expose OTEL endpoint for telemetry by @a6kme in https://github.com/dograh-hq/dograh/pull/788
+* feat: enhance answer supervisor to listen even when playing initial greeting by @a6kme in https://github.com/dograh-hq/dograh/pull/790
+* feat: add tts caching for MiniMax TTS by @a6kme in https://github.com/dograh-hq/dograh/pull/796
+* feat(ui): config-driven event banner, SF Tech Week + Cloudonix by @sandeepvemu-dograh in https://github.com/dograh-hq/dograh/pull/801
+* feat: select median TTS cache audio from reserved candidates by @a6kme in https://github.com/dograh-hq/dograh/pull/803
+* feat: add canadacentral Azure Speech region by @paramedicspecialist in https://github.com/dograh-hq/dograh/pull/792
+* feat: allow editing markdown and text files in knowledge base by @a6kme in https://github.com/dograh-hq/dograh/pull/807
+* feat: form-encoded http tool bodies, transfer greeting toggle and transfer fixes by @a6kme in https://github.com/dograh-hq/dograh/pull/808
+* feat: add org-configured BigQuery call event exports by @a6kme in https://github.com/dograh-hq/dograh/pull/805
+* feat: add campaign traffic splits and workflow version links by @a6kme in https://github.com/dograh-hq/dograh/pull/810
+* feat: filter billing ledger by credit, usage, and date by @a6kme in https://github.com/dograh-hq/dograh/pull/824
+* feat: default Cartesia TTS to sonic-3.6 by @a6kme in https://github.com/dograh-hq/dograh/pull/826
+* feat(mcp): add list_calls and get_call_transcript tools by @chewwbaka in https://github.com/dograh-hq/dograh/pull/813
+* feat: add Hopper LLM provider (Gemma 4 31B) by @jashwanth-12 in https://github.com/dograh-hq/dograh/pull/831
+### Bug Fixes
+* fix: add multi locale in answer supervisor by @a6kme in https://github.com/dograh-hq/dograh/pull/782
+* fix: extract node variables when a text chat ends without a transition by @a6kme in https://github.com/dograh-hq/dograh/pull/783
+* fix: fix call response watchdog and user idle controller by @a6kme in https://github.com/dograh-hq/dograh/pull/802
+* fix: skip Telnyx recording lifecycle events instead of logging unexpected status updates by @a692570 in https://github.com/dograh-hq/dograh/pull/799
+* fix: set an Outbound Voice Profile on auto-created Telnyx Call Control Applications by @a692570 in https://github.com/dograh-hq/dograh/pull/797
+* fix: return a uniform 404 from the Telnyx events route so unsigned callers cannot enumerate run ids by @a692570 in https://github.com/dograh-hq/dograh/pull/798
+* fix: align Telnyx informational event skip list with the real event catalog by @a6kme in https://github.com/dograh-hq/dograh/pull/804
+* fix: adopt bounded MiniMax TTS retries by @a6kme in https://github.com/dograh-hq/dograh/pull/809
+* fix: seed Gemini Live node-transition context after reconnect settles by @chewwbaka in https://github.com/dograh-hq/dograh/pull/816
+* fix: resolve deprecated timezone aliases on billing credits endpoint by @chewwbaka in https://github.com/dograh-hq/dograh/pull/827
+* fix: prevent agent worker leaks after setup hangup by @a6kme in https://github.com/dograh-hq/dograh/pull/835
+* fix(docker): drop NLTK punkt_tab download removed by Pipecat 1.12 by @a6kme in https://github.com/dograh-hq/dograh/pull/836
+* fix(sarvam): route LLM to v1 endpoint and support configurable base_url by @amitbhakt in https://github.com/dograh-hq/dograh/pull/839
+* fix: preserve agent handoff history and opening responses by @a6kme in https://github.com/dograh-hq/dograh/pull/844
+* fix: forward Twilio SIP Call-ID to Tuner for simulation linking by @HamzaFouad in https://github.com/dograh-hq/dograh/pull/837
+* fix: pull MinIO from dograh's own image by @a6kme in https://github.com/dograh-hq/dograh/pull/847
+### Documentation
+* docs(api): customMessage plays before tool execution, not after by @AAlexxis222 in https://github.com/dograh-hq/dograh/pull/722
+### Other Changes
+* Eot model min word by @a6kme in https://github.com/dograh-hq/dograh/pull/832
+* Upgrade Pipecat to v1.12.0 and default Gemini Live to 3.8 by @a6kme in https://github.com/dograh-hq/dograh/pull/833
+* Add optional spoken introductions to Twilio call transfers by @a6kme in https://github.com/dograh-hq/dograh/pull/843
+
+## New Contributors
+* @paramedicspecialist made their first contribution in https://github.com/dograh-hq/dograh/pull/792
+* @AAlexxis222 made their first contribution in https://github.com/dograh-hq/dograh/pull/722
+* @jashwanth-12 made their first contribution in https://github.com/dograh-hq/dograh/pull/831
+* @amitbhakt made their first contribution in https://github.com/dograh-hq/dograh/pull/839
+* @HamzaFouad made their first contribution in https://github.com/dograh-hq/dograh/pull/837
+
+**Full Changelog**: https://github.com/dograh-hq/dograh/compare/dograh-v1.47.0...dograh-v1.48.0
+
+## 1.47.0 (2026-09-15)
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+
+## What's Changed
+### Features
+* feat: optional Reo.dev integration by @chewwbaka in https://github.com/dograh-hq/dograh/pull/728
+* feat(ui): add Cartesia event announcement banner (cloud only) by @sandeepvemu-dograh in https://github.com/dograh-hq/dograh/pull/751
+* feat: add answer supervision before pipeline kicks off by @a6kme in https://github.com/dograh-hq/dograh/pull/759
+* feat(tts): add Speechify as a Voice (TTS) provider (Simba 3.2) by @shauntrennery in https://github.com/dograh-hq/dograh/pull/654
+* feat(turns): let external-turn STT decide the turn start, retire provisional_vad by @a6kme in https://github.com/dograh-hq/dograh/pull/767
+* feat(telephony): expose provider call ID in workflow initial context by @chewwbaka in https://github.com/dograh-hq/dograh/pull/692
+* feat: refactor campaign dispatcher to handle higher concurrency by @a6kme in https://github.com/dograh-hq/dograh/pull/769
+* feat(workflow): expose run ID in initial context by @a6kme in https://github.com/dograh-hq/dograh/pull/774
+* feat: transfer call to a different agent by @a6kme in https://github.com/dograh-hq/dograh/pull/776
+### Bug Fixes
+* fix: ARI destination dial string in campaigns by @a6kme in https://github.com/dograh-hq/dograh/pull/764
+* fix(ui): derive session cookie Secure flag from the request, not NODE_ENV by @a6kme in https://github.com/dograh-hq/dograh/pull/771
+* fix: update MinIO image registry to Quay by @palinko91 in https://github.com/dograh-hq/dograh/pull/772
+* fix(answer): run answer handling on inbound, and let patterns beat the clock by @a6kme in https://github.com/dograh-hq/dograh/pull/773
+### Other Changes
+* Add Exotel telephony provider for Connect Voice AI by @vinayexotel in https://github.com/dograh-hq/dograh/pull/639
+
+## New Contributors
+* @vinayexotel made their first contribution in https://github.com/dograh-hq/dograh/pull/639
+* @shauntrennery made their first contribution in https://github.com/dograh-hq/dograh/pull/654
+
+**Full Changelog**: https://github.com/dograh-hq/dograh/compare/dograh-v1.46.0...dograh-v1.47.0
+
+## 1.46.0 (2026-09-03)
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+
+## What's Changed
+### Features
+* feat: better UX for setting up telephony by @a6kme in https://github.com/dograh-hq/dograh/pull/678
+* feat: add Google Tag Manager by @sandeepvemu-dograh in https://github.com/dograh-hq/dograh/pull/673
+* feat: click to copy telephony phone ID by @chewwbaka in https://github.com/dograh-hq/dograh/pull/702
+* feat: derive call disposition from the conversation, and funnel termi… by @a6kme in https://github.com/dograh-hq/dograh/pull/685
+* feat(transfer-call): support custom disposition after successful tran… by @chewwbaka in https://github.com/dograh-hq/dograh/pull/712
+* feat: configure structured call dispositions in workflow settings by @chewwbaka in https://github.com/dograh-hq/dograh/pull/713
+* feat: add sonic-3.6 to Cartesia TTS model options by @chewwbaka in https://github.com/dograh-hq/dograh/pull/726
+### Bug Fixes
+* fix: transfer disposition and vicidial lead sync by @a6kme in https://github.com/dograh-hq/dograh/pull/676
+* fix: serve disposition filter codes from the backend by @a6kme in https://github.com/dograh-hq/dograh/pull/677
+* fix: generate a unique Stasis app name per ARI configuration by @a6kme in https://github.com/dograh-hq/dograh/pull/679
+* fix(ui): don't label a secret-only integration node "Not configured" by @ImrKhn03 in https://github.com/dograh-hq/dograh/pull/646
+* fix: keep Langfuse traces private by default by @anupPradhan0 in https://github.com/dograh-hq/dograh/pull/674
+* fix(logging): emit structured JSON on stdout and drop probe noise by @a6kme in https://github.com/dograh-hq/dograh/pull/706
+* fix(helm): add readiness probe and minReadySeconds to arq-worker by @a6kme in https://github.com/dograh-hq/dograh/pull/708
+### Other Changes
+* Update README with badges for Product Hunt and Trendshift by @sandeepvemu-dograh in https://github.com/dograh-hq/dograh/pull/659
+* Update README with new Product Hunt badges - Product of the week by @sandeepvemu-dograh in https://github.com/dograh-hq/dograh/pull/672
+* added meta pixel by @pk-198 in https://github.com/dograh-hq/dograh/pull/696
+* Tuner simulation by @mohamedsalem-bot in https://github.com/dograh-hq/dograh/pull/698
+* ci: amd64-only API image build for the EKS deploy path by @a6kme in https://github.com/dograh-hq/dograh/pull/724
+
+## New Contributors
+* @sandeepvemu-dograh made their first contribution in https://github.com/dograh-hq/dograh/pull/659
+* @ImrKhn03 made their first contribution in https://github.com/dograh-hq/dograh/pull/646
+
+**Full Changelog**: https://github.com/dograh-hq/dograh/compare/dograh-v1.45.0...dograh-v1.46.0
+
+## 1.45.0 (2026-08-11)
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+
+## What's Changed
+### Features
+* feat(telephony): capability-token auth for the media WebSocket (#598) by @AManjunath-Voxpro in https://github.com/dograh-hq/dograh/pull/599
+* feat: hydrate error events at error source and seam by @a6kme in https://github.com/dograh-hq/dograh/pull/618
+* feat(tools): support inline URL path parameters for custom HTTP tools by @arnofrxdd in https://github.com/dograh-hq/dograh/pull/617
+* feat: add nested JSON body template support for HTTP tools by @arnofrxdd in https://github.com/dograh-hq/dograh/pull/611
+* feat(files): add support for uploading Markdown (.md) documents by @AvinashShrivastav in https://github.com/dograh-hq/dograh/pull/630
+* feat(realtime): add temperature configuration for Gemini Live and Ope… by @AvinashShrivastav in https://github.com/dograh-hq/dograh/pull/629
+* feat: add pre all fetch condition by @chewwbaka in https://github.com/dograh-hq/dograh/pull/638
+* feat: make context mapping in transfer call generally available by @a6kme in https://github.com/dograh-hq/dograh/pull/647
+* feat: provision SIP endpoints as part of org bootstrap by @a6kme in https://github.com/dograh-hq/dograh/pull/643
+### Bug Fixes
+* fix: combine OSS run authorization requests by @a6kme in https://github.com/dograh-hq/dograh/pull/608
+* fix(telephony): carry the media-WS token in the path, not the query s… by @a6kme in https://github.com/dograh-hq/dograh/pull/610
+* fix(qa): forward configured base_url to QA analysis LLM (#527) by @amaanJvd in https://github.com/dograh-hq/dograh/pull/613
+* fix: hit webhook when text widget finishes by @a6kme in https://github.com/dograh-hq/dograh/pull/623
+* fix: disable ARI telephony config after repeated connection failures by @a6kme in https://github.com/dograh-hq/dograh/pull/625
+* fix(tracing): build project-scoped Langfuse trace URLs for v4 by @a6kme in https://github.com/dograh-hq/dograh/pull/628
+* fix: fix variable extraction in chat widget by @a6kme in https://github.com/dograh-hq/dograh/pull/648
+### Other Changes
+* Fix FORCE_TURN_RELAY leaking public candidates on CGNAT/private-range deployments by @rajdeep225 in https://github.com/dograh-hq/dograh/pull/620
+* Add noveum-trace integration for dograh by @shivamgcodes in https://github.com/dograh-hq/dograh/pull/571
+
+## New Contributors
+* @AManjunath-Voxpro made their first contribution in https://github.com/dograh-hq/dograh/pull/599
+* @rajdeep225 made their first contribution in https://github.com/dograh-hq/dograh/pull/620
+* @shivamgcodes made their first contribution in https://github.com/dograh-hq/dograh/pull/571
+* @AvinashShrivastav made their first contribution in https://github.com/dograh-hq/dograh/pull/630
+
+**Full Changelog**: https://github.com/dograh-hq/dograh/compare/dograh-v1.44.0...dograh-v1.45.0
+
+## 1.44.0 (2026-08-01)
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+
+## What's Changed
+### Features
+* feat(tts): add LMNT as a Voice (TTS) provider by @amaanJvd in https://github.com/dograh-hq/dograh/pull/569
+* feat: add Plivo call transfer support by @arnofrxdd in https://github.com/dograh-hq/dograh/pull/564
+* feat(autoscaling): call-based KEDA autoscaling for web pods + call-safe drain by @anupPradhan0 in https://github.com/dograh-hq/dograh/pull/577
+* feat: add Atlas Cloud LLM provider by @binyangzhu000-sudo in https://github.com/dograh-hq/dograh/pull/552
+* feat: add chat functionality in the web widget by @a6kme in https://github.com/dograh-hq/dograh/pull/604
+### Bug Fixes
+* fix(vobiz): synchronize application number bindings by @Piyush-sahoo in https://github.com/dograh-hq/dograh/pull/543
+* fix: use default button style for "Save Organization Configuration" by @Harddiikk in https://github.com/dograh-hq/dograh/pull/582
+* fix(telephony): surface pre-call failures on workflow runs by @a6kme in https://github.com/dograh-hq/dograh/pull/587
+* fix: honor default caller ID for one-off outbound calls by @a6kme in https://github.com/dograh-hq/dograh/pull/593
+* fix(ui): serve public embed widget without auth redirect (#585) by @amaanJvd in https://github.com/dograh-hq/dograh/pull/591
+* fix(ui): prevent /embed prefix from exempting sibling routes from auth by @amaanJvd in https://github.com/dograh-hq/dograh/pull/605
+* fix: handle Ultravox playback_clear_buffer in realtime override by @Zelray in https://github.com/dograh-hq/dograh/pull/570
+* fix(telephony): validate number ownership before assignment by @a6kme in https://github.com/dograh-hq/dograh/pull/602
+
+## New Contributors
+* @Harddiikk made their first contribution in https://github.com/dograh-hq/dograh/pull/582
+* @arnofrxdd made their first contribution in https://github.com/dograh-hq/dograh/pull/564
+* @anupPradhan0 made their first contribution in https://github.com/dograh-hq/dograh/pull/577
+* @binyangzhu000-sudo made their first contribution in https://github.com/dograh-hq/dograh/pull/552
+* @Zelray made their first contribution in https://github.com/dograh-hq/dograh/pull/570
+
+**Full Changelog**: https://github.com/dograh-hq/dograh/compare/dograh-v1.43.0...dograh-v1.44.0
+
+## 1.43.0 (2026-07-25)
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+
+## What's Changed
+### Features
+* feat: add tool test panel for HTTP API tools by @rushilbh27 in https://github.com/dograh-hq/dograh/pull/547
+* feat(openai-realtime): allow pinning input transcription language by @jvcss in https://github.com/dograh-hq/dograh/pull/557
+* feat: add vici dial controls from UI by @a6kme in https://github.com/dograh-hq/dograh/pull/563
+* feat(tts): add websocket transport option for xAI TTS by @Flowentxo in https://github.com/dograh-hq/dograh/pull/548
+### Bug Fixes
+* fix(web): honor X-Forwarded-Proto in uvicorn so request.url is https behind a reverse proxy by @prabhatlepton in https://github.com/dograh-hq/dograh/pull/515
+* fix: clear both cookie jars during superadmin impersonation by @a6kme in https://github.com/dograh-hq/dograh/pull/558
+* fix: add Transcription Turn Start for non external STTs by @a6kme in https://github.com/dograh-hq/dograh/pull/559
+* fix(api): validate pagination bounds on run-list endpoints (#553) by @amaanJvd in https://github.com/dograh-hq/dograh/pull/554
+* fix(ui): restore committed states in workflow undo/redo by @AliFozooni in https://github.com/dograh-hq/dograh/pull/550
+* fix: move draft and template context handling out of create_workflow_run by @chewwbaka in https://github.com/dograh-hq/dograh/pull/560
+* fix: save call metadata in gathered context for an api trigger outbou… by @chewwbaka in https://github.com/dograh-hq/dograh/pull/566
+* fix: fix crypto.randomUUID crash by @a6kme in https://github.com/dograh-hq/dograh/pull/573
+* fix: cast usage run filter JSON values to Float instead of Integer by @a6kme in https://github.com/dograh-hq/dograh/pull/574
+* fix: use clipboard fallback across UI by @a6kme in https://github.com/dograh-hq/dograh/pull/578
+* fix(workflow): reject duplicate tool function names by @a6kme in https://github.com/dograh-hq/dograh/pull/579
+### Documentation
+* docs: flesh out all 5 voice agent node pages by @rushilbh27 in https://github.com/dograh-hq/dograh/pull/556
+### Other Changes
+* Add support for Cloudonix parameters in WebSocket start event by @greenfieldtech-nirs in https://github.com/dograh-hq/dograh/pull/549
+* updated youtube url link by @nihal0514 in https://github.com/dograh-hq/dograh/pull/568
+
+## New Contributors
+* @jvcss made their first contribution in https://github.com/dograh-hq/dograh/pull/557
+* @AliFozooni made their first contribution in https://github.com/dograh-hq/dograh/pull/550
+* @Flowentxo made their first contribution in https://github.com/dograh-hq/dograh/pull/548
+
+**Full Changelog**: https://github.com/dograh-hq/dograh/compare/dograh-v1.42.0...dograh-v1.43.0
+
+## 1.42.0 (2026-07-15)
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+
+## What's Changed
+### Features
+* feat(tts): add xAI as a Voice (TTS) provider by @xTararAisx in https://github.com/dograh-hq/dograh/pull/476
+* feat(auth): gate OSS signup behind ENABLE_SIGNUP flag by @prabhatlepton in https://github.com/dograh-hq/dograh/pull/514
+* feat: show model pricing in configuration UI by @a6kme in https://github.com/dograh-hq/dograh/pull/528
+* feat: add ElevenLabs realtime STT provider support (#512) by @mqasim41 in https://github.com/dograh-hq/dograh/pull/522
+* feat(helm): add HPA for arq-worker + ui, ship a lean k3s prod example by @prabhatlepton in https://github.com/dograh-hq/dograh/pull/516
+### Bug Fixes
+* fix: gate OSS email/password auth endpoints outside local auth mode by @a6kme in https://github.com/dograh-hq/dograh/pull/500
+* fix: forward billing-v2 protocol on textchat KB retrieval and node su… by @a6kme in https://github.com/dograh-hq/dograh/pull/503
+* fix: fix agent stream contract with cloudonix by @a6kme in https://github.com/dograh-hq/dograh/pull/504
+* fix(auth): allow invited org members to start workflow runs by @KomalSrinivasan in https://github.com/dograh-hq/dograh/pull/509
+* fix: increase concurrency limit an handle it across all call paths by @a6kme in https://github.com/dograh-hq/dograh/pull/508
+* fix: fix org scoped access for resources by @a6kme in https://github.com/dograh-hq/dograh/pull/517
+* fix: fix realtime event ordering by @a6kme in https://github.com/dograh-hq/dograh/pull/534
+* fix(quota): fail closed when quota verification errors (#331) by @amaanJvd in https://github.com/dograh-hq/dograh/pull/523
+* fix: fix speech to speech model transitions by @a6kme in https://github.com/dograh-hq/dograh/pull/545
+### Documentation
+* docs: add video-embedded getting-started pages for API Trigger, Webhook, Telephony, Tools & KB by @rushilbh27 in https://github.com/dograh-hq/dograh/pull/535
+### Other Changes
+* Feat/enhanced timestamped transcript by @chewwbaka in https://github.com/dograh-hq/dograh/pull/501
+* Add MiniMax M3 model option by @octo-patch in https://github.com/dograh-hq/dograh/pull/513
+* Feat/dybamic transfer by @chewwbaka in https://github.com/dograh-hq/dograh/pull/521
+* Paygent integration new with revert pipecat/realtime changes by @nihal0514 in https://github.com/dograh-hq/dograh/pull/539
+* Cloudonix Transfer Feature by @greenfieldtech-nirs in https://github.com/dograh-hq/dograh/pull/542
+* Improve outbound dialing error handling by @greenfieldtech-nirs in https://github.com/dograh-hq/dograh/pull/544
+
+## New Contributors
+* @KomalSrinivasan made their first contribution in https://github.com/dograh-hq/dograh/pull/509
+* @prabhatlepton made their first contribution in https://github.com/dograh-hq/dograh/pull/514
+* @amaanJvd made their first contribution in https://github.com/dograh-hq/dograh/pull/523
+* @nihal0514 made their first contribution in https://github.com/dograh-hq/dograh/pull/539
+
+**Full Changelog**: https://github.com/dograh-hq/dograh/compare/dograh-v1.41.0...dograh-v1.42.0
+
+## 1.41.0 (2026-07-06)
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+
+## What's Changed
+### Features
+* feat: client gen default configurations by @a6kme in https://github.com/dograh-hq/dograh/pull/499
+### Bug Fixes
+* fix: clean up ARI transferred call legs on participant hangup by @chewwbaka in https://github.com/dograh-hq/dograh/pull/498
+
+
+**Full Changelog**: https://github.com/dograh-hq/dograh/compare/dograh-v1.40.0...dograh-v1.41.0
+
 ## 1.40.0 (2026-07-03)
 
 <!-- Release notes generated using configuration in .github/release.yml at main -->

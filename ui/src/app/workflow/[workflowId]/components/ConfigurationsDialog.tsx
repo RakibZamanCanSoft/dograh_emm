@@ -1,3 +1,4 @@
+import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -6,10 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { useOrgConfig } from "@/context/OrgConfigContext";
 import {
     AmbientNoiseConfiguration,
-    DEFAULT_PROVISIONAL_VAD_PAUSE_SECS,
     DEFAULT_TURN_START_MIN_WORDS,
+    ExternalPBXFieldMapping,
+    resolveWorkflowConfigurations,
     TURN_START_STRATEGY_OPTIONS,
     TurnStartStrategy,
     TurnStopStrategy,
@@ -24,11 +27,6 @@ interface ConfigurationsDialogProps {
     onSave: (configurations: WorkflowConfigurations, workflowName: string) => Promise<void>;
 }
 
-const DEFAULT_AMBIENT_NOISE_CONFIG: AmbientNoiseConfiguration = {
-    enabled: false,
-    volume: 0.3,
-};
-
 export const ConfigurationsDialog = ({
     open,
     onOpenChange,
@@ -36,52 +34,65 @@ export const ConfigurationsDialog = ({
     workflowName,
     onSave
 }: ConfigurationsDialogProps) => {
+    const { externalPbxIntegrationsEnabled } = useOrgConfig();
+    const resolvedWorkflowConfigurations = resolveWorkflowConfigurations(workflowConfigurations);
     const [name, setName] = useState<string>(workflowName);
     const [ambientNoiseConfig, setAmbientNoiseConfig] = useState<AmbientNoiseConfiguration>(
-        workflowConfigurations?.ambient_noise_configuration || DEFAULT_AMBIENT_NOISE_CONFIG
+        resolvedWorkflowConfigurations.ambient_noise_configuration
     );
     const [maxCallDuration, setMaxCallDuration] = useState<number>(
-        workflowConfigurations?.max_call_duration || 600  // Default 10 minutes
+        resolvedWorkflowConfigurations.max_call_duration
     );
     const [maxUserIdleTimeout, setMaxUserIdleTimeout] = useState<number>(
-        workflowConfigurations?.max_user_idle_timeout || 10  // Default 10 seconds
+        resolvedWorkflowConfigurations.max_user_idle_timeout
     );
     const [smartTurnStopSecs, setSmartTurnStopSecs] = useState<number>(
-        workflowConfigurations?.smart_turn_stop_secs || 2  // Default 2 seconds
+        resolvedWorkflowConfigurations.smart_turn_stop_secs
     );
     const [turnStartStrategy, setTurnStartStrategy] = useState<TurnStartStrategy>(
-        workflowConfigurations?.turn_start_strategy || 'default'
+        resolvedWorkflowConfigurations.turn_start_strategy
     );
     const [turnStartMinWords, setTurnStartMinWords] = useState<number>(
-        workflowConfigurations?.turn_start_min_words || DEFAULT_TURN_START_MIN_WORDS
-    );
-    const [provisionalVadPauseSecs, setProvisionalVadPauseSecs] = useState<number>(
-        workflowConfigurations?.provisional_vad_pause_secs || DEFAULT_PROVISIONAL_VAD_PAUSE_SECS
+        resolvedWorkflowConfigurations.turn_start_min_words
     );
     const [turnStopStrategy, setTurnStopStrategy] = useState<TurnStopStrategy>(
-        workflowConfigurations?.turn_stop_strategy || 'transcription'
+        resolvedWorkflowConfigurations.turn_stop_strategy
     );
     const [contextCompactionEnabled, setContextCompactionEnabled] = useState<boolean>(
-        workflowConfigurations?.context_compaction_enabled ?? false
+        resolvedWorkflowConfigurations.context_compaction_enabled
+    );
+    const [ttsCacheEnabled, setTtsCacheEnabled] = useState<boolean>(
+        resolvedWorkflowConfigurations.tts_cache_enabled
+    );
+    const [externalPbxFieldMappings, setExternalPbxFieldMappings] = useState<ExternalPBXFieldMapping[]>(
+        resolvedWorkflowConfigurations.external_pbx_field_mappings
     );
     const [isSaving, setIsSaving] = useState(false);
     const selectedTurnStartStrategy = TURN_START_STRATEGY_OPTIONS.find(
         (option) => option.value === turnStartStrategy
+    );
+    const externalPbxFieldMappingsValid = externalPbxFieldMappings.every(
+        (mapping) =>
+            Boolean(mapping.context_path.trim()) &&
+            /^[A-Za-z][A-Za-z0-9_]{0,63}$/.test(mapping.destination_field.trim())
     );
 
     const handleSave = async () => {
         setIsSaving(true);
         try {
             await onSave({
+                ...resolvedWorkflowConfigurations,
                 ambient_noise_configuration: ambientNoiseConfig,
                 max_call_duration: maxCallDuration,
                 max_user_idle_timeout: maxUserIdleTimeout,
                 smart_turn_stop_secs: smartTurnStopSecs,
                 turn_start_strategy: turnStartStrategy,
                 turn_start_min_words: turnStartMinWords,
-                provisional_vad_pause_secs: provisionalVadPauseSecs,
                 turn_stop_strategy: turnStopStrategy,
+                transcript_configuration: resolvedWorkflowConfigurations.transcript_configuration,
                 context_compaction_enabled: contextCompactionEnabled,
+                tts_cache_enabled: ttsCacheEnabled,
+                external_pbx_field_mappings: externalPbxFieldMappings,
             }, name);
             onOpenChange(false);
         } catch (error) {
@@ -94,22 +105,24 @@ export const ConfigurationsDialog = ({
     // Sync state with props when dialog opens
     useEffect(() => {
         if (open) {
+            const nextWorkflowConfigurations = resolveWorkflowConfigurations(workflowConfigurations);
             setName(workflowName);
-            setAmbientNoiseConfig(workflowConfigurations?.ambient_noise_configuration || DEFAULT_AMBIENT_NOISE_CONFIG);
-            setMaxCallDuration(workflowConfigurations?.max_call_duration || 600);
-            setMaxUserIdleTimeout(workflowConfigurations?.max_user_idle_timeout || 10);
-            setSmartTurnStopSecs(workflowConfigurations?.smart_turn_stop_secs || 2);
-            setTurnStartStrategy(workflowConfigurations?.turn_start_strategy || 'default');
-            setTurnStartMinWords(workflowConfigurations?.turn_start_min_words || DEFAULT_TURN_START_MIN_WORDS);
-            setProvisionalVadPauseSecs(workflowConfigurations?.provisional_vad_pause_secs || DEFAULT_PROVISIONAL_VAD_PAUSE_SECS);
-            setTurnStopStrategy(workflowConfigurations?.turn_stop_strategy || 'transcription');
-            setContextCompactionEnabled(workflowConfigurations?.context_compaction_enabled ?? false);
+            setAmbientNoiseConfig(nextWorkflowConfigurations.ambient_noise_configuration);
+            setMaxCallDuration(nextWorkflowConfigurations.max_call_duration);
+            setMaxUserIdleTimeout(nextWorkflowConfigurations.max_user_idle_timeout);
+            setSmartTurnStopSecs(nextWorkflowConfigurations.smart_turn_stop_secs);
+            setTurnStartStrategy(nextWorkflowConfigurations.turn_start_strategy);
+            setTurnStartMinWords(nextWorkflowConfigurations.turn_start_min_words);
+            setTurnStopStrategy(nextWorkflowConfigurations.turn_stop_strategy);
+            setContextCompactionEnabled(nextWorkflowConfigurations.context_compaction_enabled);
+            setTtsCacheEnabled(nextWorkflowConfigurations.tts_cache_enabled);
+            setExternalPbxFieldMappings(nextWorkflowConfigurations.external_pbx_field_mappings);
         }
     }, [open, workflowName, workflowConfigurations]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Configurations</DialogTitle>
                 </DialogHeader>
@@ -244,6 +257,16 @@ export const ConfigurationsDialog = ({
                                 </p>
                             </div>
                         )}
+                    </div>
+
+                    {/* Interruption Section */}
+                    <div className="space-y-4">
+                        <div>
+                            <h3 className="text-sm font-semibold mb-1">Interruption</h3>
+                            <p className="text-xs text-muted-foreground">
+                                Configure when user speech should interrupt the agent while it is speaking.
+                            </p>
+                        </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="turn_start_strategy" className="text-xs">
@@ -293,31 +316,6 @@ export const ConfigurationsDialog = ({
                                 </p>
                             </div>
                         )}
-
-                        {turnStartStrategy === 'provisional_vad' && (
-                            <div className="space-y-2">
-                                <Label htmlFor="provisional_vad_pause_secs" className="text-xs">
-                                    Provisional Pause (seconds)
-                                </Label>
-                                <Input
-                                    id="provisional_vad_pause_secs"
-                                    type="number"
-                                    step="0.1"
-                                    min="0.1"
-                                    max="5"
-                                    value={provisionalVadPauseSecs}
-                                    onChange={(e) => {
-                                        const value = parseFloat(e.target.value);
-                                        if (!isNaN(value) && value >= 0.1) {
-                                            setProvisionalVadPauseSecs(value);
-                                        }
-                                    }}
-                                />
-                                <p className="text-xs text-muted-foreground">
-                                    Seconds to pause bot audio while waiting for transcript confirmation. Default: {DEFAULT_PROVISIONAL_VAD_PAUSE_SECS}
-                                </p>
-                            </div>
-                        )}
                     </div>
 
                     {/* Context Management Section */}
@@ -337,6 +335,26 @@ export const ConfigurationsDialog = ({
                                 id="context-compaction-enabled"
                                 checked={contextCompactionEnabled}
                                 onCheckedChange={setContextCompactionEnabled}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div>
+                            <h3 className="text-sm font-semibold mb-1">Speech Caching</h3>
+                            <p className="text-xs text-muted-foreground">
+                                Reuse generated audio for repeated phrases to reduce response time and speech generation costs.
+                                Cached audio expires after 24 hours. Currently available with MiniMax TTS.
+                            </p>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="tts-cache-enabled" className="text-sm">
+                                Enable Speech Caching
+                            </Label>
+                            <Switch
+                                id="tts-cache-enabled"
+                                checked={ttsCacheEnabled}
+                                onCheckedChange={setTtsCacheEnabled}
                             />
                         </div>
                     </div>
@@ -392,13 +410,92 @@ export const ConfigurationsDialog = ({
                             </div>
                         </div>
                     </div>
+
+                    {externalPbxIntegrationsEnabled && (
+                        <div className="space-y-4 border-t pt-4">
+                            <div>
+                                <h3 className="text-sm font-semibold mb-1">External PBX Field Updates</h3>
+                                <p className="text-xs text-muted-foreground">
+                                    Optionally copy final gathered-context values into provider-native fields before transfer or hangup.
+                                </p>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <Label className="text-sm">Field Mappings</Label>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setExternalPbxFieldMappings((current) => [
+                                        ...current,
+                                        { context_path: "", destination_field: "" },
+                                    ])}
+                                >
+                                    <Plus className="mr-1 h-4 w-4" /> Add mapping
+                                </Button>
+                            </div>
+                            <div className="space-y-2">
+                                {externalPbxFieldMappings.map((mapping, index) => (
+                                    <div key={index} className="grid grid-cols-[1fr_1fr_auto] gap-2">
+                                        <Input
+                                            aria-label={`Gathered context field ${index + 1}`}
+                                            value={mapping.context_path}
+                                            onChange={(event) => setExternalPbxFieldMappings((current) =>
+                                                current.map((item, itemIndex) =>
+                                                    itemIndex === index
+                                                        ? { ...item, context_path: event.target.value }
+                                                        : item
+                                                )
+                                            )}
+                                            placeholder="qualified"
+                                        />
+                                        <Input
+                                            aria-label={`External PBX destination field ${index + 1}`}
+                                            value={mapping.destination_field}
+                                            onChange={(event) => setExternalPbxFieldMappings((current) =>
+                                                current.map((item, itemIndex) =>
+                                                    itemIndex === index
+                                                        ? { ...item, destination_field: event.target.value }
+                                                        : item
+                                                )
+                                            )}
+                                            placeholder="address3"
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            aria-label={`Remove external PBX field mapping ${index + 1}`}
+                                            onClick={() => setExternalPbxFieldMappings((current) =>
+                                                current.filter((_, itemIndex) => itemIndex !== index)
+                                            )}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                ))}
+                                {externalPbxFieldMappings.length === 0 && (
+                                    <p className="text-xs text-muted-foreground">
+                                        No external fields will be updated. Context names may be direct extracted-variable names or paths such as extracted_variables.qualified.
+                                    </p>
+                                )}
+                                {!externalPbxFieldMappingsValid && (
+                                    <p className="text-xs text-destructive">
+                                        Each mapping needs a context field and a destination field containing only letters, numbers, and underscores.
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <DialogFooter>
                     <Button variant="outline" onClick={() => onOpenChange(false)}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSave} disabled={isSaving}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={isSaving || (externalPbxIntegrationsEnabled && !externalPbxFieldMappingsValid)}
+                    >
                         {isSaving ? "Saving..." : "Save"}
                     </Button>
                 </DialogFooter>

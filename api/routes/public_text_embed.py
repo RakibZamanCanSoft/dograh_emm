@@ -1,20 +1,19 @@
-from datetime import UTC, datetime
-from typing import Any, Dict
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, Request, Response
-from loguru import logger
-from pydantic import BaseModel, Field
+from pipecat.utils.run_context import set_current_run_id
+from pydantic import BaseModel
 
 from api.db import db_client
 from api.db.models import WorkflowRunTextSessionModel
-from api.enums import WorkflowRunMode
+from api.enums import CallType, WorkflowRunMode
 from api.routes.public_embed import (
     InitEmbedRequest,
     _allow_embed_origin,
+    _cors_response,
     generate_session_token,
     get_request_origin,
-    validate_origin,
 )
 from api.routes.workflow_text_chat import (
     AppendTextChatMessageRequest,
@@ -23,6 +22,12 @@ from api.routes.workflow_text_chat import (
     _execute_pending_turn_response,
     _revision_conflict_detail,
 )
+from api.services.workflow.embed_context import sanitize_embed_context_variables
+from api.services.workflow.embed_session_service import (
+    authorize_embed_workflow_run_start,
+    validate_embed_origin,
+)
+from api.services.workflow.run_creation import prepare_workflow_run_inputs
 from api.services.workflow.text_chat_session_service import (
     TextChatSessionRevisionConflictError,
     append_text_chat_user_message,
@@ -30,7 +35,6 @@ from api.services.workflow.text_chat_session_service import (
     default_text_chat_session_data,
     initialize_text_chat_session,
 )
-from pipecat.utils.run_context import set_current_run_id
 
 router = APIRouter(prefix="/public/text-embed", tags=["public-text-embed"])
 
@@ -58,7 +62,7 @@ async def _load_public_text_session_or_404(
     embed_token = await db_client.get_embed_token_by_id(embed_session.embed_token_id)
     if not embed_token:
         raise HTTPException(status_code=404, detail="Invalid embed token")
-    if not validate_origin(origin, embed_token.allowed_domains or []):
+    if not validate_embed_origin(origin, embed_token.allowed_domains or []):
         raise HTTPException(status_code=403, detail="Domain not allowed")
 
     # Load text session
@@ -90,38 +94,51 @@ async def initialize_text_embed_session(
         raise HTTPException(status_code=403, detail="Embed token is inactive")
     if embed_token.expires_at and embed_token.expires_at < datetime.now(UTC):
         raise HTTPException(status_code=403, detail="Embed token has expired")
-    if embed_token.usage_limit and embed_token.usage_count >= embed_token.usage_limit:
-        raise HTTPException(status_code=403, detail="Embed token usage limit exceeded")
 
-    if not validate_origin(origin, embed_token.allowed_domains or []):
+    if not validate_embed_origin(origin, embed_token.allowed_domains or []):
         raise HTTPException(status_code=403, detail=f"Domain not allowed: {origin}")
 
     if origin:
         _allow_embed_origin(response, origin)
 
+    usage_reserved = await db_client.reserve_embed_token_usage(
+        embed_token.id, embed_token.organization_id
+    )
+    if not usage_reserved:
+        raise HTTPException(status_code=403, detail="Embed token usage limit exceeded")
+
     session_name = f"WR-TEXT-EMBED-{uuid4().hex[:6].upper()}"
     try:
+        workflow = await db_client.get_workflow(
+            embed_token.workflow_id, organization_id=embed_token.organization_id
+        )
+        if not workflow:
+            raise ValueError("Workflow not found")
+        run_inputs = await prepare_workflow_run_inputs(db_client, workflow)
+        context_variables = sanitize_embed_context_variables(
+            init_request.context_variables
+        )
         workflow_run = await db_client.create_workflow_run(
             name=session_name,
             workflow_id=embed_token.workflow_id,
             mode=WorkflowRunMode.TEXTCHAT.value,
             user_id=embed_token.created_by,
+            organization_id=embed_token.organization_id,
+            call_type=CallType.INBOUND,
             initial_context={
-                **(init_request.context_variables or {}),
+                **context_variables,
                 "provider": WorkflowRunMode.TEXTCHAT.value,
             },
-            use_draft=False, # Use published workflow for embeds
+            definition_id=run_inputs.definition_id,
         )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
     set_current_run_id(workflow_run.id)
 
-    from api.services.quota_service import authorize_workflow_run_start
-    quota_result = await authorize_workflow_run_start(
-        workflow_id=embed_token.workflow_id,
+    quota_result = await authorize_embed_workflow_run_start(
+        embed_token=embed_token,
         workflow_run_id=workflow_run.id,
-        actor_user=None,
     )
     if not quota_result.has_quota:
         raise HTTPException(status_code=402, detail=quota_result.error_message)
@@ -158,8 +175,6 @@ async def initialize_text_embed_session(
     )
 
     session_token = generate_session_token()
-    # Expire text chats after 24h
-    from datetime import timedelta
     await db_client.create_embed_session(
         session_token=session_token,
         embed_token_id=embed_token.id,
@@ -169,7 +184,6 @@ async def initialize_text_embed_session(
         origin=origin[:255],
         expires_at=datetime.now(UTC) + timedelta(hours=24),
     )
-    await db_client.increment_embed_token_usage(embed_token.id)
 
     config = {
         "workflow_id": embed_token.workflow_id,
@@ -196,13 +210,17 @@ async def append_public_text_chat_message(
     res: Response,
 ):
     origin = get_request_origin(req)
-    text_session, workflow_id = await _load_public_text_session_or_404(session_token, origin)
-    
+    text_session, workflow_id = await _load_public_text_session_or_404(
+        session_token, origin
+    )
+
     if origin:
         _allow_embed_origin(res, origin)
 
     if text_session.workflow_run and text_session.workflow_run.is_completed:
-        raise HTTPException(status_code=400, detail="Text chat session is already completed")
+        raise HTTPException(
+            status_code=400, detail="Text chat session is already completed"
+        )
 
     try:
         text_session = await append_text_chat_user_message(
@@ -231,8 +249,8 @@ async def get_public_text_chat_session(
     res: Response,
 ):
     origin = get_request_origin(req)
-    text_session, workflow_id = await _load_public_text_session_or_404(session_token, origin)
-    
+    text_session, _ = await _load_public_text_session_or_404(session_token, origin)
+
     if origin:
         _allow_embed_origin(res, origin)
 
@@ -241,20 +259,17 @@ async def get_public_text_chat_session(
 
 @router.options("/init")
 async def options_init(request: Request):
-    from api.routes.public_embed import _cors_response
     origin = request.headers.get("origin", "*")
     return _cors_response(origin, "POST, OPTIONS")
 
 
 @router.options("/{session_token}/messages")
 async def options_text_messages(request: Request):
-    from api.routes.public_embed import _cors_response
     origin = request.headers.get("origin", "*")
     return _cors_response(origin, "POST, OPTIONS")
 
 
 @router.options("/{session_token}")
-async def options_text_session(request: Request):
-    from api.routes.public_embed import _cors_response
+async def options_text_get(request: Request):
     origin = request.headers.get("origin", "*")
     return _cors_response(origin, "GET, OPTIONS")

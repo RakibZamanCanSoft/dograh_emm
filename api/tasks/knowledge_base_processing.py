@@ -105,9 +105,8 @@ async def process_knowledge_base_document(
         existing_doc = await db_client.get_document_by_hash(file_hash, organization_id)
         if existing_doc and existing_doc.id != document_id:
             error_message = (
-                f"This file is a duplicate of '{existing_doc.filename}'. "
-                f"Please delete the duplicate files and consolidate them into a "
-                f"single unique file before uploading."
+                f"This content is identical to '{existing_doc.filename}'. "
+                f"Keep only one copy of it in the knowledge base."
             )
             logger.warning(
                 f"Duplicate document detected: {document_id} is duplicate of "
@@ -143,14 +142,13 @@ async def process_knowledge_base_document(
         embeddings_base_url = None
         embeddings_endpoint = None
         embeddings_api_version = None
-        if retrieval_mode == "chunked" and document.created_by:
+        if retrieval_mode == "chunked":
             from api.services.configuration.ai_model_configuration import (
                 apply_managed_embeddings_base_url,
                 get_resolved_ai_model_configuration,
             )
 
             resolved_config = await get_resolved_ai_model_configuration(
-                user_id=document.created_by,
                 organization_id=document.organization_id,
             )
             effective_config = resolved_config.effective
@@ -182,7 +180,7 @@ async def process_knowledge_base_document(
             content_type=mime_type or "application/octet-stream",
             retrieval_mode=retrieval_mode,
             max_tokens=max_tokens,
-            organization_id=organization_id,
+            organization_id=document.organization_id,
             created_by=created_by_provider_id,
         )
 
@@ -215,7 +213,7 @@ async def process_knowledge_base_document(
             return
 
         # Ingestion runs outside any workflow run, so resolve the MPS correlation
-        # id here (mint only for orgs already on v2; never create an account).
+        # id here.
         embedding_service = await build_embedding_service(
             db_client=db_client,
             provider=embeddings_provider,
@@ -224,8 +222,6 @@ async def process_knowledge_base_document(
             base_url=embeddings_base_url,
             endpoint=embeddings_endpoint,
             api_version=embeddings_api_version,
-            organization_id=organization_id,
-            created_by=created_by_provider_id,
             resolve_correlation=True,
         )
 

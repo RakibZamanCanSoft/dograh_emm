@@ -2,7 +2,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
-from pipecat.frames.frames import TTSSpeakFrame
+from pipecat.frames.frames import BotStoppedSpeakingFrame, TTSSpeakFrame
 from pipecat.processors.aggregators.llm_context import LLMContext
 from pipecat.processors.frame_processor import FrameDirection
 from pipecat.services.openai.realtime import events
@@ -10,6 +10,7 @@ from pipecat.services.openai.realtime import events
 from api.services.pipecat.realtime.azure_realtime import (
     DograhAzureRealtimeLLMService,
 )
+from api.tests.test_streamed_tool_response import response_done
 
 
 def _make_service() -> DograhAzureRealtimeLLMService:
@@ -86,3 +87,47 @@ async def test_tts_greeting_waits_for_session_updated_before_sending_prompt():
     assert service._pending_initial_greeting_text is None
     assert service._llm_needs_conversation_setup is False
     service._create_response.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_non_transition_function_call_runs_while_bot_is_speaking():
+    service = _make_service()
+    service._context = LLMContext()
+    service.run_function_calls = AsyncMock()
+    service._workflow_bot_is_speaking = True
+    service._pending_function_calls["call-1"] = SimpleNamespace(name="lookup_order")
+
+    await service._handle_evt_function_call_arguments_done(
+        SimpleNamespace(call_id="call-1", arguments='{"order_id":"123"}')
+    )
+
+    service.run_function_calls.assert_awaited_once()
+    assert service._workflow_tool_deferral.pending == []
+
+
+@pytest.mark.asyncio
+async def test_node_transition_function_call_waits_until_bot_stops_speaking():
+    service = _make_service()
+    service._context = LLMContext()
+    service.run_function_calls = AsyncMock()
+    service._workflow_bot_is_speaking = True
+    service.register_function(
+        "customer_support",
+        AsyncMock(),
+        is_node_transition=True,
+    )
+    service._pending_function_calls["call-1"] = SimpleNamespace(name="customer_support")
+
+    await service._handle_evt_function_call_arguments_done(
+        SimpleNamespace(call_id="call-1", arguments='{"department":"sales"}')
+    )
+
+    service.run_function_calls.assert_not_awaited()
+    assert len(service._workflow_tool_deferral.pending) == 1
+
+    service.push_frame = AsyncMock()
+    await response_done(service)
+    await service.process_frame(BotStoppedSpeakingFrame(), FrameDirection.UPSTREAM)
+
+    service.run_function_calls.assert_awaited_once()
+    assert service._workflow_tool_deferral.pending == []

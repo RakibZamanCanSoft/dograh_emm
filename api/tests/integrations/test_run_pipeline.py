@@ -21,7 +21,7 @@ from pipecat.tests.mock_transport import MockTransport
 from pipecat.transports.base_transport import TransportParams
 
 from api.enums import WorkflowRunMode, WorkflowRunState
-from api.services.pipecat import active_calls
+from api.services.observability import active_calls
 from api.services.pipecat.audio_config import create_audio_config
 from api.services.pipecat.run_pipeline import _run_pipeline
 from api.services.pipecat.worker_runner import wait_for_pipeline_worker_started
@@ -90,8 +90,15 @@ async def test_run_pipeline_fires_initial_response_and_completes_run(
     response is triggered (set_node), and on_pipeline_finished updates
     the workflow_run row to COMPLETED."""
     workflow_run, user, workflow = workflow_run_setup
+    await db_session.update_workflow_run(
+        workflow_run.id, initial_context={"workflow_run_id": "stale-run-id"}
+    )
     transport = MockTransport(
-        TransportParams(audio_in_enabled=True, audio_out_enabled=True)
+        TransportParams(
+            audio_in_enabled=True,
+            audio_out_enabled=True,
+            audio_out_end_silence_secs=0,
+        )
     )
 
     captured_task: list = []
@@ -104,6 +111,7 @@ async def test_run_pipeline_fires_initial_response_and_completes_run(
             user_id=user.id,
             audio_config=audio_config,
             user_provider_id=user.provider_id,
+            call_context_vars={"workflow_run_id": "external-run-id"},
         )
         run_task = asyncio.create_task(run_coro)
 
@@ -132,6 +140,7 @@ async def test_run_pipeline_fires_initial_response_and_completes_run(
     refreshed = await db_session.get_workflow_run_by_id(workflow_run.id)
     assert refreshed.is_completed is True
     assert refreshed.state == WorkflowRunState.COMPLETED.value
+    assert refreshed.initial_context["workflow_run_id"] == workflow_run.id
     # set_node("start") populates "nodes_visited" via _gathered_context, and
     # on_pipeline_finished merges call_tags into gathered_context.
     assert "Start" in refreshed.gathered_context.get("nodes_visited", [])
@@ -171,7 +180,11 @@ async def test_call_stays_registered_for_drain_until_artifacts_uploaded(
     )
 
     transport = MockTransport(
-        TransportParams(audio_in_enabled=True, audio_out_enabled=True)
+        TransportParams(
+            audio_in_enabled=True,
+            audio_out_enabled=True,
+            audio_out_end_silence_secs=0,
+        )
     )
     captured_task: list = []
     audio_config = create_audio_config(WorkflowRunMode.SMALLWEBRTC.value)

@@ -2,53 +2,58 @@ import json
 import re
 import uuid
 from datetime import datetime
-from typing import List, Literal, Optional
+from typing import Annotated, List, Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
-from httpx import HTTPStatusError
+from httpx import HTTPStatusError, RequestError
 from loguru import logger
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, ValidationError
 
 from api.constants import DEPLOYMENT_MODE
 from api.db import db_client
 from api.db.agent_trigger_client import TriggerPathConflictError
 from api.db.models import UserModel
 from api.db.workflow_template_client import WorkflowTemplateClient
-from api.enums import CallType, PostHogEvent, StorageBackend, WorkflowStatus
-from api.schemas.ai_model_configuration import OrganizationAIModelConfigurationV2
+from api.enums import (
+    CallType,
+    PostHogEvent,
+    StorageBackend,
+    WorkflowRunMode,
+    WorkflowStatus,
+)
 from api.schemas.workflow import WorkflowRunResponseSchema
+from api.schemas.workflow_configurations import WorkflowConfigurationDefaults
 from api.sdk_expose import sdk_expose
 from api.services.auth.depends import get_user
 from api.services.configuration.ai_model_configuration import (
     WORKFLOW_MODEL_CONFIGURATION_V2_OVERRIDE_KEY,
-    check_for_masked_keys_in_ai_model_configuration_v2,
-    compile_ai_model_configuration_v2,
-    convert_legacy_ai_model_configuration_to_v2,
-    get_resolved_ai_model_configuration,
-    merge_ai_model_configuration_v2_secrets,
 )
-from api.services.configuration.check_validity import UserConfigurationValidator
 from api.services.configuration.masking import (
     mask_workflow_configurations,
     mask_workflow_definition,
     merge_workflow_api_keys,
 )
-from api.services.configuration.merge import merge_workflow_configuration_secrets
-from api.services.configuration.resolve import (
-    enrich_overrides_with_api_keys,
-    resolve_effective_config,
-)
 from api.services.mps_service_key_client import mps_service_key_client
-from api.services.posthog_client import capture_event
+from api.services.posthog_tenant import capture_tenant_event
 from api.services.reports import generate_workflow_report_csv
 from api.services.storage import storage_fs
+from api.services.workflow.configuration_policy import (
+    ExternalPBXConfigurationDisabledError,
+    WorkflowConfigurationNotFoundError,
+    apply_external_pbx_mapping_policy,
+)
 from api.services.workflow.dto import ReactFlowDTO, sanitize_workflow_definition
 from api.services.workflow.duplicate import duplicate_workflow
 from api.services.workflow.errors import ItemKind, WorkflowError
+from api.services.workflow.greeting_validation import validate_greeting_recordings
+from api.services.workflow.run_creation import prepare_workflow_run_inputs
 from api.services.workflow.run_usage_response import (
     format_public_cost_info,
     format_public_usage_info,
+)
+from api.services.workflow.tool_name_validation import (
+    validate_workflow_tool_name_collisions,
 )
 from api.services.workflow.trigger_paths import (
     TriggerPathIssue,
@@ -61,6 +66,7 @@ from api.services.workflow.trigger_paths import (
 from api.services.workflow.workflow_graph import (
     WorkflowGraph,
     validate_node_instance_constraints,
+    validate_unique_transition_tool_names,
 )
 from api.utils.artifacts import artifact_url
 from api.utils.recording_artifacts import (
@@ -122,9 +128,10 @@ def _trigger_path_validation_http_exception(
 
 async def _validate_workflow_definition(
     workflow_definition: Optional[dict],
+    organization_id: int,
     exclude_workflow_id: Optional[int] = None,
 ) -> list[WorkflowError]:
-    """Run DTO + graph + trigger-conflict checks on a workflow definition.
+    """Run DTO, greeting, graph, tool-name, and trigger checks on a definition.
 
     Returns the list of errors (empty if the definition is valid). This is
     the single source of truth for "is this workflow valid?" — used by the
@@ -140,6 +147,8 @@ async def _validate_workflow_definition(
         dto = ReactFlowDTO.model_validate(workflow_definition)
     except ValidationError as exc:
         errors.extend(_transform_schema_errors(exc, workflow_definition))
+
+    errors.extend(validate_greeting_recordings(workflow_definition))
 
     # ----------- Graph Validation if DTO is valid ------------
     try:
@@ -158,6 +167,13 @@ async def _validate_workflow_definition(
                 message=issue.message,
             )
         )
+
+    errors.extend(
+        await validate_workflow_tool_name_collisions(
+            workflow_definition,
+            organization_id,
+        )
+    )
 
     # ----------- Trigger Path Conflict Check ------------
     trigger_paths = extract_trigger_paths(workflow_definition)
@@ -214,6 +230,35 @@ def _node_instance_validation_errors(
         node_types,
         enforce_min_instances=False,
     )
+
+
+def _transition_tool_name_validation_errors(
+    workflow_definition: Optional[dict],
+) -> list[WorkflowError]:
+    """Validate transition names without requiring a complete draft DTO."""
+    if not workflow_definition:
+        return []
+    edges = workflow_definition.get("edges")
+    if not isinstance(edges, list):
+        return []
+
+    transitions: list[tuple[str, str, str]] = []
+    for edge in edges:
+        if not isinstance(edge, dict):
+            continue
+        edge_id = edge.get("id")
+        source = edge.get("source")
+        data = edge.get("data")
+        label = data.get("label") if isinstance(data, dict) else None
+        if (
+            isinstance(edge_id, str)
+            and isinstance(source, str)
+            and isinstance(label, str)
+            and label
+        ):
+            transitions.append((edge_id, source, label))
+
+    return validate_unique_transition_tool_names(transitions)
 
 
 class CallDispositionCodes(BaseModel):
@@ -284,7 +329,37 @@ class UpdateWorkflowRequest(BaseModel):
     name: str | None = None
     workflow_definition: dict | None = None
     template_context_variables: dict | None = None
-    workflow_configurations: dict | None = None
+    # Typed so field constraints (e.g. the max_call_duration cap) are
+    # enforced by FastAPI; extra="allow" keeps passthrough keys like
+    # model_configuration_override intact.
+    workflow_configurations: WorkflowConfigurationDefaults | None = None
+
+
+class PublishWorkflowRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    version_name: (
+        Annotated[
+            str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)
+        ]
+        | None
+    ) = None
+    change_description: (
+        Annotated[
+            str, StringConstraints(strip_whitespace=True, min_length=1, max_length=500)
+        ]
+        | None
+    ) = None
+
+
+class UpdateWorkflowVersionMetadataRequest(PublishWorkflowRequest):
+    """Omitted fields are preserved; null clears a release note."""
+
+
+class WorkflowVersionMetadataResponse(BaseModel):
+    id: int
+    version_name: str | None
+    change_description: str | None
 
 
 class WorkflowVersionResponse(BaseModel):
@@ -293,6 +368,8 @@ class WorkflowVersionResponse(BaseModel):
     status: str
     created_at: datetime
     published_at: datetime | None = None
+    version_name: str | None = None
+    change_description: str | None = None
     workflow_json: dict
     workflow_configurations: dict | None = None
     template_context_variables: dict | None = None
@@ -387,7 +464,9 @@ async def validate_workflow(
     )
 
     errors = await _validate_workflow_definition(
-        workflow_definition, exclude_workflow_id=workflow_id
+        workflow_definition,
+        organization_id=user.selected_organization_id,
+        exclude_workflow_id=workflow_id,
     )
 
     if errors:
@@ -444,6 +523,15 @@ async def create_workflow(
     instance_errors = _node_instance_validation_errors(workflow_definition)
     if instance_errors:
         raise _validation_errors_http_exception(instance_errors)
+    transition_errors = _transition_tool_name_validation_errors(workflow_definition)
+    if transition_errors:
+        raise _validation_errors_http_exception(transition_errors)
+    tool_name_errors = await validate_workflow_tool_name_collisions(
+        workflow_definition,
+        user.selected_organization_id,
+    )
+    if tool_name_errors:
+        raise _validation_errors_http_exception(tool_name_errors)
 
     # Validate trigger path uniqueness BEFORE creating the workflow so we
     # don't leave an orphaned workflow record when the trigger conflicts.
@@ -465,14 +553,14 @@ async def create_workflow(
         user.selected_organization_id,
     )
 
-    capture_event(
+    await capture_tenant_event(
         distinct_id=str(user.provider_id),
         event=PostHogEvent.WORKFLOW_CREATED,
+        organization_id=user.selected_organization_id,
         properties={
-            "workflow_id": workflow.id,
+            "workflow_uuid": workflow.workflow_uuid,
             "workflow_name": workflow.name,
             "source": "direct",
-            "organization_id": user.selected_organization_id,
         },
     )
 
@@ -540,6 +628,7 @@ async def create_workflow_from_template(
                 call_type=mps_call_type.upper(),
                 use_case=request.use_case,
                 activity_description=request.activity_description,
+                organization_id=user.selected_organization_id,
                 created_by=str(user.provider_id),
             )
         else:
@@ -629,17 +718,16 @@ async def create_workflow_from_template(
             organization_id=user.selected_organization_id,
         )
 
-
-        capture_event(
+        await capture_tenant_event(
             distinct_id=str(user.provider_id),
             event=PostHogEvent.WORKFLOW_CREATED,
+            organization_id=user.selected_organization_id,
             properties={
-                "workflow_id": workflow.id,
+                "workflow_uuid": workflow.workflow_uuid,
                 "workflow_name": workflow.name,
                 "source": "template",
                 "call_type": request.call_type,
                 "use_case": request.use_case,
-                "organization_id": user.selected_organization_id,
             },
         )
 
@@ -666,6 +754,17 @@ async def create_workflow_from_template(
 
     except HTTPException:
         raise
+    except RequestError as e:
+        logger.error(f"MPS API connection error: {e}")
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "Building a workflow from a use-case description requires the Dograh "
+                "cloud service (Model Proxy Service), which could not be reached. "
+                "Please check your network connectivity and the MPS_API_URL "
+                "configuration, or build the workflow manually or with the Dograh SDK."
+            ),
+        )
     except HTTPStatusError as e:
         logger.error(f"MPS API error: {e}")
         raise HTTPException(
@@ -839,17 +938,41 @@ async def get_workflow(
     }
 
 
+class WorkflowVersionSummaryResponse(BaseModel):
+    id: int
+    version_number: int | None
+    status: str
+    published_at: datetime | None
+
+
+@router.get("/{workflow_id}/version-summaries")
+async def get_workflow_version_summaries(
+    workflow_id: int, user: UserModel = Depends(get_user)
+) -> list[WorkflowVersionSummaryResponse]:
+    workflow_name = await db_client.get_workflow_name(
+        workflow_id, organization_id=user.selected_organization_id
+    )
+    if workflow_name is None:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    return await db_client.get_workflow_version_summaries(
+        workflow_id, user.selected_organization_id
+    )
+
+
 @router.get("/{workflow_id}/versions")
 async def get_workflow_versions(
     workflow_id: int,
     limit: int | None = Query(None, ge=1, le=100),
     offset: int = Query(0, ge=0),
     user: UserModel = Depends(get_user),
+    version_number: Annotated[int | None, Query(ge=1)] = None,
+    status: Literal["draft", "published", "archived"] | None = None,
 ) -> list[WorkflowVersionResponse]:
     """List versions for a workflow, newest first.
 
     Pass `limit`/`offset` to page through long histories. With no `limit`,
-    returns every version (legacy behavior).
+    returns every version (legacy behavior). Filter by `version_number` to
+    open an exact version, or by `status=published` for the latest release.
     """
     workflow = await db_client.get_workflow(
         workflow_id, organization_id=user.selected_organization_id
@@ -860,7 +983,11 @@ async def get_workflow_versions(
         )
 
     versions = await db_client.get_workflow_versions(
-        workflow_id, limit=limit, offset=offset
+        workflow_id,
+        limit=limit,
+        offset=offset,
+        version_number=version_number,
+        status=status,
     )
     return [
         WorkflowVersionResponse(
@@ -869,6 +996,8 @@ async def get_workflow_versions(
             status=v.status,
             created_at=v.created_at,
             published_at=v.published_at,
+            version_name=(v.extra_metadata or {}).get("version_name"),
+            change_description=(v.extra_metadata or {}).get("change_description"),
             workflow_json=mask_workflow_definition(v.workflow_json),
             workflow_configurations=mask_workflow_configurations(
                 v.workflow_configurations
@@ -880,9 +1009,34 @@ async def get_workflow_versions(
     ]
 
 
+@router.patch("/{workflow_id}/versions/{definition_id}/metadata")
+async def update_workflow_version_metadata(
+    workflow_id: int,
+    definition_id: int,
+    request: UpdateWorkflowVersionMetadataRequest,
+    user: Annotated[UserModel, Depends(get_user)],
+) -> WorkflowVersionMetadataResponse:
+    """Edit release notes on a published or archived version without republishing."""
+    version = await db_client.update_workflow_version_metadata(
+        workflow_id=workflow_id,
+        definition_id=definition_id,
+        organization_id=user.selected_organization_id,
+        updates=request.model_dump(exclude_unset=True),
+    )
+    if version is None:
+        raise HTTPException(status_code=404, detail="Published version not found")
+    metadata = version.extra_metadata or {}
+    return WorkflowVersionMetadataResponse(
+        id=version.id,
+        version_name=metadata.get("version_name"),
+        change_description=metadata.get("change_description"),
+    )
+
+
 @router.post("/{workflow_id}/publish")
 async def publish_workflow(
     workflow_id: int,
+    request: PublishWorkflowRequest | None = None,
     user: UserModel = Depends(get_user),
 ):
     """Publish the current draft version of a workflow.
@@ -903,24 +1057,42 @@ async def publish_workflow(
     if draft is None:
         raise HTTPException(status_code=400, detail="No draft to publish")
 
+    model_override = (draft.workflow_configurations or {}).get(
+        "model_configuration_override"
+    )
+    if model_override is not None:
+        from api.services.configuration.model_connections import (
+            resolve_model_configuration,
+        )
+
+        await resolve_model_configuration(
+            user.selected_organization_id, workflow_override=model_override
+        )
+
     errors = await _validate_workflow_definition(
-        draft.workflow_json, exclude_workflow_id=workflow_id
+        draft.workflow_json,
+        organization_id=user.selected_organization_id,
+        exclude_workflow_id=workflow_id,
     )
     if errors:
         raise _validation_errors_http_exception(errors)
 
     try:
-        published = await db_client.publish_workflow_draft(workflow_id)
+        published = await db_client.publish_workflow_draft(
+            workflow_id,
+            version_name=request.version_name if request else None,
+            change_description=request.change_description if request else None,
+        )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    capture_event(
+    await capture_tenant_event(
         distinct_id=str(user.provider_id),
         event=PostHogEvent.WORKFLOW_PUBLISHED,
+        organization_id=user.selected_organization_id,
         properties={
-            "workflow_id": workflow_id,
+            "workflow_uuid": workflow.workflow_uuid,
             "version_number": published.version_number,
-            "organization_id": user.selected_organization_id,
         },
     )
 
@@ -929,6 +1101,10 @@ async def publish_workflow(
         "version_number": published.version_number,
         "status": published.status,
         "published_at": published.published_at,
+        "version_name": (published.extra_metadata or {}).get("version_name"),
+        "change_description": (published.extra_metadata or {}).get(
+            "change_description"
+        ),
     }
 
 
@@ -956,6 +1132,8 @@ async def create_workflow_draft(
         status=draft.status,
         created_at=draft.created_at,
         published_at=draft.published_at,
+        version_name=(draft.extra_metadata or {}).get("version_name"),
+        change_description=(draft.extra_metadata or {}).get("change_description"),
         workflow_json=mask_workflow_definition(draft.workflow_json),
         workflow_configurations=mask_workflow_configurations(
             draft.workflow_configurations
@@ -1120,6 +1298,18 @@ async def update_workflow(
         instance_errors = _node_instance_validation_errors(workflow_definition)
         if instance_errors:
             raise _validation_errors_http_exception(instance_errors, status_code=409)
+        transition_errors = _transition_tool_name_validation_errors(workflow_definition)
+        if transition_errors:
+            raise _validation_errors_http_exception(transition_errors, status_code=409)
+        tool_name_errors = await validate_workflow_tool_name_collisions(
+            workflow_definition,
+            user.selected_organization_id,
+        )
+        if tool_name_errors:
+            raise _validation_errors_http_exception(
+                tool_name_errors,
+                status_code=409,
+            )
         if workflow_definition:
             existing_workflow = await db_client.get_workflow(
                 workflow_id, organization_id=user.selected_organization_id
@@ -1137,133 +1327,41 @@ async def update_workflow(
                     existing_def,
                 )
 
-        # Validate model overrides. v2 uses a complete workflow-level model
-        # configuration; legacy v1 uses partial service overlays.
-        workflow_configurations = request.workflow_configurations
-        if workflow_configurations and workflow_configurations.get(
-            WORKFLOW_MODEL_CONFIGURATION_V2_OVERRIDE_KEY
-        ):
-            existing_workflow = await db_client.get_workflow(
-                workflow_id, organization_id=user.selected_organization_id
-            )
-            if existing_workflow is None:
-                raise HTTPException(
-                    status_code=404, detail=f"Workflow with id {workflow_id} not found"
-                )
-            existing_draft = await db_client.get_draft_version(workflow_id)
-            existing_configs = (
-                existing_draft.workflow_configurations
-                if existing_draft
-                else existing_workflow.released_definition.workflow_configurations
-            )
-            existing_v2_override = (existing_configs or {}).get(
-                WORKFLOW_MODEL_CONFIGURATION_V2_OVERRIDE_KEY
-            )
-            try:
-                incoming_v2_override = (
-                    OrganizationAIModelConfigurationV2.model_validate(
-                        workflow_configurations[
-                            WORKFLOW_MODEL_CONFIGURATION_V2_OVERRIDE_KEY
-                        ]
-                    )
-                )
-                existing_v2_override_config = (
-                    OrganizationAIModelConfigurationV2.model_validate(
-                        existing_v2_override
-                    )
-                    if existing_v2_override
-                    else None
-                )
-                v2_override = merge_ai_model_configuration_v2_secrets(
-                    incoming_v2_override,
-                    existing_v2_override_config,
-                )
-                if existing_v2_override_config is None:
-                    resolved_config = await get_resolved_ai_model_configuration(
-                        user_id=user.id,
-                        organization_id=user.selected_organization_id,
-                    )
-                    v2_override = merge_ai_model_configuration_v2_secrets(
-                        v2_override,
-                        resolved_config.organization_configuration,
-                    )
-                check_for_masked_keys_in_ai_model_configuration_v2(v2_override)
-                effective = compile_ai_model_configuration_v2(v2_override)
-                await UserConfigurationValidator().validate(
-                    effective,
-                    organization_id=user.selected_organization_id,
-                    created_by=user.provider_id,
-                )
-            except (ValidationError, ValueError) as e:
-                raise HTTPException(status_code=422, detail=str(e))
-            workflow_configurations = {
-                **workflow_configurations,
-                WORKFLOW_MODEL_CONFIGURATION_V2_OVERRIDE_KEY: v2_override.model_dump(
-                    mode="json",
-                    exclude_none=True,
-                ),
-            }
-            workflow_configurations.pop("model_overrides", None)
-        elif workflow_configurations and workflow_configurations.get("model_overrides"):
-            existing_workflow = await db_client.get_workflow(
-                workflow_id, organization_id=user.selected_organization_id
-            )
-            if existing_workflow is None:
-                raise HTTPException(
-                    status_code=404, detail=f"Workflow with id {workflow_id} not found"
-                )
-            existing_draft = await db_client.get_draft_version(workflow_id)
-            existing_configs = (
-                existing_draft.workflow_configurations
-                if existing_draft
-                else existing_workflow.released_definition.workflow_configurations
-            )
-            workflow_configurations = merge_workflow_configuration_secrets(
+        # exclude_unset keeps stored configs sparse: keys the request didn't
+        # send stay absent so runtime defaults keep applying to them.
+        workflow_configurations = (
+            request.workflow_configurations.model_dump(mode="json", exclude_unset=True)
+            if request.workflow_configurations is not None
+            else None
+        )
+        try:
+            workflow_configurations = await apply_external_pbx_mapping_policy(
                 workflow_configurations,
-                existing_configs,
-            )
-            resolved_config = await get_resolved_ai_model_configuration(
-                user_id=user.id,
+                workflow_id=workflow_id,
                 organization_id=user.selected_organization_id,
             )
-            effective_config = resolved_config.effective
-            try:
-                enriched_overrides = enrich_overrides_with_api_keys(
-                    workflow_configurations["model_overrides"],
-                    effective_config,
+        except WorkflowConfigurationNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except ExternalPBXConfigurationDisabledError as exc:
+            raise HTTPException(status_code=403, detail=str(exc)) from exc
+        if workflow_configurations:
+            # Model settings live in the catalog. Old clients may still echo
+            # the retired inline keys; they are dropped rather than re-imported.
+            workflow_configurations.pop(
+                WORKFLOW_MODEL_CONFIGURATION_V2_OVERRIDE_KEY, None
+            )
+            workflow_configurations.pop("model_overrides", None)
+            if workflow_configurations.get("model_configuration_override") is not None:
+                from api.services.configuration.model_connections import (
+                    resolve_model_configuration,
                 )
-                effective = resolve_effective_config(
-                    effective_config, enriched_overrides
+
+                await resolve_model_configuration(
+                    user.selected_organization_id,
+                    workflow_override=workflow_configurations[
+                        "model_configuration_override"
+                    ],
                 )
-                if resolved_config.source == "organization_v2":
-                    v2_override = convert_legacy_ai_model_configuration_to_v2(effective)
-                    await UserConfigurationValidator().validate(
-                        compile_ai_model_configuration_v2(v2_override),
-                        organization_id=user.selected_organization_id,
-                        created_by=user.provider_id,
-                    )
-                else:
-                    await UserConfigurationValidator().validate(
-                        effective,
-                        organization_id=user.selected_organization_id,
-                        created_by=user.provider_id,
-                    )
-            except ValueError as e:
-                raise HTTPException(status_code=422, detail=str(e))
-            if resolved_config.source == "organization_v2":
-                workflow_configurations = {
-                    **workflow_configurations,
-                    WORKFLOW_MODEL_CONFIGURATION_V2_OVERRIDE_KEY: v2_override.model_dump(
-                        mode="json",
-                        exclude_none=True,
-                    ),
-                }
-                workflow_configurations.pop("model_overrides", None)
-            else:
-                workflow_configurations = {
-                    **workflow_configurations,
-                    "model_overrides": enriched_overrides,
-                }
 
         # Reject upfront if any new trigger path collides with another
         # workflow's trigger — keeps the workflow record from
@@ -1347,14 +1445,13 @@ async def duplicate_workflow_endpoint(
             user_id=user.id,
         )
 
-        capture_event(
+        await capture_tenant_event(
             distinct_id=str(user.provider_id),
             event=PostHogEvent.WORKFLOW_DUPLICATED,
+            organization_id=user.selected_organization_id,
             properties={
-                "workflow_id": workflow.id,
+                "workflow_uuid": workflow.workflow_uuid,
                 "workflow_name": workflow.name,
-                "source_workflow_id": workflow_id,
-                "organization_id": user.selected_organization_id,
             },
         )
 
@@ -1394,13 +1491,47 @@ async def create_workflow_run(
         request: The create workflow run request
         user: The user to create the workflow run for
     """
+    workflow = await db_client.get_workflow(
+        workflow_id, organization_id=user.selected_organization_id
+    )
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
+    run_inputs = await prepare_workflow_run_inputs(
+        db_client,
+        workflow,
+        use_draft=True,
+        include_template_context=True,
+    )
+
+    initial_context = dict(run_inputs.initial_context or {})
+    call_type = CallType.OUTBOUND
+    if request.mode == WorkflowRunMode.SMALLWEBRTC.value:
+        configured_direction = initial_context.get("direction")
+        normalized_direction = (
+            configured_direction.strip().lower()
+            if isinstance(configured_direction, str)
+            else None
+        )
+        # Browser voice tests are inbound by default. A workflow author can set
+        # the template-context variable `direction=outbound` to test that path.
+        call_type = (
+            CallType.OUTBOUND
+            if normalized_direction == CallType.OUTBOUND.value
+            else CallType.INBOUND
+        )
+        initial_context["direction"] = call_type.value
+
     run = await db_client.create_workflow_run(
         request.name,
         workflow_id,
         request.mode,
         user.id,
-        use_draft=True,
+        call_type=call_type,
         organization_id=user.selected_organization_id,
+        definition_id=run_inputs.definition_id,
+        use_draft=run_inputs.use_draft,
+        initial_context=initial_context,
     )
     return {
         "id": run.id,
@@ -1484,8 +1615,8 @@ class WorkflowRunsResponse(BaseModel):
 @router.get("/{workflow_id}/runs")
 async def get_workflow_runs(
     workflow_id: int,
-    page: int = 1,
-    limit: int = 50,
+    page: int = Query(1, ge=1, description="Page number (starts from 1)"),
+    limit: int = Query(50, ge=1, le=100, description="Number of items per page"),
     filters: Optional[str] = Query(None, description="JSON-encoded filter criteria"),
     sort_by: Optional[str] = Query(
         None, description="Field to sort by (e.g., 'duration', 'created_at')"

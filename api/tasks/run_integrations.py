@@ -13,6 +13,13 @@ from api.constants import BACKEND_API_ENDPOINT, DEFAULT_WEBHOOK_DELIVERY_CONFIG
 from api.db import db_client
 from api.db.models import WorkflowRunModel
 from api.enums import OrganizationConfigurationKey
+from api.errors.failure import (
+    DograhFailure,
+    ErrorSource,
+    ErrorType,
+    classify_exception,
+    log_failure,
+)
 from api.services.integrations import (
     IntegrationCompletionContext,
     has_completion_handlers,
@@ -205,6 +212,8 @@ async def run_integrations_post_workflow_run(_ctx, workflow_run_id: int):
                 host=langfuse_config.get("host"),
                 public_key=langfuse_config.get("public_key"),
                 secret_key=langfuse_config.get("secret_key"),
+                project_id=langfuse_config.get("project_id"),
+                traces_public=langfuse_config.get("traces_public", False),
             )
 
         # Step 2: Get workflow definition from the run's pinned version
@@ -229,7 +238,7 @@ async def run_integrations_post_workflow_run(_ctx, workflow_run_id: int):
             and not has_registered_integrations
             and not has_campaign
         ):
-            logger.debug("No integration nodes and no campaign, skipping")
+            logger.info("No integration nodes and no campaign, skipping")
             return
 
         public_token = await db_client.ensure_public_access_token(workflow_run_id)
@@ -294,7 +303,7 @@ async def run_integrations_post_workflow_run(_ctx, workflow_run_id: int):
 
         # Step 7: Execute webhooks
         if not webhook_nodes:
-            logger.debug("No webhook nodes in workflow")
+            logger.info("No webhook nodes in workflow")
             return
 
         logger.info(f"Found {len(webhook_nodes)} webhook nodes to execute")
@@ -308,8 +317,20 @@ async def run_integrations_post_workflow_run(_ctx, workflow_run_id: int):
             try:
                 webhook_node = WebhookRFNode.model_validate(node)
             except ValidationError as e:
-                logger.warning(
-                    f"Webhook node #{node_id} failed validation, skipping: {e}"
+                log_failure(
+                    DograhFailure(
+                        source=ErrorSource.WEBHOOK,
+                        type=ErrorType.CONFIG_ERROR,
+                        code="webhook-invalid-config",
+                        internal_message=f"Webhook node #{node_id} failed validation: {e}",
+                        external_message="Check the webhook node configuration.",
+                        provider="webhook",
+                        error_owner="user",
+                        retryable=False,
+                    ),
+                    organization_id=organization_id,
+                    workflow_run_id=workflow_run_id,
+                    node_id=str(node_id),
                 )
                 continue
 
@@ -341,10 +362,23 @@ async def run_integrations_post_workflow_run(_ctx, workflow_run_id: int):
                     webhook_node_id=str(node_id),
                 )
             except Exception as e:
-                logger.warning(f"Failed to enqueue webhook '{webhook_data.name}': {e}")
+                log_failure(
+                    classify_exception(
+                        e,
+                        source=ErrorSource.WEBHOOK,
+                        provider="webhook",
+                        error_owner="user",
+                    ),
+                    organization_id=organization_id,
+                    workflow_run_id=workflow_run_id,
+                    node_id=str(node_id),
+                )
 
     except Exception as e:
-        logger.error(f"Error running integrations: {e}", exc_info=True)
+        log_failure(
+            classify_exception(e, source=ErrorSource.INTEGRATION),
+            workflow_run_id=workflow_run_id,
+        )
         raise
 
 
@@ -427,54 +461,20 @@ def _build_webhook_payload(
     return payload
 
 
-# Substrings that mark a header as likely carrying a secret. Matched against the
-# normalized key so variants are caught too (e.g. ``X-Custom-Auth-Token``,
-# ``My-Api-Key``), not just exact names. Their values are NOT persisted on the
-# delivery row (which would store them in plaintext); secrets belong in the
-# credential store, re-resolved at send time. Bare "key" is intentionally absent
-# to avoid dropping benign headers like ``X-Idempotency-Key``.
-_SECRET_HEADER_MARKERS = (
-    "authorization",
-    "auth",
-    "token",
-    "secret",
-    "password",
-    "passwd",
-    "cookie",
-    "credential",
-    "api-key",
-    "apikey",
-    "api_key",
-    "access-key",
-)
+def _custom_headers(webhook_data: WebhookNodeData) -> list[dict]:
+    """Custom headers to persist on the delivery row, exactly as configured.
 
-
-def _looks_like_secret_header(key: str) -> bool:
-    normalized = key.strip().lower()
-    return any(marker in normalized for marker in _SECRET_HEADER_MARKERS)
-
-
-def _safe_custom_headers(
-    webhook_data: WebhookNodeData, webhook_name: str
-) -> list[dict]:
-    """Custom headers to persist, with secret-looking ones dropped.
-
-    Persisting arbitrary header values would store credentials (Authorization,
-    X-API-Key, ...) in plaintext on the delivery row. Drop those and tell the
-    operator to use a credential instead.
+    Every header the user configures is stored and sent verbatim, auth-bearing
+    ones included: the receiver decides what it needs to authenticate. Values
+    therefore sit in plaintext on the delivery row; logs stay clean via the
+    redaction in ``_log_webhook_request``. A credential remains the better
+    option when the secret should be rotatable and never persisted here.
     """
-    safe = []
-    for h in webhook_data.custom_headers or []:
-        if not (h.key and h.value):
-            continue
-        if _looks_like_secret_header(h.key):
-            logger.warning(
-                f"Webhook '{webhook_name}' custom header '{h.key}' looks like a "
-                f"secret; it will not be stored or sent. Use a credential instead."
-            )
-            continue
-        safe.append({"key": h.key, "value": h.value})
-    return safe
+    return [
+        {"key": h.key, "value": h.value}
+        for h in webhook_data.custom_headers or []
+        if h.key and h.value
+    ]
 
 
 async def _enqueue_webhook_delivery(
@@ -497,7 +497,7 @@ async def _enqueue_webhook_delivery(
     webhook_name = webhook_data.name
 
     if not webhook_data.enabled:
-        logger.debug(f"Webhook '{webhook_name}' is disabled, skipping")
+        logger.info(f"Webhook '{webhook_name}' is disabled, skipping")
         return
 
     url = webhook_data.endpoint_url
@@ -507,9 +507,9 @@ async def _enqueue_webhook_delivery(
 
     payload = _build_webhook_payload(webhook_data, render_context)
 
-    # Persist non-secret request definition. The credential is stored by reference
-    # (uuid) and re-resolved at send time so secrets never land in this row.
-    custom_headers = _safe_custom_headers(webhook_data, webhook_name)
+    # Persist the request definition. Custom headers are stored verbatim; a
+    # credential is stored by reference (uuid) and re-resolved at send time.
+    custom_headers = _custom_headers(webhook_data)
     method = (webhook_data.http_method or "POST").upper()
 
     delivery, created = await db_client.create_webhook_delivery(

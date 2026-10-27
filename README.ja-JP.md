@@ -4,7 +4,7 @@
 >
 > 💡 **注記**: このドキュメントはコミュニティによって保守されています。翻訳の不正確さや英語版からの内容のずれを見つけた場合は、ぜひ PR を作成してください。
 
-**オープンソースでセルフホスト可能な Vapi / Retell の代替手段** -- ドラッグ&ドロップのワークフロービルダーで本番向け音声エージェントを構築できます。ゼロから 2 分以内で動作するボットを立ち上げられます。
+**オープンソースでセルフホスト可能な Vapi / Retell の代替手段** -- ビジュアルワークフロービルダーで本番向け音声エージェントを構築し、数分でテストし、MCP 経由で AI コーディングアシスタントに設計や編集を任せられます。
 
 <p align="center">
   <a href="https://app.dograh.com">
@@ -15,7 +15,7 @@
     <img src="https://img.shields.io/badge/⚡_60秒でセルフホスト-コマンド1つ-111827?style=for-the-badge" alt="60秒でセルフホスト">
   </a>
   &nbsp;
-  <a href="https://join.slack.com/t/dograh-community/shared_invite/zt-3zjb5vwvl-j7hRz3_F1SOn5cH~jm5f5g">
+  <a href="https://join.slack.com/t/dograh-community/shared_invite/zt-4anp45mlu-ukR3jTqwdDFMEpqeBhKn6g">
     <img src="https://img.shields.io/badge/💬_Slackに参加-コミュニティ-4A154B?style=for-the-badge&logo=slack" alt="Slackに参加">
   </a>
 </p>
@@ -108,31 +108,40 @@ curl -o docker-compose.yaml https://raw.githubusercontent.com/dograh-hq/dograh/m
 
 1. ブラウザで [http://localhost:3010](http://localhost:3010) を開きます。
 2. **Inbound(着信)** または **Outbound(発信)** を選び、ボットに名前を付けます(例: _リード判定_)。続けて用途を 5-10 語で説明します(例: _保険フォーム送信者の購入意向を確認_)。
-3. **Web Call** をクリックすると、ボットと直接会話できます。
+3. **Test Agent** をクリックします。
+4. **Test Audio** でブラウザからエージェントと会話するか、**Test Chat** でテキストベースに素早く反復します。Test Chat ではユーザー発話を編集または再実行でき、Dograh がその地点からエージェントの応答とノード遷移を再生成します。
 
 > 🔑 **API キーは不要です。** Dograh には自動生成されるキーと、組み込みの LLM / TTS / STT スタックが付属しています。必要に応じて、独自の LLM、TTS、STT、または Twilio、Vonage、Telnyx などの電話連携プロバイダーをいつでも接続できます。
 
+## MCP でエージェントを構築
+
+Dograh には MCP サーバーが付属しているため、コーディングエージェントが Dograh ワークスペース内で直接作業できます。
+
+Codex、Claude Code、Cursor、または任意の MCP クライアントを接続すると、既存エージェントの確認、Dograh ドキュメントの検索、ノードスキーマの取得、新しいワークフローの作成、自然言語からのドラフト編集保存ができます。
+
+コーディングエージェントに音声エージェントの構築を依頼するときは、1 行のプロンプトだけでなく、ユースケース用の短いスクリプトを共有してください。エージェントのペルソナ、通話フロー、ルール、反論処理、成功基準、可能であればサンプル会話を含めると効果的です。
+
+アシスタントの接続方法は [MCP ガイド](https://docs.dograh.com/integrations/mcp) を参照してください。
+
 ## 機能
 
-### 音声機能
+### 音声エージェントビルダー
 
-- 電話連携: Twilio、Vonage、Vobiz、Cloudonix などを標準搭載(他のプロバイダーも簡単に追加可能)。有人オペレーターへの転送にも対応
-- 言語: 英語をサポート(他言語へ拡張可能)
-- カスタムモデル: 独自の TTS / STT モデルを持ち込み可能
-- リアルタイム処理: 低遅延の音声インタラクション
+- Start ノード、Agent ノード、グローバル指示、ツール、遷移、通話終了結果を備えたビジュアルワークフロービルダー
+- ブラウザ音声テスト用の **Test Audio** と、高速なプロンプト反復用の **Test Chat** を備えた Test Agent パネル
+- 本番ワークフロー向けの QA ノード、ナレッジベース、Webhook、埋め込み、ツール呼び出し
+
+### 音声と電話連携
+
+- Twilio、Vonage、Telnyx、Plivo、Vobiz、Cloudonix、Asterisk ARI などの電話連携を標準搭載
+- 対応する電話連携プロバイダーでは通話転送による有人対応が可能
+- 独自の LLM、TTS、STT、電話連携プロバイダーを接続可能。成果物は同梱の MinIO または AWS / S3 互換ストレージに保存できます
 
 ### 開発者体験
 
-- ゼロ設定で開始: API キーを自動生成し、すぐにテスト可能
-- Python ベース: Python で構築されており、カスタマイズしやすい
-- Docker ファースト: コンテナ化により一貫したデプロイが可能
-- モジュラー構成: 必要に応じて各コンポーネントを差し替え可能
-
-### テストと品質
-
-- **テストモード**: 本番通話や本番データに影響を与えず、公開前にエージェントをエンドツーエンドで試せます
-- **ダッシュボード内 Web 通話**: 電話連携を設定しなくても、構築中にボットと直接会話できます
-- **QA ノード**: 他のノードに含まれるプロンプト品質を分析する組み込みワークフローノード
+- セルフホスト向けの 1 コマンド Docker セットアップ
+- カスタマイズしやすい Python バックエンドとモジュラーなプロバイダー構成
+- プログラムからのエージェント作成とアウトバウンド通話に対応する Python / Node SDK
 
 ## デプロイ方法
 
@@ -142,7 +151,7 @@ curl -o docker-compose.yaml https://raw.githubusercontent.com/dograh-hq/dograh/m
 
 ### セルフホストデプロイ
 
-リモートサーバーへのデプロイや HTTPS 設定を含む詳しい手順は、[Docker デプロイガイド](https://docs.dograh.com/deployment/docker)を参照してください。
+リモートサーバーへのデプロイや HTTPS 設定を含む詳しい手順は、[Docker デプロイガイド](https://docs.dograh.com/deployment/docker#option-2-remote-server-deployment)を参照してください。
 
 ### クラウド版
 
@@ -165,7 +174,7 @@ curl -o docker-compose.yaml https://raw.githubusercontent.com/dograh-hq/dograh/m
 - **GitHub Discussions** -- ユースケースを共有し、質問し、ワークフローのレシピを交換できます。
 - **GitHub Issues** -- バグ報告や機能リクエストに利用してください。
 
-👉 参加はこちら → [Dograh Community Slack](https://join.slack.com/t/dograh-community/shared_invite/zt-3zjb5vwvl-j7hRz3_F1SOn5cH~jm5f5g)
+👉 参加はこちら → [Dograh Community Slack](https://join.slack.com/t/dograh-community/shared_invite/zt-4anp45mlu-ukR3jTqwdDFMEpqeBhKn6g)
 
 ## 🙌 コントリビューション
 
@@ -181,9 +190,7 @@ curl -o docker-compose.yaml https://raw.githubusercontent.com/dograh-hq/dograh/m
 
 ## ⭐ Star 履歴
 
-<a href="https://star-history.com/#dograh-hq/dograh&Date">
-  <img src="https://api.star-history.com/svg?repos=dograh-hq/dograh&type=Date" alt="Dograh の Star 履歴" width="80%">
-</a>
+<img src="docs/images/star-history.png" alt="Dograh star history" width="80%">
 
 ## 📄 ライセンス
 
@@ -197,7 +204,7 @@ Dograh AI は [BSD 2-Clause License](LICENSE) のもとで公開されていま�
 <br><br><br>
 
   <p align="center">
-    <a href="https://github.com/dograh-hq/dograh/stargazers">⭐ GitHub で Star する</a> |
+    <a href="https://github.com/dograh-hq/dograh">⭐ GitHub で Star する</a> |
     <a href="https://app.dograh.com">☁️ クラウド版を試す</a> |
-    <a href="https://join.slack.com/t/dograh-community/shared_invite/zt-3zjb5vwvl-j7hRz3_F1SOn5cH~jm5f5g">💬 Slack に参加</a>
+    <a href="https://join.slack.com/t/dograh-community/shared_invite/zt-4anp45mlu-ukR3jTqwdDFMEpqeBhKn6g">💬 Slack に参加</a>
   </p>

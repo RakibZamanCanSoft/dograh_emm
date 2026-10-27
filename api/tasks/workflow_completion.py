@@ -1,123 +1,121 @@
-import asyncio
-import os
+"""Run extraction and completion integrations after durable call finalization."""
+
+import time
+import uuid
 
 from loguru import logger
-from pipecat.utils.run_context import set_current_run_id
+from pipecat.utils.run_context import set_current_org_id, set_current_run_id
 
-from api.services.workflow_run_artifacts import upload_workflow_run_artifacts
+from api.db import db_client
+from api.services.telephony.external_pbx_writeback import sync_external_pbx_call_record
+from api.services.workflow.final_extraction import run_final_extraction
 from api.services.workflow_run_billing import (
     report_completed_workflow_run_platform_usage,
 )
 from api.tasks.run_integrations import run_integrations_post_workflow_run
 
 
-def _read_and_remove_temp_file(temp_file_path: str | None, label: str) -> bytes | None:
-    if not temp_file_path:
-        return None
-    try:
-        if not os.path.exists(temp_file_path):
-            logger.warning(f"{label} temp file not found: {temp_file_path}")
-            return None
-        with open(temp_file_path, "rb") as f:
-            data = f.read()
-        os.remove(temp_file_path)
-        return data
-    except Exception as e:
-        logger.error(f"Error reading legacy {label} temp file {temp_file_path}: {e}")
-        return None
+async def process_workflow_completion(_ctx, workflow_run_id: int):
+    """Extract, run integrations, bill and write back after artifact upload.
 
-
-async def _upload_legacy_temp_artifacts(
-    workflow_run_id: int,
-    audio_temp_path: str | None,
-    transcript_temp_path: str | None,
-    user_audio_temp_path: str | None,
-    bot_audio_temp_path: str | None,
-) -> None:
-    """Handle jobs enqueued before uploads moved into the pipeline process.
-
-    Pre-refactor web workers passed local temp-file paths; upload them if this
-    worker can still see the files (same host / shared volume).
-
-    Deprecated: remove once no pre-refactor jobs can remain in the queue.
+    New voice runs carry a durable completion record. Legacy runs and text
+    chats use the same steps without participating in voice-run recovery.
     """
-    logger.info(
-        f"Processing legacy temp-file artifacts for workflow run {workflow_run_id}"
+    set_current_run_id(str(workflow_run_id))
+    run, organization_id = await db_client.get_workflow_run_with_context(
+        workflow_run_id
     )
-    transcript_bytes = await asyncio.to_thread(
-        _read_and_remove_temp_file, transcript_temp_path, "transcript"
+    if run is None or organization_id is None:
+        return
+    set_current_org_id(organization_id)
+    tracked = bool((run.extra or {}).get("workflow_completion"))
+    token = uuid.uuid4().hex
+    steps = []
+    if tracked:
+        claim = await db_client.claim_workflow_completion(
+            workflow_run_id, organization_id, token
+        )
+        if claim is None:
+            return
+        steps = claim.get("steps") or []
+        # A failed extraction is recorded and downstream processing continues;
+        # a failed persistence raises so no consumer sees an uncommitted result.
+        await run_final_extraction(workflow_run_id, organization_id, token)
+
+    run, _ = await db_client.get_workflow_run_with_context(workflow_run_id)
+    disposition = (run.gathered_context or {}).get("mapped_call_disposition")
+    operations = []
+    if disposition:
+        operations.append(
+            (
+                "disposition",
+                lambda: db_client.add_call_disposition_code(
+                    run.workflow_id, disposition
+                ),
+            )
+        )
+    operations.extend(
+        [
+            (
+                "integrations",
+                lambda: run_integrations_post_workflow_run(_ctx, workflow_run_id),
+            ),
+            (
+                "billing",
+                lambda: report_completed_workflow_run_platform_usage(workflow_run_id),
+            ),
+            ("pbx", lambda: sync_external_pbx_call_record(workflow_run_id)),
+        ]
     )
-    await upload_workflow_run_artifacts(
-        workflow_run_id,
-        mixed_audio_wav=await asyncio.to_thread(
-            _read_and_remove_temp_file, audio_temp_path, "mixed audio"
-        ),
-        user_audio_wav=await asyncio.to_thread(
-            _read_and_remove_temp_file, user_audio_temp_path, "user audio"
-        ),
-        bot_audio_wav=await asyncio.to_thread(
-            _read_and_remove_temp_file, bot_audio_temp_path, "bot audio"
-        ),
-        transcript_text=(
-            transcript_bytes.decode("utf-8") if transcript_bytes else None
-        ),
-    )
-
-
-async def process_workflow_completion(
-    _ctx,
-    workflow_run_id: int,
-    audio_temp_path: str | None = None,
-    transcript_temp_path: str | None = None,
-    user_audio_temp_path: str | None = None,
-    bot_audio_temp_path: str | None = None,
-):
-    """Process workflow completion: run integrations and report billing.
-
-    Recording/transcript uploads happen in the pipeline process itself
-    (api/services/workflow_run_artifacts.py) before this job is enqueued,
-    so this task needs no shared filesystem with the web tier. The temp-path
-    arguments only exist for jobs enqueued by pre-refactor web workers.
-
-    Args:
-        _ctx: ARQ context (unused)
-        workflow_run_id: The workflow run ID
-        audio_temp_path: Deprecated, pre-refactor jobs only
-        transcript_temp_path: Deprecated, pre-refactor jobs only
-        user_audio_temp_path: Deprecated, pre-refactor jobs only
-        bot_audio_temp_path: Deprecated, pre-refactor jobs only
-    """
-    run_id = str(workflow_run_id)
-    set_current_run_id(run_id)
-
-    logger.info(f"Processing workflow completion for run {workflow_run_id}")
-
-    if (
-        audio_temp_path
-        or transcript_temp_path
-        or user_audio_temp_path
-        or bot_audio_temp_path
-    ):
-        await _upload_legacy_temp_artifacts(
+    failed_steps = []
+    for step, operation in operations:
+        if step in steps:
+            continue
+        try:
+            await operation()
+        except Exception as exc:  # noqa: BLE001 - independent completion steps
+            logger.error(
+                "Error in completion step {} for run {}: {}", step, workflow_run_id, exc
+            )
+            failed_steps.append(step)
+            continue
+        if tracked and not await db_client.checkpoint_workflow_completion(
             workflow_run_id,
-            audio_temp_path,
-            transcript_temp_path,
-            user_audio_temp_path,
-            bot_audio_temp_path,
-        )
+            organization_id,
+            token,
+            step,
+        ):
+            raise RuntimeError("Completion lease expired")
+    if tracked:
+        if failed_steps:
+            # Keep the lease until expiry; the sweeper will retry only the
+            # unfinished steps without racing an already queued duplicate.
+            raise RuntimeError(f"Workflow completion failed: {', '.join(failed_steps)}")
+        if not await db_client.checkpoint_workflow_completion(
+            workflow_run_id, organization_id, token, "done"
+        ):
+            raise RuntimeError("Completion lease expired")
+    logger.info("Completed workflow completion processing for run {}", workflow_run_id)
 
-    # Run integrations including QA analysis (after uploads are complete)
-    try:
-        await run_integrations_post_workflow_run(_ctx, workflow_run_id)
-    except Exception as e:
-        logger.error(f"Error running integrations for workflow {workflow_run_id}: {e}")
 
-    # Notify MPS after completion. MPS owns credit accounting.
-    try:
-        await report_completed_workflow_run_platform_usage(workflow_run_id)
-    except Exception as e:
-        logger.error(
-            f"Error reporting platform usage for workflow {workflow_run_id}: {e}"
-        )
+async def sweep_workflow_completions(_ctx) -> None:
+    """Recover lost jobs, including runs whose extraction already finished."""
+    from api.tasks.arq import enqueue_job
+    from api.tasks.function_names import FunctionNames
 
-    logger.info(f"Completed workflow completion processing for run {workflow_run_id}")
+    for run_id in await db_client.get_overdue_workflow_completions():
+        try:
+            # ARQ retains results for an hour, including failed jobs. A bounded
+            # recovery generation bypasses that retention; the DB lease owns
+            # deduplication against the original job and other recoveries.
+            await enqueue_job(
+                FunctionNames.PROCESS_WORKFLOW_COMPLETION,
+                run_id,
+                _job_id=f"workflow-completion-{run_id}-recovery-{int(time.time() // 600)}",
+            )
+        except Exception as exc:  # noqa: BLE001 - independent completion steps
+            logger.warning(
+                "Could not recover completion for run {} ({})",
+                run_id,
+                type(exc).__name__,
+            )
