@@ -62,7 +62,8 @@ $Lines = @(
     "    echo `"[*] Building Docker images from source and restarting...`"",
     "    find scripts deploy -type f -name '*.sh' -o -name '*.template' | xargs sed -i 's/\r//g' 2>/dev/null || true",
     "    find scripts -type f -name '*.sh' -exec chmod +x {} + 2>/dev/null || true",
-    "    docker compose --profile remote up -d --build",
+    "    docker compose --profile remote build --pull
+    docker compose --profile remote up -d",
     "    echo `"[*] Server successfully updated and restarted!`"",
     "fi"
 )
