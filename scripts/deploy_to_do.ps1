@@ -37,6 +37,7 @@ Write-Host "[*] Creating remote execution script..." -ForegroundColor Cyan
 
 $Lines = @(
     "mkdir -p ~/dograh",
+    "rm -rf ~/dograh/api ~/dograh/ui ~/dograh/pipecat ~/dograh/scripts ~/dograh/deploy",
     "tar -xzf ~/dograh_deploy.tar.gz -C ~/dograh",
     "rm ~/dograh_deploy.tar.gz",
     "cd ~/dograh",
