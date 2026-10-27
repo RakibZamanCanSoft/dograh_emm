@@ -19,7 +19,8 @@ Write-Host "[*] Archiving local files (excluding local configs, databases, and n
 $ExcludeList = @(
     "venv", "node_modules", ".env", "ui/.env", "api/.env", ".git", 
     "__pycache__", ".next", "postgres_data", "redis_data", "minio-data", 
-    "docker-compose-local.yaml", ".gemini", ".agent", "deploy_archive.tar.gz", "deploy_remote.sh", "logs"
+    "docker-compose-local.yaml", ".gemini", ".agent", ".agents", "scratch", "*.jsonl",
+    "deploy_archive.tar.gz", "deploy_remote.sh", "logs"
 )
 
 # Build the tar command
@@ -59,11 +60,13 @@ $Lines = @(
     "    echo `"[*] No .env file found on the server.`"",
     "    echo `"[*] Please log into the droplet and run: cd ~/dograh && ./scripts/setup_remote.sh`"",
     "else",
+    "    echo `"[*] Backing up PostgreSQL database before upgrade...`"",
+    "    docker exec dograh-postgres-1 pg_dump -U postgres postgres > ~/dograh_db_backup_`$(date +%Y%m%d_%H%M%S).sql 2>/dev/null || true",
     "    echo `"[*] Building Docker images from source and restarting...`"",
     "    find scripts deploy -type f -name '*.sh' -o -name '*.template' | xargs sed -i 's/\r//g' 2>/dev/null || true",
     "    find scripts -type f -name '*.sh' -exec chmod +x {} + 2>/dev/null || true",
-    "    docker compose --profile remote build --pull
-    docker compose --profile remote up -d",
+    "    docker compose --profile remote build --pull",
+    "    docker compose --profile remote up -d",
     "    echo `"[*] Server successfully updated and restarted!`"",
     "fi"
 )

@@ -151,6 +151,8 @@ services:
 
       # Set to "false" in .env to disable public signup (invite-only installs).
       ENABLE_SIGNUP: "${ENABLE_SIGNUP:-true}"
+      DISABLE_NEW_REGISTRATIONS: "${DISABLE_NEW_REGISTRATIONS:-false}"
+      ADMIN_SIGNUP_SECRET: "${ADMIN_SIGNUP_SECRET:-}"
 
       # Public origin for this deployment. The API derives BACKEND_API_ENDPOINT,
       # MINIO_PUBLIC_ENDPOINT and TURN_HOST from PUBLIC_BASE_URL / PUBLIC_HOST when
