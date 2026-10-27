@@ -36,6 +36,7 @@ $TarArgs += "."
 Write-Host "[*] Creating remote execution script..." -ForegroundColor Cyan
 
 $Lines = @(
+    "set -e",
     "mkdir -p ~/dograh",
     "rm -rf ~/dograh/api ~/dograh/ui ~/dograh/pipecat ~/dograh/scripts ~/dograh/deploy",
     "tar -xzf ~/dograh_deploy.tar.gz -C ~/dograh",
@@ -66,7 +67,8 @@ $Lines = @(
     "    echo `"[*] Building Docker images from source and restarting...`"",
     "    find scripts deploy -type f -name '*.sh' -o -name '*.template' | xargs sed -i 's/\r//g' 2>/dev/null || true",
     "    find scripts -type f -name '*.sh' -exec chmod +x {} + 2>/dev/null || true",
-    "    docker compose --profile remote build --pull",
+    "    docker compose --profile remote build --pull api",
+    "    docker compose --profile remote build --pull ui",
     "    docker compose --profile remote up -d",
     "    echo `"[*] Server successfully updated and restarted!`"",
     "fi"
