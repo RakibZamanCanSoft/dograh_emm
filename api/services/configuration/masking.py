@@ -58,6 +58,11 @@ def is_mask_of(masked: str, real_key: str) -> bool:
     return mask_key(real_key) == masked
 
 
+def contains_masked_key(val: Any) -> bool:
+    """Quick heuristic: does *val* look like a masked key?"""
+    return isinstance(val, str) and MASK_MARKER in val
+
+
 # ---------------------------------------------------------------------------
 # High-level helpers for EffectiveAIModelConfiguration objects
 # ---------------------------------------------------------------------------
